@@ -82,7 +82,7 @@
     <Compile Include="Event.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="IAddEvents.cs" />
-    <Compile Include="ISaveEvents.cs" />
+    <Compile Include="IWriteStreams.cs" />
     <Compile Include="IWriteSessions.cs" />
     <Compile Include="ICreateSessions.cs" />
     <Compile Include="StreamId.cs" />

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Estuite
 {
-    public class EventStream : ISaveEvents, IAddEvents
+    public class EventStream : IWriteStreams, IAddEvents
     {
         private readonly ICreateSessions _events;
         private readonly List<Event> _eventsToSave;

@@ -64,8 +64,10 @@ namespace Estuite
                 switch (e.RequestInformation.HttpStatusCode)
                 {
                     case HttpStatusCodes.EntityAlreadyExists:
-                        string message = $"The stream {session.StreamId.Value} was modified between read and write.";
-                        throw new ConcurrencyException(message, e);
+                        throw new ConcurrencyException(
+                            $"The stream {session.StreamId.Value} was modified between read and write or the session {session.SessionId.Value} was already registered.",
+                            e
+                        );
                     default:
                         throw;
                 }
