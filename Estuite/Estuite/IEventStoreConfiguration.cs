@@ -2,6 +2,7 @@
 {
     public interface IEventStoreConfiguration
     {
-        string TableName { get; }
+        string StreamTableName { get; }
+        string EventTableName { get; }
     }
 }

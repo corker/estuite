@@ -8,11 +8,11 @@ namespace Estuite
     public class EventStore : ISaveSessions
     {
         private readonly CloudTableClient _tableClient;
-        private readonly string _tableName;
+        private readonly string _streamTableName;
 
         public EventStore(CloudStorageAccount account, IEventStoreConfiguration configuration)
         {
-            _tableName = configuration.TableName;
+            _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 
@@ -53,7 +53,7 @@ namespace Estuite
                 operation.Add(TableOperation.Insert(dispatchTableEntity));
             }
 
-            var table = _tableClient.GetTableReference(_tableName);
+            var table = _tableClient.GetTableReference(_streamTableName);
             await table.CreateIfNotExistsAsync(token);
             await table.ExecuteBatchAsync(operation, token);
         }
