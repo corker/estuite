@@ -5,10 +5,10 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Estuite
 {
-    public class EventStore : ISaveSessions
+    public class EventStore : IWriteSessions
     {
-        private readonly CloudTableClient _tableClient;
         private readonly string _streamTableName;
+        private readonly CloudTableClient _tableClient;
 
         public EventStore(CloudStorageAccount account, IEventStoreConfiguration configuration)
         {
@@ -16,7 +16,7 @@ namespace Estuite
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Save(Session session, CancellationToken token = new CancellationToken())
+        public async Task Write(Session session, CancellationToken token = new CancellationToken())
         {
             var operation = new TableBatchOperation();
             var sessionTableEntity = new SessionTableEntity
@@ -55,7 +55,26 @@ namespace Estuite
 
             var table = _tableClient.GetTableReference(_streamTableName);
             await table.CreateIfNotExistsAsync(token);
-            await table.ExecuteBatchAsync(operation, token);
+            try
+            {
+                await table.ExecuteBatchAsync(operation, token);
+            }
+            catch (StorageException e)
+            {
+                switch (e.RequestInformation.HttpStatusCode)
+                {
+                    case HttpStatusCodes.EntityAlreadyExists:
+                        string message = $"The stream {session.StreamId.Value} was modified between read and write.";
+                        throw new ConcurrencyException(message, e);
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        private static class HttpStatusCodes
+        {
+            public const int EntityAlreadyExists = 409;
         }
 
 

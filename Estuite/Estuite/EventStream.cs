@@ -9,10 +9,10 @@ namespace Estuite
     {
         private readonly ICreateSessions _events;
         private readonly List<Event> _eventsToSave;
-        private readonly ISaveSessions _sessions;
+        private readonly IWriteSessions _sessions;
         private readonly StreamId _streamId;
 
-        public EventStream(StreamId streamId, ICreateSessions events, ISaveSessions sessions)
+        public EventStream(StreamId streamId, ICreateSessions events, IWriteSessions sessions)
         {
             if (streamId == null) throw new ArgumentNullException(nameof(streamId));
             if (events == null) throw new ArgumentNullException(nameof(events));
@@ -31,7 +31,7 @@ namespace Estuite
         public async Task Save(SessionId sessionId, CancellationToken token)
         {
             var session = _events.Create(_streamId, sessionId, _eventsToSave);
-            await _sessions.Save(session, token);
+            await _sessions.Write(session, token);
             _eventsToSave.Clear();
         }
     }

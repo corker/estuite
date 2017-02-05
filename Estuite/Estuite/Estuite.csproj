@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BucketId.cs" />
+    <Compile Include="ConcurrencyException.cs" />
     <Compile Include="EventStore.cs" />
     <Compile Include="EventRecord.cs" />
     <Compile Include="IEventStoreConfiguration.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="EventStream.cs" />
     <Compile Include="IAddEvents.cs" />
     <Compile Include="ISaveEvents.cs" />
-    <Compile Include="ISaveSessions.cs" />
+    <Compile Include="IWriteSessions.cs" />
     <Compile Include="ICreateSessions.cs" />
     <Compile Include="StreamId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
