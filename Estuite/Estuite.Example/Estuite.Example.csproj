@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F1CEB646-20A4-4DDF-A93A-B93268AD2934}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{C488F728-D585-4838-91E9-EAA9A5377445}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Estuite</RootNamespace>
-    <AssemblyName>Estuite</AssemblyName>
+    <RootNamespace>Estuite.Example</RootNamespace>
+    <AssemblyName>Estuite.Example</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -50,8 +53,8 @@
       <HintPath>..\packages\WindowsAzure.Storage.8.0.1\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -68,30 +71,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BucketId.cs" />
-    <Compile Include="EventStore.cs" />
-    <Compile Include="EventRecord.cs" />
-    <Compile Include="IEventStoreConfiguration.cs" />
-    <Compile Include="IProvideUtcDateTime.cs" />
-    <Compile Include="ISerializeEvents.cs" />
-    <Compile Include="SerializedEvent.cs" />
-    <Compile Include="Session.cs" />
-    <Compile Include="SessionFactory.cs" />
-    <Compile Include="SessionId.cs" />
-    <Compile Include="Event.cs" />
-    <Compile Include="EventStream.cs" />
-    <Compile Include="IAddEvents.cs" />
-    <Compile Include="ISaveEvents.cs" />
-    <Compile Include="ISaveSessions.cs" />
-    <Compile Include="ICreateSessions.cs" />
-    <Compile Include="StreamId.cs" />
+    <Compile Include="EventSerializer.cs" />
+    <Compile Include="Events\AccountNameCorrected.cs" />
+    <Compile Include="Events\AccountRegistered.cs" />
+    <Compile Include="Configuration\ICloudStorageAccountConfiguration.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProgramConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AggregateId.cs" />
-    <Compile Include="AggregateType.cs" />
-    <Compile Include="UtcDateTimeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Estuite\Estuite.csproj">
+      <Project>{F1CEB646-20A4-4DDF-A93A-B93268AD2934}</Project>
+      <Name>Estuite</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

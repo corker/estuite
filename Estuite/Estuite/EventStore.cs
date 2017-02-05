@@ -16,13 +16,13 @@ namespace Estuite
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Save(StreamId streamId, Session session, CancellationToken token = new CancellationToken())
+        public async Task Save(Session session, CancellationToken token = new CancellationToken())
         {
             var operation = new TableBatchOperation();
             var sessionTableEntity = new SessionTableEntity
             {
-                PartitionKey = streamId.Value,
-                RowKey = $"s_{session.SessionId.Value}",
+                PartitionKey = session.StreamId.Value,
+                RowKey = $"S^{session.SessionId.Value}",
                 Created = $"{session.Created:O}",
                 RecordCount = session.Records.Length
             };
@@ -32,10 +32,10 @@ namespace Estuite
             {
                 var eventTableEntity = new EventTableEntity
                 {
-                    PartitionKey = streamId.Value,
-                    RowKey = $"e_{record.Version:D10}",
+                    PartitionKey = session.StreamId.Value,
+                    RowKey = $"E^{record.Version:D10}",
                     Created = $"{record.Created:O}",
-                    SessionId = record.SessionId,
+                    SessionId = record.SessionId.Value,
                     Type = record.Type,
                     Payload = record.Payload
                 };
@@ -43,10 +43,10 @@ namespace Estuite
 
                 var dispatchTableEntity = new DispatchTableEntity
                 {
-                    PartitionKey = streamId.Value,
-                    RowKey = $"d_{record.Version:D10}",
+                    PartitionKey = session.StreamId.Value,
+                    RowKey = $"D^{record.Version:D10}",
                     Created = $"{record.Created:O}",
-                    SessionId = record.SessionId,
+                    SessionId = record.SessionId.Value,
                     Type = record.Type,
                     Payload = record.Payload
                 };
@@ -59,7 +59,7 @@ namespace Estuite
         }
 
 
-        public class EventTableEntity : TableEntity
+        private class EventTableEntity : TableEntity
         {
             public string Created { get; set; }
             public string SessionId { get; set; }
@@ -67,7 +67,7 @@ namespace Estuite
             public string Payload { get; set; }
         }
 
-        public class DispatchTableEntity : TableEntity
+        private class DispatchTableEntity : TableEntity
         {
             public string Created { get; set; }
             public string SessionId { get; set; }
@@ -75,7 +75,7 @@ namespace Estuite
             public string Payload { get; set; }
         }
 
-        public class SessionTableEntity : TableEntity
+        private class SessionTableEntity : TableEntity
         {
             public string Created { get; set; }
             public int RecordCount { get; set; }

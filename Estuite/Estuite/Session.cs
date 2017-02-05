@@ -6,7 +6,7 @@ namespace Estuite
 {
     public class Session
     {
-        public Session(StreamId streamId, SessionId sessionId, EventRecord[] records, DateTime created)
+        public Session(StreamId streamId, SessionId sessionId, DateTime created, EventRecord[] records)
         {
             if (streamId == null) throw new ArgumentNullException(nameof(streamId));
             if (sessionId == null) throw new ArgumentNullException(nameof(sessionId));

@@ -2,6 +2,6 @@
 {
     public interface IAddEvents
     {
-        void Add(Event @event);
+        void Add(int version, object body);
     }
 }

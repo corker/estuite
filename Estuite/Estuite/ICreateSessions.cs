@@ -4,6 +4,6 @@ namespace Estuite
 {
     public interface ICreateSessions
     {
-        Session Create(IEnumerable<Event> @event, SessionId sessionId);
+        Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> @event);
     }
 }

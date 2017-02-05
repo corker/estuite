@@ -4,13 +4,14 @@ namespace Estuite
 {
     public class StreamId
     {
-        public StreamId(string value)
+        public StreamId(BucketId bucketId, AggregateType aggregateType, AggregateId aggregateId)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
-            Value = value;
+            if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
+            if (aggregateType == null) throw new ArgumentNullException(nameof(aggregateType));
+            if (aggregateId == null) throw new ArgumentNullException(nameof(aggregateId));
+            Value = $"{bucketId.Value}^{aggregateType.Value}^{aggregateId.Value}";
         }
 
-        public string Value { get; private set; }
+        public string Value { get; }
     }
 }

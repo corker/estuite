@@ -5,6 +5,6 @@ namespace Estuite
 {
     public interface ISaveSessions
     {
-        Task Save(StreamId streamId, Session session, CancellationToken token = new CancellationToken());
+        Task Save(Session session, CancellationToken token = new CancellationToken());
     }
 }
