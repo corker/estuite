@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Estuite
 {
-    public class EventStream : IWriteStreams, IAddEvents
+    public class EventStream : IWriteEvents, IAddEvents
     {
         private readonly ICreateSessions _events;
         private readonly List<Event> _eventsToSave;
@@ -28,7 +28,7 @@ namespace Estuite
             _eventsToSave.Add(@event);
         }
 
-        public async Task Save(SessionId sessionId, CancellationToken token)
+        public async Task Write(SessionId sessionId, CancellationToken token)
         {
             var session = _events.Create(_streamId, sessionId, _eventsToSave);
             await _sessions.Write(session, token);

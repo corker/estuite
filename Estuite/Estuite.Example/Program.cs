@@ -25,7 +25,7 @@ namespace Estuite.Example
             var sessionId = new SessionId($"{Guid.NewGuid()}");
 
             stream.Add(1, new AccountRegistered {AccountId = AccountId, Name = "MyAccount1"});
-            var save = stream.Save(sessionId, new CancellationToken());
+            var save = stream.Write(sessionId, new CancellationToken());
             save.Wait();
         }
 
@@ -35,7 +35,7 @@ namespace Estuite.Example
             var sessionId = new SessionId($"{Guid.NewGuid()}");
 
             stream.Add(2, new AccountNameCorrected { AccountId = AccountId, Name = "MyAccount2" });
-            var save = stream.Save(sessionId, new CancellationToken());
+            var save = stream.Write(sessionId, new CancellationToken());
             save.Wait();
         }
 
@@ -45,7 +45,7 @@ namespace Estuite.Example
             var sessionId = new SessionId($"{Guid.NewGuid()}");
 
             stream.Add(3, new AccountNameCorrected {AccountId = AccountId, Name = "MyAccount3"});
-            var save1 = stream.Save(sessionId, new CancellationToken());
+            var save1 = stream.Write(sessionId, new CancellationToken());
             save1.Wait();
 
             sessionId = new SessionId($"{Guid.NewGuid()}");
@@ -54,7 +54,7 @@ namespace Estuite.Example
             {
                 try
                 {
-                    await stream.Save(sessionId, new CancellationToken());
+                    await stream.Write(sessionId, new CancellationToken());
                 }
                 catch (ConcurrencyException e)
                 {
@@ -70,7 +70,7 @@ namespace Estuite.Example
             var sessionId = new SessionId($"{Guid.NewGuid()}");
 
             stream.Add(4, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"});
-            var save1 = stream.Save(sessionId, new CancellationToken());
+            var save1 = stream.Write(sessionId, new CancellationToken());
             save1.Wait();
 
             stream.Add(5, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"});
@@ -78,7 +78,7 @@ namespace Estuite.Example
             {
                 try
                 {
-                    await stream.Save(sessionId, new CancellationToken());
+                    await stream.Write(sessionId, new CancellationToken());
                 }
                 catch (ConcurrencyException e)
                 {
