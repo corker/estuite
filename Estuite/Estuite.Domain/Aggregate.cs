@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 namespace Estuite.Domain
 {
-    public abstract class Aggregate<TId> : IFlushEvents, IHydrateEvents
+    public abstract class Aggregate<TId> : IFlushEvents, IHydrateEvents, ICanBeHydrated, ICanBeRegistered
     {
         private readonly ICreateEvents _eventFactory;
         private readonly IHandleEvents _eventHandler;
         private List<object> _events = new List<object>();
+
+        private TId _id;
 
         protected Aggregate()
         {
@@ -15,12 +17,20 @@ namespace Estuite.Domain
             _eventHandler = this as IHandleEvents ?? new DefaultEventHandler();
         }
 
-        public TId Id { get; }
+        void ICanBeHydrated.HydrateWith(IHydrateAggregates aggregates, object id)
+        {
+            aggregates.HydrateTo((TId) id, this);
+        }
+
+        void ICanBeRegistered.RegisterWith(IRegisterAggregates aggregates)
+        {
+            aggregates.Register(_id, this);
+        }
 
         IEnumerable<object> IFlushEvents.Flush()
         {
             // http://stackoverflow.com/questions/1895761/test-for-equality-to-the-default-value
-            if (EqualityComparer<TId>.Default.Equals(Id, default(TId)))
+            if (EqualityComparer<TId>.Default.Equals(_id, default(TId)))
             {
                 var message = "Can't flush events. Id for the aggregate was not set.";
                 throw new InvalidOperationException(message);
@@ -35,7 +45,7 @@ namespace Estuite.Domain
             foreach (var @event in events) _eventHandler.Handle(this, @event);
         }
 
-        protected void Identify(TId id)
+        protected void IdentifyAs(TId id)
         {
             // http://stackoverflow.com/questions/1895761/test-for-equality-to-the-default-value
             if (EqualityComparer<TId>.Default.Equals(id, default(TId)))
@@ -43,6 +53,7 @@ namespace Estuite.Domain
                 var message = "Can't identify the aggregate.";
                 throw new ArgumentOutOfRangeException(nameof(id), message);
             }
+            _id = id;
         }
 
         protected void Apply<TEvent>(Action<TEvent> action)

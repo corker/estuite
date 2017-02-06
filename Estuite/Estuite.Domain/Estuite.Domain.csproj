@@ -41,13 +41,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate.cs" />
+    <Compile Include="ICanBeHydrated.cs" />
+    <Compile Include="ICanBeRegistered.cs" />
+    <Compile Include="IHydrateAggregates.cs" />
+    <Compile Include="IProvideAggregates.cs" />
     <Compile Include="DefaultEventFactory.cs" />
     <Compile Include="DefaultEventHandler.cs" />
     <Compile Include="ICreateEvents.cs" />
     <Compile Include="IFlushEvents.cs" />
     <Compile Include="IHandleEvents.cs" />
     <Compile Include="IHydrateEvents.cs" />
+    <Compile Include="IRegisterAggregates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

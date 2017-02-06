@@ -84,9 +84,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Estuite\Estuite.csproj">
-      <Project>{F1CEB646-20A4-4DDF-A93A-B93268AD2934}</Project>
-      <Name>Estuite</Name>
+    <ProjectReference Include="..\Estuite.AzureEventStore\Estuite.AzureEventStore.csproj">
+      <Project>{CF205E4B-050B-4AF0-BDA2-800094E1778B}</Project>
+      <Name>Estuite.AzureEventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
