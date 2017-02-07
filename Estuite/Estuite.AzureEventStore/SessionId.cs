@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite
+namespace Estuite.AzureEventStore
 {
     public class SessionId
     {

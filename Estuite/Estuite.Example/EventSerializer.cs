@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Estuite.AzureEventStore;
+using Newtonsoft.Json;
 
 namespace Estuite.Example
 {

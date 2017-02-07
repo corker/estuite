@@ -2,6 +2,8 @@
 {
     public interface IHydrateAggregates
     {
-        void HydrateTo<TId>(TId id, IHydrateEvents events);
+        void Hydrate(ICanBeHydrated aggregate);
+
+        void Hydrate<TId>(TId id, IHydrateEvents events);
     }
 }

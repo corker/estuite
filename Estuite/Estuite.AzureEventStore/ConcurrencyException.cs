@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Estuite
+namespace Estuite.AzureEventStore
 {
     [Serializable]
     public class ConcurrencyException : Exception

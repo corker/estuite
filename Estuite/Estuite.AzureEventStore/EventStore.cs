@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace Estuite
+namespace Estuite.AzureEventStore
 {
     public class EventStore : IWriteSessions
     {

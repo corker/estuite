@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Estuite
+namespace Estuite.AzureEventStore
 {
     public class Session
     {

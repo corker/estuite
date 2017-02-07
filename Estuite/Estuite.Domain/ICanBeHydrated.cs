@@ -2,6 +2,6 @@
 {
     public interface ICanBeHydrated
     {
-        void HydrateWith(IHydrateAggregates aggregates, object id);
+        void HydrateWith(IHydrateAggregates aggregates);
     }
 }

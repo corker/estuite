@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Estuite
+namespace Estuite.Domain
 {
     public interface IFlushEvents
     {

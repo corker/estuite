@@ -68,9 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateId.cs" />
-    <Compile Include="AggregateType.cs" />
-    <Compile Include="BucketId.cs" />
     <Compile Include="ConcurrencyException.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventRecord.cs" />
@@ -88,11 +85,16 @@
     <Compile Include="Session.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="SessionId.cs" />
-    <Compile Include="StreamId.cs" />
     <Compile Include="UtcDateTimeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Estuite\Estuite.csproj">
+      <Project>{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}</Project>
+      <Name>Estuite</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

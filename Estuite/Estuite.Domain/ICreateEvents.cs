@@ -1,4 +1,4 @@
-﻿namespace Estuite
+﻿namespace Estuite.Domain
 {
     public interface ICreateEvents
     {

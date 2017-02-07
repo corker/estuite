@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Estuite.AzureEventStore;
 using Estuite.Example.Events;
 using Microsoft.WindowsAzure.Storage;
 

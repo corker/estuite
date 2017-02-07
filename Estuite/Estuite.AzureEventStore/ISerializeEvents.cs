@@ -1,4 +1,4 @@
-﻿namespace Estuite
+﻿namespace Estuite.AzureEventStore
 {
     public interface ISerializeEvents
     {

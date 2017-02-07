@@ -2,7 +2,7 @@
 
 namespace Estuite.Specs.UnitTests
 {
-    public class describe_Dummy : nspec
+    public class describe_Aggregate : nspec
     {
         private void when_()
         {
