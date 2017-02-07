@@ -4,6 +4,6 @@ namespace Estuite.Domain
 {
     public interface IFlushEvents
     {
-        IEnumerable<object> Flush();
+        List<Event> Flush();
     }
 }

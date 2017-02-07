@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite.AzureEventStore
+namespace Estuite
 {
     public class SerializedEvent
     {

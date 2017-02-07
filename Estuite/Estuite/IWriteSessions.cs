@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Estuite.AzureEventStore
+namespace Estuite
 {
     public interface IWriteSessions
     {

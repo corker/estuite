@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregates\Account.cs" />
     <Compile Include="EventSerializer.cs" />
     <Compile Include="Events\AccountNameCorrected.cs" />
     <Compile Include="Events\AccountRegistered.cs" />
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\Estuite.AzureEventStore\Estuite.AzureEventStore.csproj">
       <Project>{CF205E4B-050B-4AF0-BDA2-800094E1778B}</Project>
       <Name>Estuite.AzureEventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
+      <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
+      <Name>Estuite.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Estuite\Estuite.csproj">
       <Project>{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}</Project>

@@ -44,12 +44,23 @@
     <Compile Include="AggregateType.cs" />
     <Compile Include="BucketId.cs" />
     <Compile Include="DefaultStreamIdentityFactory.cs" />
+    <Compile Include="EventRecord.cs" />
+    <Compile Include="GuidCombGenerator.cs" />
     <Compile Include="ICommitAggregates.cs" />
+    <Compile Include="ICreateSessions.cs" />
     <Compile Include="ICreateStreamIdentities.cs" />
+    <Compile Include="IProvideUtcDateTime.cs" />
+    <Compile Include="ISerializeEvents.cs" />
+    <Compile Include="IWriteSessions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializedEvent.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SessionFactory.cs" />
+    <Compile Include="SessionId.cs" />
     <Compile Include="StreamId.cs" />
     <Compile Include="StreamIdEqualityComparer.cs" />
     <Compile Include="UnitOfWork.cs" />
+    <Compile Include="UtcDateTimeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">

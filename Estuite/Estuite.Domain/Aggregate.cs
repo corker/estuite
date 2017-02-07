@@ -7,48 +7,55 @@ namespace Estuite.Domain
     {
         private readonly ICreateEvents _eventFactory;
         private readonly IHandleEvents _eventHandler;
-        private readonly TId _id;
-        private List<object> _events = new List<object>();
+        private List<Event> _events = new List<Event>();
+        private int _version;
 
         protected Aggregate(TId id)
         {
-            if (_id.IsNullOrEmpty())
+            if (id.IsNullOrEmpty())
             {
                 var message = "Can't create an aggregate with id as null or default value.";
-                throw new ArgumentOutOfRangeException(nameof(id));
+                throw new ArgumentOutOfRangeException(nameof(id), message);
             }
-            _id = id;
+            Id = id;
             _eventFactory = this as ICreateEvents ?? new DefaultEventFactory();
             _eventHandler = this as IHandleEvents ?? new DefaultEventHandler();
         }
 
+        protected TId Id { get; }
+
         void ICanBeHydrated.HydrateWith(IHydrateAggregates aggregates)
         {
-            aggregates.Hydrate(_id, this);
+            aggregates.Hydrate(Id, this);
         }
 
         void ICanBeRegistered.RegisterWith(IRegisterAggregates aggregates)
         {
-            aggregates.Register(_id, this);
+            aggregates.Register(Id, this);
         }
 
-        IEnumerable<object> IFlushEvents.Flush()
+        List<Event> IFlushEvents.Flush()
         {
             var events = _events;
-            _events = new List<object>();
+            _events = new List<Event>();
             return events;
         }
 
         void IHydrateEvents.Hydrate(IEnumerable<object> events)
         {
-            foreach (var @event in events) _eventHandler.Handle(this, @event);
+            foreach (var @event in events)
+            {
+                _eventHandler.Handle(this, @event);
+                _version++;
+            }
         }
 
         protected void Apply<TEvent>(Action<TEvent> action)
         {
             var @event = _eventFactory.Create<TEvent>();
             _eventHandler.Handle(this, @event);
-            _events.Add(@event);
+            _version++;
+            _events.Add(new Event(_version, @event));
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Estuite.Domain;
 
-namespace Estuite.AzureEventStore
+namespace Estuite
 {
     public class SessionFactory : ICreateSessions
     {

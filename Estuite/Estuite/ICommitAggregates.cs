@@ -1,7 +1,10 @@
-﻿namespace Estuite
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Estuite
 {
     public interface ICommitAggregates
     {
-        void Commit();
+        Task Commit(CancellationToken token = new CancellationToken());
     }
 }
