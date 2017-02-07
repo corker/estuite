@@ -43,6 +43,7 @@
     <Compile Include="AggregateId.cs" />
     <Compile Include="AggregateType.cs" />
     <Compile Include="BucketId.cs" />
+    <Compile Include="ConcurrencyException.cs" />
     <Compile Include="DefaultStreamIdentityFactory.cs" />
     <Compile Include="EventRecord.cs" />
     <Compile Include="GuidCombGenerator.cs" />
