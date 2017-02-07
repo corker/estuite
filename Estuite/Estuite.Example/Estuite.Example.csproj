@@ -88,6 +88,10 @@
       <Project>{CF205E4B-050B-4AF0-BDA2-800094E1778B}</Project>
       <Name>Estuite.AzureEventStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Estuite\Estuite.csproj">
+      <Project>{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}</Project>
+      <Name>Estuite</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
