@@ -78,8 +78,7 @@ namespace Estuite.AzureEventStore
         {
             public const int EntityAlreadyExists = 409;
         }
-
-
+        
         private class EventTableEntity : TableEntity
         {
             public string Created { get; set; }

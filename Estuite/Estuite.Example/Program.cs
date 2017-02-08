@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Estuite.AzureEventStore;
+using Estuite.Domain;
 using Estuite.Example.Aggregates;
 using Estuite.Example.Events;
 using Microsoft.WindowsAzure.Storage;
@@ -19,6 +19,7 @@ namespace Estuite.Example
         private static readonly CloudStorageAccount StorageAccount;
         private static readonly IWriteSessions WriteSessions;
         private static readonly GuidCombGenerator Identities;
+        private static readonly BucketId BucketId = new BucketId("default");
 
         static Program()
         {
@@ -35,13 +36,15 @@ namespace Estuite.Example
         {
             RegisterAggregateAndAppendAStream();
             VersionCollision();
-            //SessionCollision();
+            SessionCollision();
         }
 
         private static void RegisterAggregateAndAppendAStream()
         {
-            var unitOfWork = CreateUnitOfWork();
-            var aggregate = Account.Register(Guid.NewGuid(), "MyAccount1");
+            var accountId = Guid.NewGuid();
+
+            var unitOfWork = new UnitOfWork(BucketId, Sessions, WriteSessions, Identities);
+            var aggregate = Account.Register(accountId, "MyAccount1");
             unitOfWork.Register(aggregate);
             var commit1 = unitOfWork.Commit();
             commit1.Wait();
@@ -55,13 +58,13 @@ namespace Estuite.Example
         {
             var accountId = Guid.NewGuid();
 
-            var unitOfWork1 = CreateUnitOfWork();
+            var unitOfWork1 = new UnitOfWork(BucketId, Sessions, WriteSessions, Identities);
             var aggregate1 = Account.Register(accountId, "MyAccount3");
             unitOfWork1.Register(aggregate1);
             var commit1 = unitOfWork1.Commit();
             commit1.Wait();
 
-            var unitOfWork2 = CreateUnitOfWork();
+            var unitOfWork2 = new UnitOfWork(BucketId, Sessions, WriteSessions, Identities);
             var aggregate2 = Account.Register(accountId, "MyAccount3");
             unitOfWork2.Register(aggregate2);
             var commit2 = Task.Run(async () =>
@@ -78,34 +81,42 @@ namespace Estuite.Example
             commit2.Wait();
         }
 
-        //private static void SessionCollision()
-        //{
-        //    var stream = CreateUnitOfWork();
-        //    var sessionId = new SessionId($"{Guid.NewGuid()}");
-
-        //    stream.Add(4, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"});
-        //    var save1 = stream.Write(sessionId, new CancellationToken());
-        //    save1.Wait();
-
-        //    stream.Add(5, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"});
-        //    var save2 = Task.Run(async () =>
-        //    {
-        //        try
-        //        {
-        //            await stream.Write(sessionId, new CancellationToken());
-        //        }
-        //        catch (ConcurrencyException e)
-        //        {
-        //            Debug.WriteLine($"{e}");
-        //        }
-        //    });
-        //    save2.Wait();
-        //}
-
-        private static UnitOfWork CreateUnitOfWork()
+        private static void SessionCollision()
         {
-            var bucketId = new BucketId("default");
-            return new UnitOfWork(bucketId, Sessions, WriteSessions, Identities);
+            var sessionId = new SessionId($"{Guid.NewGuid()}");
+            var aggregateType = new AggregateType("Account");
+            var aggregateId = new AggregateId($"{Guid.NewGuid()}");
+
+            var streamId = new StreamId(BucketId, aggregateType, aggregateId);
+            var session1 = Sessions.Create(
+                streamId,
+                sessionId,
+                new[]
+                {
+                    new Event(1, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"})
+                });
+            var write1 = WriteSessions.Write(session1);
+            write1.Wait();
+
+            var session2 = Sessions.Create(
+                streamId,
+                sessionId,
+                new[]
+                {
+                    new Event(2, new AccountNameCorrected {AccountId = AccountId, Name = "MyAccount4"})
+                });
+            var write2 = Task.Run(async () =>
+            {
+                try
+                {
+                    await WriteSessions.Write(session2);
+                }
+                catch (ConcurrencyException e)
+                {
+                    Debug.WriteLine($"{e}");
+                }
+            });
+            write2.Wait();
         }
     }
 }

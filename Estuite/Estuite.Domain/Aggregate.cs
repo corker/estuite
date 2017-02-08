@@ -53,6 +53,7 @@ namespace Estuite.Domain
         protected void Apply<TEvent>(Action<TEvent> action)
         {
             var @event = _eventFactory.Create<TEvent>();
+            action(@event);
             _eventHandler.Handle(this, @event);
             _version++;
             _events.Add(new Event(_version, @event));
