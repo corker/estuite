@@ -1,4 +1,4 @@
-Estuite [![Build status](https://ci.appveyor.com/api/projects/status/et4nsy7i9x6eg7y5?svg=true)](https://ci.appveyor.com/project/corker/estuite)
+Estuite [![Build status](https://ci.appveyor.com/api/projects/status/et4nsy7i9x6eg7y5?svg=true)](https://ci.appveyor.com/project/corker/estuite) [![Coverage Status](https://coveralls.io/repos/github/corker/estuite/badge.svg?branch=master)](https://coveralls.io/github/corker/estuite?branch=master)
 ==
 
 An event store for Microsoft Azure.
