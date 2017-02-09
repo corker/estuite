@@ -9,8 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.Example", "Estuite.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC94C418-0E55-4D99-8C18-127FC6215684}"
 	ProjectSection(SolutionItems) = preProject
-		..\appveyor.yml = ..\appveyor.yml
-		..\README.md = ..\README.md
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.Domain", "Estuite.Domain\Estuite.Domain.csproj", "{9603D807-DC8B-4F18-A84B-17E945242AE5}"
