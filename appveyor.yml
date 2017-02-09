@@ -1,17 +1,26 @@
 version: 0.0.{build}
+
 assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+    patch: true
+    file: '**\AssemblyInfo.*'
+    assembly_version: '{version}'
+    assembly_file_version: '{version}'
+    assembly_informational_version: '{version}'
+
 cache:
-- packages -> **\packages.config
+    - packages -> **\packages.config
+
 before_build:
-- cmd: nuget restore
+    - cmd: nuget restore
+
 environment:
     COVERALLS_REPO_TOKEN:  
-       secure: PIMng24AUW7G2Fua+kchfnDyIvtB8I1aAv2Jx10iAb78vJCSQCdYLpcCTthjUUBJ
+        secure: PIMng24AUW7G2Fua+kchfnDyIvtB8I1aAv2Jx10iAb78vJCSQCdYLpcCTthjUUBJ
+
+build:
+    project: Estuite.sln
+    verbosity: detailed
+
 after_test: 
     - cmd: packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"packages\NUnit.ConsoleRunner.3.6.0\tools\nunit3-console.exe" -targetargs:"/domain:single Estuite.Specs.UnitTests/bin/debug/Estuite.Specs.UnitTests.dll" -output:coverage.xml
     - cmd: packages\coveralls.io.1.3.4\tools\coveralls.net.exe --opencover coverage.xml
