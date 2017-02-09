@@ -36,19 +36,16 @@ namespace Estuite.Specs.UnitTests
                 var stopwatch = Stopwatch.StartNew();
                 for (var i = 0; i < Times; i++) _target.Handle(_aggregate, @event);
                 _elapsed = stopwatch.Elapsed;
-                _delta = (_elapsedNoCache - _elapsed).Milliseconds;
             };
             it["executes handler multiple times"] = () => _aggregate.Counter.ShouldBe(Times);
-            it["is faster than with no cache"] = () => _delta.ShouldBeGreaterThan(Milliseconds);
+            it["is faster than with no cache"] = () => _elapsed.ShouldBeLessThan(_elapsedNoCache);
         }
 
         private AggregateUnderTest _aggregate;
         private DefaultEventHandler _target;
         private TimeSpan _elapsed;
         private TimeSpan _elapsedNoCache;
-        private int _delta;
         private const int Times = 100000;
-        private const int Milliseconds = 100;
 
         private class AggregateUnderTest
         {
