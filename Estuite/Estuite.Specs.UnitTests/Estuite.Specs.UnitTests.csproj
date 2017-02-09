@@ -52,12 +52,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="describe_EventStream.cs" />
+    <Compile Include="DefaultEventHandlerWithNoCache.cs" />
+    <Compile Include="describe_DefaultEventHandler.cs" />
+    <Compile Include="describe_DefaultEventHandlerOfAggregate.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
+      <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
+      <Name>Estuite.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
