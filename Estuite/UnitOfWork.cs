@@ -16,18 +16,14 @@ namespace Estuite
         private readonly ICreateStreamIdentities _streamIdentities;
         private readonly IWriteSessions _writeSessions;
 
-        public UnitOfWork(
-            BucketId bucketId,
-            ICreateSessions createSessions,
-            IWriteSessions writeSessions,
-            IGenerateIdentities identities)
+        public UnitOfWork(BucketId bucketId, ICreateSessions createSessions, IWriteSessions writeSessions)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             _bucketId = bucketId;
             _createSessions = createSessions;
             _writeSessions = writeSessions;
-            _identities = identities;
             _aggregates = new Dictionary<StreamId, IFlushEvents>(StreamIdEqualityComparer.Instance);
+            _identities = this as IGenerateIdentities ?? new GuidCombGenerator(new UtcDateTimeProvider());
             _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
         }
 
