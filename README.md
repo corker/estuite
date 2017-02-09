@@ -1,4 +1,4 @@
-estuite
+estuite [![Build status](https://ci.appveyor.com/api/projects/status/et4nsy7i9x6eg7y5?svg=true)](https://ci.appveyor.com/project/corker/estuite)
 ==
 
 An event store for Microsoft Azure Table Store.
