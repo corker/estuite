@@ -53,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultEventHandlerWithNoCache.cs" />
+    <Compile Include="describe_AggregateOfInteger_ICanBeHydrated.cs" />
+    <Compile Include="describe_AggregateOfObject_ICanBeHydrated.cs" />
+    <Compile Include="describe_AggregateOfString_ICanBeHydrated.cs" />
     <Compile Include="describe_DefaultEventFactory.cs" />
     <Compile Include="describe_DefaultEventHandler.cs" />
     <Compile Include="describe_DefaultEventHandlerOfAggregate.cs" />

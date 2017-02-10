@@ -26,11 +26,13 @@ namespace Estuite.Domain
 
         void ICanBeHydrated.HydrateWith(IHydrateAggregates aggregates)
         {
+            if (aggregates == null) throw new ArgumentNullException(nameof(aggregates));
             aggregates.Hydrate(Id, this);
         }
 
         void ICanBeRegistered.RegisterWith(IRegisterAggregates aggregates)
         {
+            if (aggregates == null) throw new ArgumentNullException(nameof(aggregates));
             aggregates.Register(Id, this);
         }
 
@@ -43,6 +45,7 @@ namespace Estuite.Domain
 
         void IHydrateEvents.Hydrate(IEnumerable<object> events)
         {
+            if (events == null) throw new ArgumentNullException(nameof(events));
             foreach (var @event in events)
             {
                 _eventHandler.Handle(this, @event);
@@ -52,6 +55,7 @@ namespace Estuite.Domain
 
         protected void Apply<TEvent>(Action<TEvent> action)
         {
+            if (action == null) throw new ArgumentNullException(nameof(action));
             var @event = _eventFactory.Create<TEvent>();
             action(@event);
             _eventHandler.Handle(this, @event);
