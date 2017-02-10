@@ -66,10 +66,10 @@ namespace Estuite
             aggregate.RegisterWith(this);
         }
 
-        public void Register<TId>(TId id, IFlushEvents aggregate)
+        public void Register<TId>(TId id, IFlushEvents events)
         {
-            var streamId = _streamIdentities.Create(_bucketId, id, aggregate);
-            _aggregates.Add(streamId, aggregate);
+            var streamId = _streamIdentities.Create(_bucketId, id, events);
+            _aggregates.Add(streamId, events);
         }
 
         private async Task WriteStream(StreamId streamId, IEnumerable<Event> events, CancellationToken token)
