@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultEventHandlerWithNoCache.cs" />
+    <Compile Include="describe_DefaultEventFactory.cs" />
     <Compile Include="describe_DefaultEventHandler.cs" />
     <Compile Include="describe_DefaultEventHandlerOfAggregate.cs" />
     <Compile Include="nspec.cs" />
