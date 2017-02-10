@@ -53,10 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultEventHandlerWithNoCache.cs" />
+    <Compile Include="describe_AggregateOfInteger.cs" />
     <Compile Include="describe_AggregateOfInteger_ICanBeHydrated.cs" />
     <Compile Include="describe_AggregateOfInteger_ICanBeRegistered.cs" />
+    <Compile Include="describe_AggregateOfObject.cs" />
     <Compile Include="describe_AggregateOfObject_ICanBeHydrated.cs" />
     <Compile Include="describe_AggregateOfObject_ICanBeRegistered.cs" />
+    <Compile Include="describe_AggregateOfString.cs" />
     <Compile Include="describe_AggregateOfString_ICanBeHydrated.cs" />
     <Compile Include="describe_AggregateOfString_ICanBeRegistered.cs" />
     <Compile Include="describe_DefaultEventFactory.cs" />
