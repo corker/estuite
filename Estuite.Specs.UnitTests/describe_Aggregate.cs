@@ -10,6 +10,11 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             _id = Guid.NewGuid();
+            _eventsToHydrate = _eventsToHydrate = new List<object>
+            {
+                new HydratedEvent {Index = 1},
+                new HydratedEvent {Index = 2}
+            };
         }
 
         private void when_create()
@@ -32,10 +37,22 @@ namespace Estuite.Specs.UnitTests
                     _target.HydratedEvents[0].Index.ShouldBe(1);
                     _target.HydratedEvents[1].Index.ShouldBe(2);
                 };
+                context["and events to hydrate are null"] = () =>
+                {
+                    before = () => _eventsToHydrate = null;
+                    it["throws exception"] =
+                        expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: events");
+                };
                 context["then apply"] = () =>
                 {
                     act = () => _target.ApplyTwoTimes();
                     it["handles applied events"] = () => { _target.AppliedEvents.Count.ShouldBe(2); };
+                    context["and action to apply is null"] = () =>
+                    {
+                        act = () => _target.ApplyNull();
+                        it["throws exception"] =
+                            expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: action");
+                    };
                     context["then flush"] = () =>
                     {
                         act = () => _flushedEvents = _target.Flush();
@@ -83,6 +100,11 @@ namespace Estuite.Specs.UnitTests
                 Apply<AppliedEvent>(x => { x.Index = 2; });
             }
 
+            public void ApplyNull()
+            {
+                Apply<AppliedEvent>(null);
+            }
+
             private void Handle(HydratedEvent @event)
             {
                 HydratedEvents.Add(@event);
@@ -107,11 +129,6 @@ namespace Estuite.Specs.UnitTests
         private Guid _id;
         private AggregateUnderTest _target;
         private List<Event> _flushedEvents;
-
-        private readonly List<object> _eventsToHydrate = new List<object>
-        {
-            new HydratedEvent {Index = 1},
-            new HydratedEvent {Index = 2}
-        };
+        private List<object> _eventsToHydrate;
     }
 }
