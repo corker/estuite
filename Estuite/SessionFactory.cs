@@ -18,6 +18,9 @@ namespace Estuite
 
         public Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> events)
         {
+            if (streamId == null) throw new ArgumentNullException(nameof(streamId));
+            if (sessionId == null) throw new ArgumentNullException(nameof(sessionId));
+            if (events == null) throw new ArgumentNullException(nameof(events));
             var created = _dateTime.Now;
             var records = events.Select(x => CreateEventRecord(x, sessionId, created)).ToArray();
             return new Session(streamId, sessionId, created, records);
