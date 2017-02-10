@@ -21,6 +21,11 @@ namespace Estuite.Specs.UnitTests
             it["provides an id with expected type"] = () => { _aggregates.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _aggregates.ProvidedId.ShouldBe(_id); };
             it["provides itself to hydrate events"] = () => { _aggregates.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            context["and hydrator is null"] = () =>
+            {
+                before = () => _aggregates = null;
+                it["throw exception"] = expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: aggregates");
+            };
         }
 
         private class FakeIHydrateAggregates : IHydrateAggregates
