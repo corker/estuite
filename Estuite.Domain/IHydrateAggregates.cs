@@ -4,6 +4,6 @@
     {
         void Hydrate(ICanBeHydrated aggregate);
 
-        void Hydrate<TId>(TId id, IHydrateEvents events);
+        void Hydrate<TId, TAggregate>(TId id, TAggregate events) where TAggregate : Aggregate<TId>;
     }
 }

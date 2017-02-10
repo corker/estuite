@@ -24,7 +24,9 @@ namespace Estuite.Specs.UnitTests
             context["and hydrator is null"] = () =>
             {
                 before = () => _aggregates = null;
-                it["throw exception"] = expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: aggregates");
+                it["throw exception"] = expect<ArgumentNullException>(
+                    "Value cannot be null.\r\nParameter name: aggregates"
+                );
             };
         }
 
@@ -38,7 +40,7 @@ namespace Estuite.Specs.UnitTests
                 throw new NotImplementedException();
             }
 
-            public void Hydrate<TId>(TId id, IHydrateEvents events)
+            public void Hydrate<TId, TAggregate>(TId id, TAggregate events) where TAggregate : Aggregate<TId>
             {
                 ProvidedId = id;
                 ProvidedEvents = events;

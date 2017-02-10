@@ -12,11 +12,7 @@ namespace Estuite.Domain
 
         protected Aggregate(TId id)
         {
-            if (id.IsNullOrEmpty())
-            {
-                var message = "Can't create an aggregate with id as null or default value.";
-                throw new ArgumentOutOfRangeException(nameof(id), message);
-            }
+            if (id.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(id));
             Id = id;
             _eventFactory = this as ICreateEvents ?? new DefaultEventFactory();
             _eventHandler = this as IHandleEvents ?? new DefaultEventHandler();

@@ -50,9 +50,9 @@ namespace Estuite
             }
         }
 
-        public void Hydrate<TId>(TId id, IHydrateEvents events)
+        public void Hydrate<TId, TAggregate>(TId id, TAggregate events) where TAggregate : Aggregate<TId>
         {
-            events.Hydrate(new object[0]);
+            ((IHydrateEvents)events).Hydrate(new object[0]);
             throw new NotImplementedException();
         }
 
@@ -66,10 +66,10 @@ namespace Estuite
             aggregate.RegisterWith(this);
         }
 
-        public void Register<TId>(TId id, IFlushEvents events)
+        public void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : Aggregate<TId>
         {
-            var streamId = _streamIdentities.Create(_bucketId, id, events);
-            _aggregates.Add(streamId, events);
+            var streamId = _streamIdentities.Create<TId, TAggregate>(_bucketId, id);
+            _aggregates.Add(streamId, aggregate);
         }
 
         private async Task WriteStream(StreamId streamId, IEnumerable<Event> events, CancellationToken token)

@@ -3,6 +3,6 @@
     public interface IRegisterAggregates
     {
         void Register(ICanBeRegistered aggregate);
-        void Register<TId>(TId id, IFlushEvents events);
+        void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : Aggregate<TId>;
     }
 }

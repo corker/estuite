@@ -21,7 +21,7 @@ namespace Estuite.Specs.UnitTests
             {
                 before = () => _id = null;
                 it["throws exception"] = expect<ArgumentOutOfRangeException>(
-                    "Can't create an aggregate with id as null or default value.\r\nParameter name: id"
+                    "Specified argument was out of the range of valid values.\r\nParameter name: id"
                 );
             };
         }

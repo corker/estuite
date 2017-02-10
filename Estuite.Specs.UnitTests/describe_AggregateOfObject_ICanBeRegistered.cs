@@ -20,11 +20,13 @@ namespace Estuite.Specs.UnitTests
             act = () => _target.RegisterWith(_registerer);
             it["provides an id with expected type"] = () => { _registerer.ProvidedId.ShouldBeOfType<object>(); };
             it["provides an expected id"] = () => { _registerer.ProvidedId.ShouldBe(_id); };
-            it["provides itself to flush events"] = () => { _registerer.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            it["provides itself to flush aggregate"] = () => { _registerer.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and registerer is null"] = () =>
             {
                 before = () => _registerer = null;
-                it["throw exception"] = expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: aggregates");
+                it["throw exception"] = expect<ArgumentNullException>(
+                    "Value cannot be null.\r\nParameter name: aggregates"
+                );
             };
         }
 
@@ -38,10 +40,10 @@ namespace Estuite.Specs.UnitTests
                 throw new NotImplementedException();
             }
 
-            public void Register<TId>(TId id, IFlushEvents events)
+            public void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : Aggregate<TId>
             {
                 ProvidedId = id;
-                ProvidedEvents = events;
+                ProvidedEvents = aggregate;
             }
         }
 
