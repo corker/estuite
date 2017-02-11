@@ -22,7 +22,7 @@ namespace Estuite.Specs.UnitTests
             _target = new UnitOfWork(_bucketId, _createSessions, _writeSessions);
         }
 
-        private void when_register_aggregate()
+        private void when_register_aggregate_with_events()
         {
             act = () => _target.Register(_id, _events);
             context["and commit"] = () =>
@@ -41,6 +41,15 @@ namespace Estuite.Specs.UnitTests
                         it["has version"] = () => _records[0].Version.ShouldBe(ExpectedEventVersion);
                         it["has payload"] = () => _records[0].Payload.ShouldBe(ExpectedEventBody);
                     };
+                };
+            };
+            context["and register another aggregate with events"] = () =>
+            {
+                act = () => _target.Register(Guid.NewGuid(), _events);
+                context["and commit"] = () =>
+                {
+                    actAsync = async () => await _target.Commit();
+                    it["throws exception"] = expect<InvalidOperationException>();
                 };
             };
         }

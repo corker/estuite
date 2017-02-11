@@ -49,7 +49,7 @@ namespace Estuite
                     await WriteStream(streamId, events, token);
                     break;
                 default:
-                    var ids = string.Join(", ", streamsToWrite.Select(x => x.StreamId));
+                    var ids = string.Join(", ", streamsToWrite.Select(x => x.StreamId.Value));
                     string message = $"Can't commit multiple streams. Stream ids {ids}";
                     throw new InvalidOperationException(message);
             }
