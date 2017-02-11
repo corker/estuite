@@ -36,9 +36,8 @@ namespace Estuite.Specs.UnitTests
         // ReSharper disable once ClassNeverInstantiated.Local
         private class FakeAggregate : Aggregate<string>
         {
-            public FakeAggregate(string id) : base(id)
+            private FakeAggregate() : base(null)
             {
-                throw new NotImplementedException();
             }
         }
 
