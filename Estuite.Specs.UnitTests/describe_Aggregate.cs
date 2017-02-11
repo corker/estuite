@@ -40,8 +40,9 @@ namespace Estuite.Specs.UnitTests
                 context["and events to hydrate are null"] = () =>
                 {
                     before = () => _eventsToHydrate = null;
-                    it["throws exception"] =
-                        expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: events");
+                    it["throws exception"] = expect<ArgumentNullException>(
+                        "Value cannot be null.\r\nParameter name: events"
+                    );
                 };
                 context["then apply"] = () =>
                 {
@@ -50,8 +51,9 @@ namespace Estuite.Specs.UnitTests
                     context["and action to apply is null"] = () =>
                     {
                         act = () => _target.ApplyNull();
-                        it["throws exception"] =
-                            expect<ArgumentNullException>("Value cannot be null.\r\nParameter name: action");
+                        it["throws exception"] = expect<ArgumentNullException>(
+                            "Value cannot be null.\r\nParameter name: action"
+                        );
                     };
                     context["then flush"] = () =>
                     {

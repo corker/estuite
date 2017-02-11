@@ -15,11 +15,12 @@ namespace Estuite.Specs.UnitTests
 
         private void when_create()
         {
-            act = () => _event = _target.Create<EventUnderTest>();
-            it["returns event of type"] = () => { _event.ShouldBeOfType<EventUnderTest>(); };
+            act = () => _event = _target.Create<FakeEvent>();
+            it["returns event of type"] = () => { _event.ShouldBeOfType<FakeEvent>(); };
         }
 
-        private class EventUnderTest
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class FakeEvent
         {
         }
     }

@@ -9,13 +9,13 @@ namespace Estuite.Specs.UnitTests
     {
         private void before_each()
         {
-            _aggregate = new AggregateUnderTest();
+            _aggregate = new FakeAggregate();
             _target = new DefaultEventHandler();
         }
 
         private void when_handle()
         {
-            act = () => _target.Handle(_aggregate, new EventWithHandler());
+            act = () => _target.Handle(_aggregate, new FakeEventWithHandler());
             it["should execute handler"] = () => _aggregate.Counter.ShouldBe(1);
         }
 
@@ -23,8 +23,8 @@ namespace Estuite.Specs.UnitTests
         {
             before = () =>
             {
-                var @event = new EventWithHandler();
-                var aggregate = new AggregateUnderTest();
+                var @event = new FakeEventWithHandler();
+                var aggregate = new FakeAggregate();
                 var target = new DefaultEventHandlerWithNoCache();
                 var stopwatch = Stopwatch.StartNew();
                 for (var i = 0; i < Times; i++) target.Handle(aggregate, @event);
@@ -32,7 +32,7 @@ namespace Estuite.Specs.UnitTests
             };
             act = () =>
             {
-                var @event = new EventWithHandler();
+                var @event = new FakeEventWithHandler();
                 var stopwatch = Stopwatch.StartNew();
                 for (var i = 0; i < Times; i++) _target.Handle(_aggregate, @event);
                 _elapsed = stopwatch.Elapsed;
@@ -41,23 +41,23 @@ namespace Estuite.Specs.UnitTests
             it["is faster than with no cache"] = () => _elapsed.ShouldBeLessThan(_elapsedNoCache);
         }
 
-        private AggregateUnderTest _aggregate;
+        private FakeAggregate _aggregate;
         private DefaultEventHandler _target;
         private TimeSpan _elapsed;
         private TimeSpan _elapsedNoCache;
         private const int Times = 100000;
 
-        private class AggregateUnderTest
+        private class FakeAggregate
         {
             public int Counter;
 
-            private void Handle(EventWithHandler @event)
+            private void Handle(FakeEventWithHandler @event)
             {
                 Counter++;
             }
         }
 
-        private class EventWithHandler
+        private class FakeEventWithHandler
         {
         }
     }

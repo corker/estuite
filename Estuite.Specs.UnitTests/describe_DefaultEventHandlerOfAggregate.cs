@@ -10,44 +10,44 @@ namespace Estuite.Specs.UnitTests
     {
         private void before_each()
         {
-            _aggregate = new AggregateUnderTest();
-            _target = new DefaultEventHandler<AggregateUnderTest>();
+            _aggregate = new FakeAggregate();
+            _target = new DefaultEventHandler<FakeAggregate>();
         }
 
         private void when_handle()
         {
             context["and event has a handle method"] = () =>
             {
-                act = () => _target.Handle(_aggregate, new EventWithHandler());
+                act = () => _target.Handle(_aggregate, new FakeEventWithHandler());
                 it["should execute handler"] = () => _aggregate.Counter.ShouldBe(1);
             };
 
             context["and event has no handle method"] = () =>
             {
-                act = () => _target.Handle(_aggregate, new EventWithNoHandler());
+                act = () => _target.Handle(_aggregate, new FakeEventWithNoHandler());
                 it["should throw"] = expect<ArgumentOutOfRangeException>();
             };
         }
 
-        private class AggregateUnderTest
+        private class FakeAggregate
         {
             public int Counter;
 
-            private void Handle(EventWithHandler @event)
+            private void Handle(FakeEventWithHandler @event)
             {
                 Counter++;
             }
         }
 
-        private class EventWithHandler
+        private class FakeEventWithHandler
         {
         }
 
-        private class EventWithNoHandler
+        private class FakeEventWithNoHandler
         {
         }
 
-        private DefaultEventHandler<AggregateUnderTest> _target;
-        private AggregateUnderTest _aggregate;
+        private DefaultEventHandler<FakeAggregate> _target;
+        private FakeAggregate _aggregate;
     }
 }

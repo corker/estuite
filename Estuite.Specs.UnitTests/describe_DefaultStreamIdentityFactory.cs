@@ -15,9 +15,9 @@ namespace Estuite.Specs.UnitTests
 
         private void when_create()
         {
-            act = () => _streamId = _target.Create<string, AggregateUnderTest>(_bucketId, _id);
+            act = () => _streamId = _target.Create<string, FakeAggregate>(_bucketId, _id);
             it["creates stream id with expected value"] =
-                () => { _streamId.Value.ShouldBe("bucket-id^AggregateUnderTest^aggregate-id"); };
+                () => { _streamId.Value.ShouldBe("bucket-id^FakeAggregate^aggregate-id"); };
             context["and bucket id is null"] = () =>
             {
                 before = () => _bucketId = null;
@@ -34,9 +34,9 @@ namespace Estuite.Specs.UnitTests
         }
 
         // ReSharper disable once ClassNeverInstantiated.Local
-        private class AggregateUnderTest : Aggregate<string>
+        private class FakeAggregate : Aggregate<string>
         {
-            public AggregateUnderTest(string id) : base(id)
+            public FakeAggregate(string id) : base(id)
             {
                 throw new NotImplementedException();
             }
