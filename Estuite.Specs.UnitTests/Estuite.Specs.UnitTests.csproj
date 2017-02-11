@@ -78,6 +78,7 @@
     <Compile Include="describe_Session.cs" />
     <Compile Include="describe_SessionFactory.cs" />
     <Compile Include="describe_SessionId.cs" />
+    <Compile Include="describe_StreamId.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
