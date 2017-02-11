@@ -68,6 +68,7 @@
     <Compile Include="describe_AggregateOfString.cs" />
     <Compile Include="describe_AggregateOfString_ICanBeHydrated.cs" />
     <Compile Include="describe_AggregateOfString_ICanBeRegistered.cs" />
+    <Compile Include="describe_AggregateType.cs" />
     <Compile Include="describe_BucketId.cs" />
     <Compile Include="describe_DefaultEventFactory.cs" />
     <Compile Include="describe_DefaultEventHandler.cs" />
