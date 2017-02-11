@@ -14,32 +14,14 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             _bucketId = new BucketId("bucket-id");
-            _createSessions = new FakeICreateSessions();
-            _writeSessions = new FakeIWriteSessions();
             _aggregate = new FakeICanBeRegistered();
-            _target = new UnitOfWork(_bucketId, _createSessions, _writeSessions);
+            _target = new UnitOfWork(_bucketId, null, null);
         }
 
         private void when_register_aggregate()
         {
             act = () => _target.Register(_aggregate);
             it["calls aggregate with itself"] = () => _aggregate.RegisteredTo.ShouldBeSameAs(_target);
-        }
-
-        private class FakeIWriteSessions : IWriteSessions
-        {
-            public Task Write(Session session, CancellationToken token = new CancellationToken())
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeICreateSessions : ICreateSessions
-        {
-            public Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> @event)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         private class FakeICanBeRegistered : ICanBeRegistered
@@ -54,8 +36,6 @@ namespace Estuite.Specs.UnitTests
 
         private UnitOfWork _target;
         private BucketId _bucketId;
-        private ICreateSessions _createSessions;
-        private IWriteSessions _writeSessions;
         private FakeICanBeRegistered _aggregate;
     }
 }
