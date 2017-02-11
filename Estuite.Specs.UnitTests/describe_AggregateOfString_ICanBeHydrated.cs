@@ -35,11 +35,6 @@ namespace Estuite.Specs.UnitTests
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public void Hydrate(ICanBeHydrated aggregate)
-            {
-                throw new NotImplementedException();
-            }
-
             public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents
             {
                 ProvidedId = id;
