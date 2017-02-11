@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Estuite.Domain;
+﻿using Estuite.Domain;
 using NSpec;
 using Shouldly;
 
