@@ -15,9 +15,8 @@ namespace Estuite.Specs.UnitTests
 
         private void when_create()
         {
-            act = () => _streamId = _target.Create<string, FakeAggregate>(_bucketId, _id);
-            it["creates stream id with expected value"] =
-                () => { _streamId.Value.ShouldBe("bucket-id^FakeAggregate^aggregate-id"); };
+            act = () => _streamId = _target.Create<string, Aggregate<string>>(_bucketId, _id);
+            it["has value"] = () => { _streamId.Value.ShouldBe(ExpectedValue); };
             context["and bucket id is null"] = () =>
             {
                 before = () => _bucketId = null;
@@ -33,17 +32,10 @@ namespace Estuite.Specs.UnitTests
             };
         }
 
-        // ReSharper disable once ClassNeverInstantiated.Local
-        private class FakeAggregate : Aggregate<string>
-        {
-            private FakeAggregate() : base(null)
-            {
-            }
-        }
-
         private DefaultStreamIdentityFactory _target;
         private BucketId _bucketId;
         private string _id;
         private StreamId _streamId;
+        private static readonly string ExpectedValue = "bucket-id^Aggregate`1^aggregate-id";
     }
 }
