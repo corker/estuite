@@ -12,12 +12,12 @@ namespace Estuite.Specs.UnitTests
         {
             _id = 1;
             _target = _aggregate = new AggregateUnderTest(_id);
-            _registerer = new FakeIRegisterAggregates();
+            _registerer = new FakeIRegisterEventStreams();
         }
 
         private void when_register()
         {
-            act = () => _target.RegisterWith(_registerer);
+            act = () => _target.RegisterTo(_registerer);
             it["provides an id with expected type"] = () => { _registerer.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _registerer.ProvidedId.ShouldBe(_id); };
             it["provides itself to flush aggregate"] = () => { _registerer.ProvidedEvents.ShouldBeSameAs(_aggregate); };
@@ -25,12 +25,12 @@ namespace Estuite.Specs.UnitTests
             {
                 before = () => _registerer = null;
                 it["throw exception"] = expect<ArgumentNullException>(
-                    "Value cannot be null.\r\nParameter name: aggregates"
+                    "Value cannot be null.\r\nParameter name: streams"
                 );
             };
         }
 
-        private class FakeIRegisterAggregates : IRegisterAggregates
+        private class FakeIRegisterEventStreams : IRegisterEventStreams
         {
             public IFlushEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
@@ -57,6 +57,6 @@ namespace Estuite.Specs.UnitTests
         private int _id;
         private ICanBeRegistered _target;
         private AggregateUnderTest _aggregate;
-        private FakeIRegisterAggregates _registerer;
+        private FakeIRegisterEventStreams _registerer;
     }
 }

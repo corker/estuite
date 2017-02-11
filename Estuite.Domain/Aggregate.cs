@@ -20,16 +20,16 @@ namespace Estuite.Domain
 
         protected TId Id { get; }
 
-        void ICanBeHydrated.HydrateWith(IHydrateAggregates aggregates)
+        void ICanBeHydrated.HydrateTo(IHydrateEventStreams streams)
         {
-            if (aggregates == null) throw new ArgumentNullException(nameof(aggregates));
-            aggregates.Hydrate(Id, this);
+            if (streams == null) throw new ArgumentNullException(nameof(streams));
+            streams.Hydrate(Id, this);
         }
 
-        void ICanBeRegistered.RegisterWith(IRegisterAggregates aggregates)
+        void ICanBeRegistered.RegisterTo(IRegisterEventStreams streams)
         {
-            if (aggregates == null) throw new ArgumentNullException(nameof(aggregates));
-            aggregates.Register(Id, this);
+            if (streams == null) throw new ArgumentNullException(nameof(streams));
+            streams.Register(Id, this);
         }
 
         List<Event> IFlushEvents.Flush()

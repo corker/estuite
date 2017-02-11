@@ -7,7 +7,12 @@ using Estuite.Domain;
 
 namespace Estuite
 {
-    public class UnitOfWork : IRegisterAggregates, IHydrateAggregates, ICommitAggregates
+    public class UnitOfWork :
+        IRegisterAggregates,
+        IRegisterEventStreams,
+        IHydrateAggregates,
+        IHydrateEventStreams,
+        ICommitAggregates
     {
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
         private readonly BucketId _bucketId;
@@ -52,10 +57,10 @@ namespace Estuite
 
         public void Hydrate(ICanBeHydrated aggregate)
         {
-            aggregate.HydrateWith(this);
+            aggregate.HydrateTo(this);
         }
 
-        public void Hydrate<TId, TAggregate>(TId id, TAggregate events) where TAggregate : IHydrateEvents
+        public void Hydrate<TId, TEventStream>(TId id, TEventStream events) where TEventStream : IHydrateEvents
         {
             events.Hydrate(new object[0]);
             throw new NotImplementedException();
@@ -63,12 +68,12 @@ namespace Estuite
 
         public void Register(ICanBeRegistered aggregate)
         {
-            aggregate.RegisterWith(this);
+            aggregate.RegisterTo(this);
         }
 
-        public void Register<TId, TAggregate>(TId id, TAggregate events) where TAggregate : IFlushEvents
+        public void Register<TId, TEventStream>(TId id, TEventStream events) where TEventStream : IFlushEvents
         {
-            var streamId = _streamIdentities.Create<TId, TAggregate>(_bucketId, id);
+            var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
             _aggregates.Add(streamId, events);
         }
 
