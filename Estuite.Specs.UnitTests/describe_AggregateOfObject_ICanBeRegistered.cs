@@ -35,11 +35,6 @@ namespace Estuite.Specs.UnitTests
             public IFlushEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public void Register(ICanBeRegistered aggregate)
-            {
-                throw new NotImplementedException();
-            }
-
             public void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IFlushEvents
             {
                 ProvidedId = id;
