@@ -18,7 +18,6 @@ namespace Estuite.Specs.UnitTests
             _bucketId = new BucketId("bucket-id");
             _createSessions = new FakeICreateSessions();
             _writeSessions = new FakeIWriteSessions();
-            _aggregate = new FakeICanBeRegistered();
             _events = new FakeIFlushEvents();
             _target = new UnitOfWork(_bucketId, _createSessions, _writeSessions);
         }
@@ -66,16 +65,6 @@ namespace Estuite.Specs.UnitTests
             }
         }
 
-        private class FakeICanBeRegistered : ICanBeRegistered
-        {
-            public IRegisterEventStreams RegisteredTo { get; private set; }
-
-            public void RegisterTo(IRegisterEventStreams streams)
-            {
-                RegisteredTo = streams;
-            }
-        }
-
         private class FakeIFlushEvents : IFlushEvents
         {
             public List<Event> Flush()
@@ -88,7 +77,6 @@ namespace Estuite.Specs.UnitTests
         private BucketId _bucketId;
         private ICreateSessions _createSessions;
         private FakeIWriteSessions _writeSessions;
-        private FakeICanBeRegistered _aggregate;
         private Guid _id;
         private FakeIFlushEvents _events;
         private Session _session;
