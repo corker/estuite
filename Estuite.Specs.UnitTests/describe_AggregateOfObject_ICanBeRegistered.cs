@@ -40,7 +40,7 @@ namespace Estuite.Specs.UnitTests
                 throw new NotImplementedException();
             }
 
-            public void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : Aggregate<TId>
+            public void Register<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IFlushEvents
             {
                 ProvidedId = id;
                 ProvidedEvents = aggregate;

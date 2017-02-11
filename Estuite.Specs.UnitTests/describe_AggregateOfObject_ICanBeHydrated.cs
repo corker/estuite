@@ -20,7 +20,7 @@ namespace Estuite.Specs.UnitTests
             act = () => _target.HydrateWith(_aggregates);
             it["provides an id with expected type"] = () => { _aggregates.ProvidedId.ShouldBeOfType<object>(); };
             it["provides an expected id"] = () => { _aggregates.ProvidedId.ShouldBe(_id); };
-            it["provides itself to hydrate events"] = () => { _aggregates.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            it["provides itself to hydrate aggregate"] = () => { _aggregates.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and hydrator is null"] = () =>
             {
                 before = () => _aggregates = null;
@@ -40,10 +40,10 @@ namespace Estuite.Specs.UnitTests
                 throw new NotImplementedException();
             }
 
-            public void Hydrate<TId, TAggregate>(TId id, TAggregate events) where TAggregate : Aggregate<TId>
+            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents
             {
                 ProvidedId = id;
-                ProvidedEvents = events;
+                ProvidedEvents = aggregate;
             }
         }
 

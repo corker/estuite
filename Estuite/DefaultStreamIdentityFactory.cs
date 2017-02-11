@@ -5,7 +5,7 @@ namespace Estuite
 {
     public class DefaultStreamIdentityFactory : ICreateStreamIdentities
     {
-        public StreamId Create<TId, TAggregate>(BucketId bucketId, TId id) where TAggregate : Aggregate<TId>
+        public StreamId Create<TId, TAggregate>(BucketId bucketId, TId id)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             if (id.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(id));
