@@ -18,39 +18,63 @@ namespace Estuite.Specs.UnitTests
             _bucketId = new BucketId("bucket-id");
             _createSessions = new FakeICreateSessions();
             _writeSessions = new FakeIWriteSessions();
-            _events = new FakeIFlushEvents();
             _target = new UnitOfWork(_bucketId, _createSessions, _writeSessions);
         }
 
-        private void when_register_aggregate_with_events()
+        private void when_register()
         {
-            act = () => _target.Register(_id, _events);
-            context["and commit"] = () =>
+            context["aggregate with events"] = () =>
             {
-                actAsync = async () => await _target.Commit();
-                it["has session"] = () => _writeSessions.Sessions.Count.ShouldBe(1);
-                context["and session"] = () =>
-                {
-                    act = () => _session = _writeSessions.Sessions.Single();
-                    it["has stream id"] = () => _session.StreamId.Value.ShouldBe(ExpectedStreamIdValue);
-                    it["has created"] = () => _session.Created.ShouldBe(ExpectedCreated);
-                    it["has event records"] = () => _session.Records.Length.ShouldBe(1);
-                    context["and records"] = () =>
-                    {
-                        act = () => _records = _session.Records;
-                        it["has version"] = () => _records[0].Version.ShouldBe(ExpectedEventVersion);
-                        it["has payload"] = () => _records[0].Payload.ShouldBe(ExpectedEventBody);
-                    };
-                };
-            };
-            context["and register another aggregate with events"] = () =>
-            {
-                act = () => _target.Register(Guid.NewGuid(), _events);
+                before = () => _aggregate = new FakeIFlushEvents(1);
+                act = () => _target.Register(_id, _aggregate);
                 context["and commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["throws exception"] = expect<InvalidOperationException>();
+                    it["has session"] = () => _writeSessions.Sessions.Count.ShouldBe(1);
+                    context["and session"] = () =>
+                    {
+                        act = () => _session = _writeSessions.Sessions.Single();
+                        it["has stream id"] = () => _session.StreamId.Value.ShouldBe(ExpectedStreamIdValue);
+                        it["has created"] = () => _session.Created.ShouldBe(ExpectedCreated);
+                        it["has event records"] = () => _session.Records.Length.ShouldBe(1);
+                        context["and records"] = () =>
+                        {
+                            act = () => _records = _session.Records;
+                            it["has version"] = () => _records[0].Version.ShouldBe(ExpectedEventVersion);
+                            it["has payload"] = () => _records[0].Payload.ShouldBe("event-0");
+                        };
+                    };
                 };
+                context["and register another aggregate with events"] = () =>
+                {
+                    before = () => _anotherAggregate = new FakeIFlushEvents(1);
+                    act = () => _target.Register(Guid.NewGuid(), _anotherAggregate);
+                    context["and commit"] = () =>
+                    {
+                        actAsync = async () => await _target.Commit();
+                        it["throws exception"] = expect<InvalidOperationException>();
+                    };
+                };
+            };
+            context["aggregate without events"] = () =>
+            {
+                before = () => _aggregate = new FakeIFlushEvents(0);
+                act = () => _target.Register(_id, _aggregate);
+                context["and commit"] = () =>
+                {
+                    actAsync = async () => await _target.Commit();
+                    it["has no session"] = () => _writeSessions.Sessions.Count.ShouldBe(0);
+                };
+            };
+        }
+
+        private void when_register_aggregate_with_no_events()
+        {
+            act = () => _target.Register(_id, _aggregate);
+            context["and commit"] = () =>
+            {
+                actAsync = async () => await _target.Commit();
+                it["has no sessions"] = () => _writeSessions.Sessions.Count.ShouldBe(0);
             };
         }
 
@@ -76,9 +100,21 @@ namespace Estuite.Specs.UnitTests
 
         private class FakeIFlushEvents : IFlushEvents
         {
+            private readonly int _count;
+
+            public FakeIFlushEvents(int count)
+            {
+                _count = count;
+            }
+
             public List<Event> Flush()
             {
-                return new List<Event> {new Event(ExpectedEventVersion, ExpectedEventBody)};
+                return Create(_count).ToList();
+            }
+
+            private static IEnumerable<Event> Create(int count)
+            {
+                for (var i = 0; i < count; i++) yield return new Event(i + 1, $"event-{i}");
             }
         }
 
@@ -87,12 +123,12 @@ namespace Estuite.Specs.UnitTests
         private ICreateSessions _createSessions;
         private FakeIWriteSessions _writeSessions;
         private Guid _id;
-        private FakeIFlushEvents _events;
+        private FakeIFlushEvents _aggregate;
         private Session _session;
         private EventRecord[] _records;
         private static readonly DateTime ExpectedCreated = DateTime.Now;
+        private FakeIFlushEvents _anotherAggregate;
         private const string ExpectedStreamIdValue = "bucket-id^FakeIFlushEvents^bcb724f5-562f-4706-b470-570fa7174ec0";
         private const int ExpectedEventVersion = 1;
-        private const string ExpectedEventBody = "event";
     }
 }
