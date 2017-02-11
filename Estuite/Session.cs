@@ -1,4 +1,5 @@
 ﻿using System;
+using Estuite.Domain;
 
 namespace Estuite
 {
@@ -8,6 +9,7 @@ namespace Estuite
         {
             if (streamId == null) throw new ArgumentNullException(nameof(streamId));
             if (sessionId == null) throw new ArgumentNullException(nameof(sessionId));
+            if (created.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(created));
             if (records == null) throw new ArgumentNullException(nameof(records));
             StreamId = streamId;
             SessionId = sessionId;
