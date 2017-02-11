@@ -75,6 +75,7 @@
     <Compile Include="describe_DefaultEventHandlerOfAggregate.cs" />
     <Compile Include="describe_DefaultStreamIdentityFactory.cs" />
     <Compile Include="describe_Event.cs" />
+    <Compile Include="describe_SerializedEvent.cs" />
     <Compile Include="describe_Session.cs" />
     <Compile Include="describe_SessionFactory.cs" />
     <Compile Include="describe_SessionId.cs" />

@@ -6,10 +6,8 @@ namespace Estuite
     {
         public SerializedEvent(string type, string payload)
         {
-            if (string.IsNullOrWhiteSpace(type))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(type));
-            if (string.IsNullOrWhiteSpace(payload))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(payload));
+            if (string.IsNullOrWhiteSpace(type)) throw new ArgumentOutOfRangeException(nameof(type));
+            if (string.IsNullOrWhiteSpace(payload)) throw new ArgumentOutOfRangeException(nameof(payload));
             Type = type;
             Payload = payload;
         }
