@@ -28,6 +28,12 @@ namespace Estuite.Domain
             await streams.Hydrate(Id, this, token);
         }
 
+        async Task<bool> ICanBeHydrated.TryHydrateTo(IHydrateStreams streams, CancellationToken token)
+        {
+            if (streams == null) throw new ArgumentNullException(nameof(streams));
+            return await streams.TryHydrate(Id, this, token);
+        }
+
         void ICanBeRegistered.RegisterTo(IRegisterStreams streams)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));

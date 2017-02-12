@@ -30,6 +30,12 @@ namespace Estuite.Specs.UnitTests
             {
                 HydratedTo = streams;
             }
+
+            public async Task<bool> TryHydrateTo(IHydrateStreams streams, CancellationToken token = new CancellationToken())
+            {
+                HydratedTo = streams;
+                return true;
+            }
         }
 
         private UnitOfWork _target;

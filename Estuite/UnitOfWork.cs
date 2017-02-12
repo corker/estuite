@@ -66,29 +66,32 @@ namespace Estuite
             await aggregate.HydrateTo(this, token);
         }
 
-        public Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
+        public async Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
         {
-            throw new NotImplementedException();
+            return await aggregate.TryHydrateTo(this, token);
         }
 
-        public async Task Hydrate<TId, TEventStream>(
+        public async Task Hydrate<TId, TStream>(
             TId id,
-            TEventStream stream,
+            TStream stream,
             CancellationToken token = new CancellationToken())
-            where TEventStream : IHydrateEvents, IFlushEvents
+            where TStream : IHydrateEvents, IFlushEvents
         {
-            var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
+            var streamId = _streamIdentities.Create<TId, TStream>(_bucketId, id);
             await _readStreams.Read(streamId, stream, token);
             _aggregates.Add(streamId, stream);
         }
 
-        public async Task<bool> TryHydrate<TId, TEventStream>(
+        public async Task<bool> TryHydrate<TId, TStream>(
             TId id,
-            TEventStream stream,
+            TStream stream,
             CancellationToken token = new CancellationToken())
-            where TEventStream : IHydrateEvents, IFlushEvents
+            where TStream : IHydrateEvents, IFlushEvents
         {
-            throw new NotImplementedException();
+            var streamId = _streamIdentities.Create<TId, TStream>(_bucketId, id);
+            var result = await _readStreams.TryRead(streamId, stream, token);
+            _aggregates.Add(streamId, stream);
+            return result;
         }
 
         public void Register(ICanBeRegistered aggregate)
