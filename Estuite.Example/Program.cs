@@ -17,7 +17,7 @@ namespace Estuite.Example
         private static readonly IProvideUtcDateTime DateTime;
         private static readonly ICreateSessions Sessions;
         private static readonly CloudStorageAccount StorageAccount;
-        private static readonly IWriteEventStreams EventStreams;
+        private static readonly IWriteStreams Streams;
         private static readonly BucketId BucketId = new BucketId("default");
 
         static Program()
@@ -27,7 +27,7 @@ namespace Estuite.Example
             DateTime = new UtcDateTimeProvider();
             Sessions = new SessionFactory(DateTime, SerializeEvents);
             StorageAccount = CloudStorageAccount.Parse(Configuration.ConnectionString);
-            EventStreams = new EventStreamWriter(StorageAccount, Configuration);
+            Streams = new StreamWriter(StorageAccount, Configuration);
         }
 
         private static void Main(string[] args)
@@ -41,7 +41,7 @@ namespace Estuite.Example
         {
             var accountId = Guid.NewGuid();
 
-            var unitOfWork = new UnitOfWork(BucketId, Sessions, EventStreams, null);
+            var unitOfWork = new UnitOfWork(BucketId, Sessions, Streams, null);
             var aggregate = Account.Register(accountId, "MyAccount1");
             unitOfWork.Register(aggregate);
             var commit1 = unitOfWork.Commit();
@@ -56,13 +56,13 @@ namespace Estuite.Example
         {
             var accountId = Guid.NewGuid();
 
-            var unitOfWork1 = new UnitOfWork(BucketId, Sessions, EventStreams, null);
+            var unitOfWork1 = new UnitOfWork(BucketId, Sessions, Streams, null);
             var aggregate1 = Account.Register(accountId, "MyAccount3");
             unitOfWork1.Register(aggregate1);
             var commit1 = unitOfWork1.Commit();
             commit1.Wait();
 
-            var unitOfWork2 = new UnitOfWork(BucketId, Sessions, EventStreams, null);
+            var unitOfWork2 = new UnitOfWork(BucketId, Sessions, Streams, null);
             var aggregate2 = Account.Register(accountId, "MyAccount3");
             unitOfWork2.Register(aggregate2);
             var commit2 = Task.Run(async () =>
@@ -71,7 +71,7 @@ namespace Estuite.Example
                 {
                     await unitOfWork2.Commit();
                 }
-                catch (EventStreamConcurrentWriteException e)
+                catch (StreamConcurrentWriteException e)
                 {
                     Debug.WriteLine($"{e}");
                 }
@@ -93,7 +93,7 @@ namespace Estuite.Example
                 {
                     new Event(1, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"})
                 });
-            var write1 = EventStreams.Write(session1);
+            var write1 = Streams.Write(session1);
             write1.Wait();
 
             var session2 = Sessions.Create(
@@ -107,9 +107,9 @@ namespace Estuite.Example
             {
                 try
                 {
-                    await EventStreams.Write(session2);
+                    await Streams.Write(session2);
                 }
-                catch (EventStreamConcurrentWriteException e)
+                catch (StreamConcurrentWriteException e)
                 {
                     Debug.WriteLine($"{e}");
                 }

@@ -14,26 +14,26 @@ namespace Estuite.Specs.UnitTests
         {
             _id = "some id";
             _target = _aggregate = new AggregateUnderTest(_id);
-            _eventStreams = new FakeIHydrateEventStreams();
+            _streams = new FakeIHydrateStreams();
         }
 
         private void when_hydrate()
         {
-            actAsync = async () => await _target.HydrateTo(_eventStreams);
-            it["provides an id with expected type"] = () => { _eventStreams.ProvidedId.ShouldBeOfType<string>(); };
-            it["provides an expected id"] = () => { _eventStreams.ProvidedId.ShouldBe(_id); };
+            actAsync = async () => await _target.HydrateTo(_streams);
+            it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<string>(); };
+            it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
             it["provides itself to hydrate events"] =
-                () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+                () => { _streams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and hydrator is null"] = () =>
             {
-                before = () => _eventStreams = null;
+                before = () => _streams = null;
                 it["throw exception"] = expect<ArgumentNullException>(
                     "Value cannot be null.\r\nParameter name: streams"
                 );
             };
         }
 
-        private class FakeIHydrateEventStreams : IHydrateEventStreams
+        private class FakeIHydrateStreams : IHydrateStreams
         {
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
@@ -68,6 +68,6 @@ namespace Estuite.Specs.UnitTests
         private string _id;
         private ICanBeHydrated _target;
         private AggregateUnderTest _aggregate;
-        private FakeIHydrateEventStreams _eventStreams;
+        private FakeIHydrateStreams _streams;
     }
 }

@@ -5,12 +5,12 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Estuite.AzureEventStore
 {
-    public class EventStreamWriter : IWriteEventStreams
+    public class StreamWriter : IWriteStreams
     {
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;
 
-        public EventStreamWriter(CloudStorageAccount account, IEventStoreConfiguration configuration)
+        public StreamWriter(CloudStorageAccount account, IEventStoreConfiguration configuration)
         {
             _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
@@ -64,7 +64,7 @@ namespace Estuite.AzureEventStore
                 switch (e.RequestInformation.HttpStatusCode)
                 {
                     case HttpStatusCodes.EntityAlreadyExists:
-                        throw new EventStreamConcurrentWriteException(
+                        throw new StreamConcurrentWriteException(
                             $"The stream {session.StreamId.Value} was modified between read and write or the session {session.SessionId.Value} was already registered.",
                             e
                         );

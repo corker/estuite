@@ -84,7 +84,7 @@
     <Compile Include="describe_UnitOfWork_HydrateAggregate.cs" />
     <Compile Include="describe_UnitOfWork_HydrateAggregate_WithEvents.cs" />
     <Compile Include="describe_UnitOfWork_RegisterAggregate.cs" />
-    <Compile Include="describe_UnitOfWork_RegisterEventStream.cs" />
+    <Compile Include="describe_UnitOfWork_RegisterStream.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

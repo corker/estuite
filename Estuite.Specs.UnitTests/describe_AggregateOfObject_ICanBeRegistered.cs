@@ -12,7 +12,7 @@ namespace Estuite.Specs.UnitTests
         {
             _id = new object();
             _target = _aggregate = new AggregateUnderTest(_id);
-            _registerer = new FakeIRegisterEventStreams();
+            _registerer = new FakeIRegisterStreams();
         }
 
         private void when_register()
@@ -30,7 +30,7 @@ namespace Estuite.Specs.UnitTests
             };
         }
 
-        private class FakeIRegisterEventStreams : IRegisterEventStreams
+        private class FakeIRegisterStreams : IRegisterStreams
         {
             public IFlushEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
@@ -52,6 +52,6 @@ namespace Estuite.Specs.UnitTests
         private object _id;
         private ICanBeRegistered _target;
         private AggregateUnderTest _aggregate;
-        private FakeIRegisterEventStreams _registerer;
+        private FakeIRegisterStreams _registerer;
     }
 }

@@ -24,9 +24,9 @@ namespace Estuite.Specs.UnitTests
 
         private class FakeICanBeHydrated : ICanBeHydrated
         {
-            public IHydrateEventStreams HydratedTo { get; private set; }
+            public IHydrateStreams HydratedTo { get; private set; }
 
-            public async Task HydrateTo(IHydrateEventStreams streams, CancellationToken token = new CancellationToken())
+            public async Task HydrateTo(IHydrateStreams streams, CancellationToken token = new CancellationToken())
             {
                 HydratedTo = streams;
             }

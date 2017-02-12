@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Estuite
 {
-    public interface IWriteEventStreams
+    public interface IWriteStreams
     {
         Task Write(Session session, CancellationToken token = new CancellationToken());
     }

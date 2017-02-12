@@ -53,10 +53,10 @@
     <Compile Include="IHandleEvents.cs" />
     <Compile Include="IHydrateAggregates.cs" />
     <Compile Include="IHydrateEvents.cs" />
-    <Compile Include="IHydrateEventStreams.cs" />
+    <Compile Include="IHydrateStreams.cs" />
     <Compile Include="IProvideUtcDateTime.cs" />
     <Compile Include="IRegisterAggregates.cs" />
-    <Compile Include="IRegisterEventStreams.cs" />
+    <Compile Include="IRegisterStreams.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

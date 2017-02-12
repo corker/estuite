@@ -7,12 +7,12 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Estuite.AzureEventStore
 {
-    public class EventStreamReader : IReadEventStreams
+    public class StreamReader : IReadStreams
     {
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;
 
-        public EventStreamReader(CloudStorageAccount account, IEventStoreConfiguration configuration)
+        public StreamReader(CloudStorageAccount account, IEventStoreConfiguration configuration)
         {
             _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();

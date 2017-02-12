@@ -17,9 +17,9 @@ namespace Estuite.Specs.UnitTests
             _bucketId = new BucketId("bucket-id");
             _aggregate = new FakeAggregate(_id);
             _createSessions = new FakeICreateSessions();
-            _writeSessionStreams = new FakeIWriteEventStreams();
-            _readEventStreams = new FakeIReadEventStreams();
-            _target = new UnitOfWork(_bucketId, _createSessions, _writeSessionStreams, _readEventStreams);
+            _writeSessionStreams = new FakeIWriteStreams();
+            _readStreams = new FakeIReadStreams();
+            _target = new UnitOfWork(_bucketId, _createSessions, _writeSessionStreams, _readStreams);
         }
 
         private void when_hydrate()
@@ -81,7 +81,7 @@ namespace Estuite.Specs.UnitTests
             }
         }
 
-        private class FakeIWriteEventStreams : IWriteEventStreams
+        private class FakeIWriteStreams : IWriteStreams
         {
             private readonly List<EventRecord> _records = new List<EventRecord>();
 
@@ -96,7 +96,7 @@ namespace Estuite.Specs.UnitTests
             }
         }
 
-        private class FakeIReadEventStreams : IReadEventStreams
+        private class FakeIReadStreams : IReadStreams
         {
             public async Task Read(
                 StreamId streamId,
@@ -120,7 +120,7 @@ namespace Estuite.Specs.UnitTests
         private BucketId _bucketId;
         private FakeAggregate _aggregate;
         private FakeICreateSessions _createSessions;
-        private FakeIWriteEventStreams _writeSessionStreams;
-        private FakeIReadEventStreams _readEventStreams;
+        private FakeIWriteStreams _writeSessionStreams;
+        private FakeIReadStreams _readStreams;
     }
 }

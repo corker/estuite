@@ -22,9 +22,9 @@ namespace Estuite.Specs.UnitTests
 
         private class FakeICanBeRegistered : ICanBeRegistered
         {
-            public IRegisterEventStreams RegisteredTo { get; private set; }
+            public IRegisterStreams RegisteredTo { get; private set; }
 
-            public void RegisterTo(IRegisterEventStreams streams)
+            public void RegisterTo(IRegisterStreams streams)
             {
                 RegisteredTo = streams;
             }

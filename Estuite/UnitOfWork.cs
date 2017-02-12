@@ -9,30 +9,30 @@ namespace Estuite
 {
     public class UnitOfWork :
         IRegisterAggregates,
-        IRegisterEventStreams,
+        IRegisterStreams,
         IHydrateAggregates,
-        IHydrateEventStreams,
+        IHydrateStreams,
         ICommitAggregates
     {
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
         private readonly BucketId _bucketId;
         private readonly ICreateSessions _createSessions;
         private readonly IGenerateIdentities _identities;
-        private readonly IReadEventStreams _readEventStreams;
+        private readonly IReadStreams _readStreams;
         private readonly ICreateStreamIdentities _streamIdentities;
-        private readonly IWriteEventStreams _writeEventStreams;
+        private readonly IWriteStreams _writeStreams;
 
         public UnitOfWork(
             BucketId bucketId,
             ICreateSessions createSessions,
-            IWriteEventStreams writeEventStreams,
-            IReadEventStreams readEventStreams)
+            IWriteStreams writeStreams,
+            IReadStreams readStreams)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             _bucketId = bucketId;
             _createSessions = createSessions;
-            _writeEventStreams = writeEventStreams;
-            _readEventStreams = readEventStreams;
+            _writeStreams = writeStreams;
+            _readStreams = readStreams;
             _aggregates = new Dictionary<StreamId, IFlushEvents>(StreamIdEqualityComparer.Instance);
             _identities = this as IGenerateIdentities ?? new GuidCombGenerator(new UtcDateTimeProvider());
             _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
@@ -78,7 +78,7 @@ namespace Estuite
             where TEventStream : IHydrateEvents, IFlushEvents
         {
             var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
-            await _readEventStreams.Read(streamId, stream, token);
+            await _readStreams.Read(streamId, stream, token);
             _aggregates.Add(streamId, stream);
         }
 
@@ -109,7 +109,7 @@ namespace Estuite
         {
             var sessionId = new SessionId($"{_identities.Generate()}");
             var session = _createSessions.Create(streamId, sessionId, events);
-            await _writeEventStreams.Write(session, token);
+            await _writeStreams.Write(session, token);
         }
     }
 }

@@ -5,6 +5,6 @@ namespace Estuite.Domain
 {
     public interface ICanBeHydrated
     {
-        Task HydrateTo(IHydrateEventStreams streams, CancellationToken token = new CancellationToken());
+        Task HydrateTo(IHydrateStreams streams, CancellationToken token = new CancellationToken());
     }
 }

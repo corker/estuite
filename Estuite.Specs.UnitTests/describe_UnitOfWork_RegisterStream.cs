@@ -10,15 +10,15 @@ using Shouldly;
 namespace Estuite.Specs.UnitTests
 {
     [Tag("describe_UnitOfWork")]
-    public class describe_UnitOfWork_RegisterEventStream : nspec
+    public class describe_UnitOfWork_RegisterStream : nspec
     {
         private void before_each()
         {
             _id = Guid.Parse("bcb724f5-562f-4706-b470-570fa7174ec0");
             _bucketId = new BucketId("bucket-id");
             _createSessions = new FakeICreateSessions();
-            _eventStreams = new FakeIWriteEventStreams();
-            _target = new UnitOfWork(_bucketId, _createSessions, _eventStreams, null);
+            _streams = new FakeIWriteStreams();
+            _target = new UnitOfWork(_bucketId, _createSessions, _streams, null);
         }
 
         private void when_register()
@@ -30,10 +30,10 @@ namespace Estuite.Specs.UnitTests
                 context["and commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["has session"] = () => _eventStreams.Sessions.Count.ShouldBe(1);
+                    it["has session"] = () => _streams.Sessions.Count.ShouldBe(1);
                     context["and session"] = () =>
                     {
-                        act = () => _session = _eventStreams.Sessions.Single();
+                        act = () => _session = _streams.Sessions.Single();
                         it["has stream id"] = () => _session.StreamId.Value.ShouldBe(ExpectedStreamIdValue);
                         it["has created"] = () => _session.Created.ShouldBe(ExpectedCreated);
                         it["has event records"] = () => _session.Records.Length.ShouldBe(1);
@@ -63,7 +63,7 @@ namespace Estuite.Specs.UnitTests
                 context["and commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["has no session"] = () => _eventStreams.Sessions.Count.ShouldBe(0);
+                    it["has no session"] = () => _streams.Sessions.Count.ShouldBe(0);
                 };
             };
         }
@@ -74,11 +74,11 @@ namespace Estuite.Specs.UnitTests
             context["and commit"] = () =>
             {
                 actAsync = async () => await _target.Commit();
-                it["has no sessions"] = () => _eventStreams.Sessions.Count.ShouldBe(0);
+                it["has no sessions"] = () => _streams.Sessions.Count.ShouldBe(0);
             };
         }
 
-        private class FakeIWriteEventStreams : IWriteEventStreams
+        private class FakeIWriteStreams : IWriteStreams
         {
             public readonly List<Session> Sessions = new List<Session>();
 
@@ -121,7 +121,7 @@ namespace Estuite.Specs.UnitTests
         private UnitOfWork _target;
         private BucketId _bucketId;
         private ICreateSessions _createSessions;
-        private FakeIWriteEventStreams _eventStreams;
+        private FakeIWriteStreams _streams;
         private Guid _id;
         private FakeIFlushEvents _aggregate;
         private Session _session;

@@ -22,13 +22,13 @@ namespace Estuite.Domain
 
         protected TId Id { get; }
 
-        async Task ICanBeHydrated.HydrateTo(IHydrateEventStreams streams, CancellationToken token)
+        async Task ICanBeHydrated.HydrateTo(IHydrateStreams streams, CancellationToken token)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
             await streams.Hydrate(Id, this, token);
         }
 
-        void ICanBeRegistered.RegisterTo(IRegisterEventStreams streams)
+        void ICanBeRegistered.RegisterTo(IRegisterStreams streams)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
             streams.Register(Id, this);
