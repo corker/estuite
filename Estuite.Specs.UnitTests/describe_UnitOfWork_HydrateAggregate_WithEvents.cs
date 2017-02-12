@@ -38,6 +38,23 @@ namespace Estuite.Specs.UnitTests
             };
         }
 
+        private void when_try_hydrate()
+        {
+            actAsync = async () => _returns = await _target.TryHydrate(_aggregate);
+            it["returns true"] = () => _returns.ShouldBeTrue();
+            it["hydrates event on aggregate"] = () => _aggregate.IsHydrated.ShouldBeTrue();
+            context["when apply event"] = () =>
+            {
+                act = () => _aggregate.ApplyEvents();
+                it["applies event on aggregate"] = () => _aggregate.IsApplied.ShouldBeTrue();
+                context["when commit"] = () =>
+                {
+                    actAsync = async () => await _target.Commit();
+                    it["writes only applied event"] = () => { _writeSessionStreams.HasOnlyAppliedEvent.ShouldBeTrue(); };
+                };
+            };
+        }
+
         private class FakeAggregate : Aggregate<Guid>
         {
             public FakeAggregate(Guid id) : base(id)
@@ -111,7 +128,8 @@ namespace Estuite.Specs.UnitTests
                 IHydrateEvents events,
                 CancellationToken token = new CancellationToken())
             {
-                throw new NotImplementedException();
+                events.Hydrate(new List<object> {new FakeHydratedEvent()});
+                return true;
             }
         }
 
@@ -122,5 +140,6 @@ namespace Estuite.Specs.UnitTests
         private FakeICreateSessions _createSessions;
         private FakeIWriteStreams _writeSessionStreams;
         private FakeIReadStreams _readStreams;
+        private bool _returns;
     }
 }
