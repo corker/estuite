@@ -66,6 +66,11 @@ namespace Estuite
             await aggregate.HydrateTo(this, token);
         }
 
+        public Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Hydrate<TId, TEventStream>(
             TId id,
             TEventStream stream,
@@ -75,6 +80,15 @@ namespace Estuite
             var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
             await _readEventStreams.Read(streamId, stream, token);
             _aggregates.Add(streamId, stream);
+        }
+
+        public async Task<bool> TryHydrate<TId, TEventStream>(
+            TId id,
+            TEventStream stream,
+            CancellationToken token = new CancellationToken())
+            where TEventStream : IHydrateEvents, IFlushEvents
+        {
+            throw new NotImplementedException();
         }
 
         public void Register(ICanBeRegistered aggregate)

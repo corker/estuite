@@ -7,5 +7,6 @@ namespace Estuite
     public interface IReadEventStreams
     {
         Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token = new CancellationToken());
+        Task<bool> TryRead(StreamId streamId, IHydrateEvents events, CancellationToken token = new CancellationToken());
     }
 }

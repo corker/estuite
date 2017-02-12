@@ -71,7 +71,7 @@ namespace Estuite.Example
                 {
                     await unitOfWork2.Commit();
                 }
-                catch (ConcurrencyException e)
+                catch (EventStreamConcurrentWriteException e)
                 {
                     Debug.WriteLine($"{e}");
                 }
@@ -109,7 +109,7 @@ namespace Estuite.Example
                 {
                     await EventStreams.Write(session2);
                 }
-                catch (ConcurrencyException e)
+                catch (EventStreamConcurrentWriteException e)
                 {
                     Debug.WriteLine($"{e}");
                 }

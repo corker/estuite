@@ -18,7 +18,18 @@ namespace Estuite.AzureEventStore
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token = new CancellationToken())
+        public Task Read(
+            StreamId streamId,
+            IHydrateEvents events,
+            CancellationToken token = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> TryRead(
+            StreamId streamId,
+            IHydrateEvents events,
+            CancellationToken token = new CancellationToken())
         {
             throw new NotImplementedException();
         }

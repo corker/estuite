@@ -47,6 +47,15 @@ namespace Estuite.Specs.UnitTests
                 ProvidedId = id;
                 ProvidedEvents = stream;
             }
+
+            public async Task<bool> TryHydrate<TId, TEventStream>(
+                TId id,
+                TEventStream stream,
+                CancellationToken token = new CancellationToken())
+                where TEventStream : IHydrateEvents, IFlushEvents
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class AggregateUnderTest : Aggregate<object>

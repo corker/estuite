@@ -64,7 +64,7 @@ namespace Estuite.AzureEventStore
                 switch (e.RequestInformation.HttpStatusCode)
                 {
                     case HttpStatusCodes.EntityAlreadyExists:
-                        throw new ConcurrencyException(
+                        throw new EventStreamConcurrentWriteException(
                             $"The stream {session.StreamId.Value} was modified between read and write or the session {session.SessionId.Value} was already registered.",
                             e
                         );

@@ -105,6 +105,14 @@ namespace Estuite.Specs.UnitTests
             {
                 events.Hydrate(new List<object> {new FakeHydratedEvent()});
             }
+
+            public async Task<bool> TryRead(
+                StreamId streamId,
+                IHydrateEvents events,
+                CancellationToken token = new CancellationToken())
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private UnitOfWork _target;

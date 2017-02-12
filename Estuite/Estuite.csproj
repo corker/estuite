@@ -43,9 +43,10 @@
     <Compile Include="AggregateId.cs" />
     <Compile Include="AggregateType.cs" />
     <Compile Include="BucketId.cs" />
-    <Compile Include="ConcurrencyException.cs" />
+    <Compile Include="EventStreamConcurrentWriteException.cs" />
     <Compile Include="DefaultStreamIdentityFactory.cs" />
     <Compile Include="EventRecord.cs" />
+    <Compile Include="EventStreamNotFoundException.cs" />
     <Compile Include="ICommitAggregates.cs" />
     <Compile Include="ICreateSessions.cs" />
     <Compile Include="ICreateStreamIdentities.cs" />
