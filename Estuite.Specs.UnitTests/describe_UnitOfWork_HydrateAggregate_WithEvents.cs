@@ -19,7 +19,7 @@ namespace Estuite.Specs.UnitTests
             _createSessions = new FakeICreateSessions();
             _writeSessionStreams = new FakeIWriteStreams();
             _readStreams = new FakeIReadStreams();
-            _target = new UnitOfWork(_bucketId, _createSessions, _writeSessionStreams, _readStreams);
+            _target = new UnitOfWork(_bucketId, _readStreams, _createSessions, _writeSessionStreams);
         }
 
         private void when_hydrate()

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
@@ -15,9 +13,8 @@ namespace Estuite.Specs.UnitTests
         {
             _bucketId = new BucketId("bucket-id");
             _aggregate = new FakeAggregate(Guid.NewGuid());
-            _createSessions = new FakeICreateSessions();
             _readStreams = new FakeIReadStreams();
-            _target = new UnitOfWork(_bucketId, _createSessions, null, _readStreams);
+            _target = new UnitOfWork(_bucketId, _readStreams, null, null);
         }
 
         private void when_hydrate()
@@ -36,15 +33,6 @@ namespace Estuite.Specs.UnitTests
         {
             public FakeAggregate(Guid id) : base(id)
             {
-            }
-        }
-
-        private class FakeICreateSessions : ICreateSessions
-        {
-            public Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> events)
-            {
-                var records = events.Select(x => new EventRecord {Payload = x.Body.GetType().Name}).ToArray();
-                return new Session(streamId, sessionId, DateTime.Now, records);
             }
         }
 
@@ -70,7 +58,6 @@ namespace Estuite.Specs.UnitTests
         private UnitOfWork _target;
         private BucketId _bucketId;
         private FakeAggregate _aggregate;
-        private FakeICreateSessions _createSessions;
         private FakeIReadStreams _readStreams;
         private bool _returns;
     }

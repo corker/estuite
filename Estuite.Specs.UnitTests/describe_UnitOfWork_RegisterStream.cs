@@ -18,7 +18,7 @@ namespace Estuite.Specs.UnitTests
             _bucketId = new BucketId("bucket-id");
             _createSessions = new FakeICreateSessions();
             _streams = new FakeIWriteStreams();
-            _target = new UnitOfWork(_bucketId, _createSessions, _streams, null);
+            _target = new UnitOfWork(_bucketId, null, _createSessions, _streams);
         }
 
         private void when_register()

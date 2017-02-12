@@ -22,11 +22,7 @@ namespace Estuite
         private readonly ICreateStreamIdentities _streamIdentities;
         private readonly IWriteStreams _writeStreams;
 
-        public UnitOfWork(
-            BucketId bucketId,
-            ICreateSessions createSessions,
-            IWriteStreams writeStreams,
-            IReadStreams readStreams)
+        public UnitOfWork(BucketId bucketId, IReadStreams readStreams, ICreateSessions createSessions, IWriteStreams writeStreams)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             _bucketId = bucketId;

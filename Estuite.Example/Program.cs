@@ -41,7 +41,7 @@ namespace Estuite.Example
         {
             var accountId = Guid.NewGuid();
 
-            var unitOfWork = new UnitOfWork(BucketId, Sessions, Streams, null);
+            var unitOfWork = new UnitOfWork(BucketId, null, Sessions, Streams);
             var aggregate = Account.Register(accountId, "MyAccount1");
             unitOfWork.Register(aggregate);
             var commit1 = unitOfWork.Commit();
@@ -56,13 +56,13 @@ namespace Estuite.Example
         {
             var accountId = Guid.NewGuid();
 
-            var unitOfWork1 = new UnitOfWork(BucketId, Sessions, Streams, null);
+            var unitOfWork1 = new UnitOfWork(BucketId, null, Sessions, Streams);
             var aggregate1 = Account.Register(accountId, "MyAccount3");
             unitOfWork1.Register(aggregate1);
             var commit1 = unitOfWork1.Commit();
             commit1.Wait();
 
-            var unitOfWork2 = new UnitOfWork(BucketId, Sessions, Streams, null);
+            var unitOfWork2 = new UnitOfWork(BucketId, null, Sessions, Streams);
             var aggregate2 = Account.Register(accountId, "MyAccount3");
             unitOfWork2.Register(aggregate2);
             var commit2 = Task.Run(async () =>
