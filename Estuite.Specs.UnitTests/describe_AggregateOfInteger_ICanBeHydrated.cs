@@ -35,7 +35,7 @@ namespace Estuite.Specs.UnitTests
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents
+            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents, IFlushEvents
             {
                 ProvidedId = id;
                 ProvidedEvents = aggregate;

@@ -17,8 +17,8 @@ namespace Estuite.Specs.UnitTests
             _id = Guid.Parse("bcb724f5-562f-4706-b470-570fa7174ec0");
             _bucketId = new BucketId("bucket-id");
             _createSessions = new FakeICreateSessions();
-            _writeSessions = new FakeIWriteSessions();
-            _target = new UnitOfWork(_bucketId, _createSessions, _writeSessions);
+            _eventStreams = new FakeIWriteEventStreams();
+            _target = new UnitOfWork(_bucketId, _createSessions, _eventStreams, null);
         }
 
         private void when_register()
@@ -30,10 +30,10 @@ namespace Estuite.Specs.UnitTests
                 context["and commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["has session"] = () => _writeSessions.Sessions.Count.ShouldBe(1);
+                    it["has session"] = () => _eventStreams.Sessions.Count.ShouldBe(1);
                     context["and session"] = () =>
                     {
-                        act = () => _session = _writeSessions.Sessions.Single();
+                        act = () => _session = _eventStreams.Sessions.Single();
                         it["has stream id"] = () => _session.StreamId.Value.ShouldBe(ExpectedStreamIdValue);
                         it["has created"] = () => _session.Created.ShouldBe(ExpectedCreated);
                         it["has event records"] = () => _session.Records.Length.ShouldBe(1);
@@ -63,7 +63,7 @@ namespace Estuite.Specs.UnitTests
                 context["and commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["has no session"] = () => _writeSessions.Sessions.Count.ShouldBe(0);
+                    it["has no session"] = () => _eventStreams.Sessions.Count.ShouldBe(0);
                 };
             };
         }
@@ -74,11 +74,11 @@ namespace Estuite.Specs.UnitTests
             context["and commit"] = () =>
             {
                 actAsync = async () => await _target.Commit();
-                it["has no sessions"] = () => _writeSessions.Sessions.Count.ShouldBe(0);
+                it["has no sessions"] = () => _eventStreams.Sessions.Count.ShouldBe(0);
             };
         }
 
-        private class FakeIWriteSessions : IWriteSessions
+        private class FakeIWriteEventStreams : IWriteEventStreams
         {
             public readonly List<Session> Sessions = new List<Session>();
 
@@ -121,7 +121,7 @@ namespace Estuite.Specs.UnitTests
         private UnitOfWork _target;
         private BucketId _bucketId;
         private ICreateSessions _createSessions;
-        private FakeIWriteSessions _writeSessions;
+        private FakeIWriteEventStreams _eventStreams;
         private Guid _id;
         private FakeIFlushEvents _aggregate;
         private Session _session;

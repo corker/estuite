@@ -1,4 +1,5 @@
 ﻿using System;
+using Estuite.Domain;
 
 namespace Estuite
 {

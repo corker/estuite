@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Estuite.AzureEventStore
 {
-    public class EventStore : IWriteSessions
+    public class EventStore : IWriteEventStreams
     {
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;

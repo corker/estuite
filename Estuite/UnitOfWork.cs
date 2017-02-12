@@ -17,16 +17,22 @@ namespace Estuite
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
         private readonly BucketId _bucketId;
         private readonly ICreateSessions _createSessions;
+        private readonly IWriteEventStreams _writeEventStreams;
         private readonly IGenerateIdentities _identities;
         private readonly ICreateStreamIdentities _streamIdentities;
-        private readonly IWriteSessions _writeSessions;
+        private readonly IReadEventStreams _readEventStreams;
 
-        public UnitOfWork(BucketId bucketId, ICreateSessions createSessions, IWriteSessions writeSessions)
+        public UnitOfWork(
+            BucketId bucketId,
+            ICreateSessions createSessions,
+            IWriteEventStreams writeEventStreams,
+            IReadEventStreams readEventStreams)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             _bucketId = bucketId;
             _createSessions = createSessions;
-            _writeSessions = writeSessions;
+            _writeEventStreams = writeEventStreams;
+            _readEventStreams = readEventStreams;
             _aggregates = new Dictionary<StreamId, IFlushEvents>(StreamIdEqualityComparer.Instance);
             _identities = this as IGenerateIdentities ?? new GuidCombGenerator(new UtcDateTimeProvider());
             _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
@@ -50,7 +56,7 @@ namespace Estuite
                     break;
                 default:
                     var ids = string.Join(", ", streamsToWrite.Select(x => x.StreamId.Value));
-                    string message = $"Can't commit multiple streams. Stream ids {ids}";
+                    string message = $"Can't commit multiple event streams. Stream ids {ids}";
                     throw new InvalidOperationException(message);
             }
         }
@@ -60,10 +66,12 @@ namespace Estuite
             aggregate.HydrateTo(this);
         }
 
-        public void Hydrate<TId, TEventStream>(TId id, TEventStream events) where TEventStream : IHydrateEvents
+        public void Hydrate<TId, TEventStream>(TId id, TEventStream events)
+            where TEventStream : IHydrateEvents, IFlushEvents
         {
-            events.Hydrate(new object[0]);
-            throw new NotImplementedException();
+            var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
+            _readEventStreams.Read(streamId, events);
+            _aggregates.Add(streamId, events);
         }
 
         public void Register(ICanBeRegistered aggregate)
@@ -81,7 +89,7 @@ namespace Estuite
         {
             var sessionId = new SessionId($"{_identities.Generate()}");
             var session = _createSessions.Create(streamId, sessionId, events);
-            await _writeSessions.Write(session, token);
+            await _writeEventStreams.Write(session, token);
         }
     }
 }

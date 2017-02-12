@@ -1,7 +1,6 @@
 ﻿using System;
-using Estuite.Domain;
 
-namespace Estuite
+namespace Estuite.Domain
 {
     /// <summary>
     ///     Tribute to awesome NHibernate

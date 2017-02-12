@@ -11,7 +11,7 @@ namespace Estuite.Specs.UnitTests
         {
             _bucketId = new BucketId("bucket-id");
             _aggregate = new FakeICanBeHydrated();
-            _target = new UnitOfWork(_bucketId, null, null);
+            _target = new UnitOfWork(_bucketId, null, null, null);
         }
 
         private void when_register_aggregate()

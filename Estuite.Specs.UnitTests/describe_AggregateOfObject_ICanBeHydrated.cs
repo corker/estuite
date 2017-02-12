@@ -20,7 +20,8 @@ namespace Estuite.Specs.UnitTests
             act = () => _target.HydrateTo(_eventStreams);
             it["provides an id with expected type"] = () => { _eventStreams.ProvidedId.ShouldBeOfType<object>(); };
             it["provides an expected id"] = () => { _eventStreams.ProvidedId.ShouldBe(_id); };
-            it["provides itself to hydrate aggregate"] = () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            it["provides itself to hydrate aggregate"] =
+                () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and hydrator is null"] = () =>
             {
                 before = () => _eventStreams = null;
@@ -35,7 +36,8 @@ namespace Estuite.Specs.UnitTests
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents
+            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate)
+                where TAggregate : IHydrateEvents, IFlushEvents
             {
                 ProvidedId = id;
                 ProvidedEvents = aggregate;
