@@ -10,7 +10,7 @@ using Shouldly;
 namespace Estuite.Specs.UnitTests
 {
     [Tag("describe_UnitOfWork")]
-    public class describe_UnitOfWork_RegisterEvents : nspec
+    public class describe_UnitOfWork_RegisterEventStream : nspec
     {
         private void before_each()
         {
@@ -91,9 +91,9 @@ namespace Estuite.Specs.UnitTests
 
         private class FakeICreateSessions : ICreateSessions
         {
-            public Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> @event)
+            public Session Create(StreamId streamId, SessionId sessionId, IEnumerable<Event> events)
             {
-                var records = @event.Select(x => new EventRecord {Version = x.Version, Payload = $"{x.Body}"}).ToArray();
+                var records = events.Select(x => new EventRecord {Version = x.Version, Payload = $"{x.Body}"}).ToArray();
                 return new Session(streamId, sessionId, ExpectedCreated, records);
             }
         }
