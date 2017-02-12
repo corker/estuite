@@ -1,7 +1,10 @@
-﻿namespace Estuite.Domain
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Estuite.Domain
 {
     public interface ICanBeHydrated
     {
-        void HydrateTo(IHydrateEventStreams streams);
+        Task HydrateTo(IHydrateEventStreams streams, CancellationToken token = new CancellationToken());
     }
 }

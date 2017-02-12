@@ -1,8 +1,10 @@
-﻿namespace Estuite.Domain
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Estuite.Domain
 {
     public interface IHydrateAggregates
     {
-        void Hydrate(ICanBeHydrated aggregate);
-
+        Task Hydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken());
     }
 }

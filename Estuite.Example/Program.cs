@@ -27,7 +27,7 @@ namespace Estuite.Example
             DateTime = new UtcDateTimeProvider();
             Sessions = new SessionFactory(DateTime, SerializeEvents);
             StorageAccount = CloudStorageAccount.Parse(Configuration.ConnectionString);
-            EventStreams = new EventStore(StorageAccount, Configuration);
+            EventStreams = new EventStreamWriter(StorageAccount, Configuration);
         }
 
         private static void Main(string[] args)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Estuite.Domain;
 using NSpec;
 using Shouldly;
@@ -17,10 +19,11 @@ namespace Estuite.Specs.UnitTests
 
         private void when_hydrate()
         {
-            act = () => _target.HydrateTo(_eventStreams);
+            actAsync = async () => await _target.HydrateTo(_eventStreams);
             it["provides an id with expected type"] = () => { _eventStreams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _eventStreams.ProvidedId.ShouldBe(_id); };
-            it["provides itself to hydrate aggregate"] = () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            it["provides itself to hydrate aggregate"] =
+                () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and hydrator is null"] = () =>
             {
                 before = () => _eventStreams = null;
@@ -35,7 +38,11 @@ namespace Estuite.Specs.UnitTests
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public void Hydrate<TId, TAggregate>(TId id, TAggregate aggregate) where TAggregate : IHydrateEvents, IFlushEvents
+            public async Task Hydrate<TId, TAggregate>(
+                TId id,
+                TAggregate aggregate,
+                CancellationToken token = new CancellationToken())
+                where TAggregate : IHydrateEvents, IFlushEvents
             {
                 ProvidedId = id;
                 ProvidedEvents = aggregate;

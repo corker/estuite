@@ -1,0 +1,26 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Estuite.Domain;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+
+namespace Estuite.AzureEventStore
+{
+    public class EventStreamReader : IReadEventStreams
+    {
+        private readonly string _streamTableName;
+        private readonly CloudTableClient _tableClient;
+
+        public EventStreamReader(CloudStorageAccount account, IEventStoreConfiguration configuration)
+        {
+            _streamTableName = configuration.StreamTableName;
+            _tableClient = account.CreateCloudTableClient();
+        }
+
+        public Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

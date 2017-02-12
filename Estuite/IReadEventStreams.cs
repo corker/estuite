@@ -1,9 +1,11 @@
-﻿using Estuite.Domain;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Estuite.Domain;
 
 namespace Estuite
 {
     public interface IReadEventStreams
     {
-        void Read(StreamId streamId, IHydrateEvents events);
+        Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token = new CancellationToken());
     }
 }

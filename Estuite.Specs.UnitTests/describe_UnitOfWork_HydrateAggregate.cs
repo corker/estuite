@@ -1,4 +1,6 @@
-﻿using Estuite.Domain;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Estuite.Domain;
 using NSpec;
 using Shouldly;
 
@@ -24,7 +26,7 @@ namespace Estuite.Specs.UnitTests
         {
             public IHydrateEventStreams HydratedTo { get; private set; }
 
-            public void HydrateTo(IHydrateEventStreams streams)
+            public async Task HydrateTo(IHydrateEventStreams streams, CancellationToken token = new CancellationToken())
             {
                 HydratedTo = streams;
             }

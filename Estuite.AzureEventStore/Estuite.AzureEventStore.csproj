@@ -68,7 +68,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventStore.cs" />
+    <Compile Include="EventStreamReader.cs" />
+    <Compile Include="EventStreamWriter.cs" />
     <Compile Include="IEventStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

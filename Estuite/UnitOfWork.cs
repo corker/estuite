@@ -17,10 +17,10 @@ namespace Estuite
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
         private readonly BucketId _bucketId;
         private readonly ICreateSessions _createSessions;
-        private readonly IWriteEventStreams _writeEventStreams;
         private readonly IGenerateIdentities _identities;
-        private readonly ICreateStreamIdentities _streamIdentities;
         private readonly IReadEventStreams _readEventStreams;
+        private readonly ICreateStreamIdentities _streamIdentities;
+        private readonly IWriteEventStreams _writeEventStreams;
 
         public UnitOfWork(
             BucketId bucketId,
@@ -61,16 +61,19 @@ namespace Estuite
             }
         }
 
-        public void Hydrate(ICanBeHydrated aggregate)
+        public async Task Hydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
         {
-            aggregate.HydrateTo(this);
+            await aggregate.HydrateTo(this, token);
         }
 
-        public void Hydrate<TId, TEventStream>(TId id, TEventStream events)
+        public async Task Hydrate<TId, TEventStream>(
+            TId id,
+            TEventStream events,
+            CancellationToken token = new CancellationToken())
             where TEventStream : IHydrateEvents, IFlushEvents
         {
             var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
-            _readEventStreams.Read(streamId, events);
+            await _readEventStreams.Read(streamId, events, token);
             _aggregates.Add(streamId, events);
         }
 
@@ -85,7 +88,10 @@ namespace Estuite
             _aggregates.Add(streamId, events);
         }
 
-        private async Task WriteStream(StreamId streamId, IEnumerable<Event> events, CancellationToken token)
+        private async Task WriteStream(
+            StreamId streamId,
+            IEnumerable<Event> events,
+            CancellationToken token = new CancellationToken())
         {
             var sessionId = new SessionId($"{_identities.Generate()}");
             var session = _createSessions.Create(streamId, sessionId, events);

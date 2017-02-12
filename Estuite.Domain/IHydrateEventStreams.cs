@@ -1,7 +1,11 @@
-﻿namespace Estuite.Domain
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Estuite.Domain
 {
     public interface IHydrateEventStreams
     {
-        void Hydrate<TId, TEventStream>(TId id, TEventStream stream) where TEventStream : IHydrateEvents, IFlushEvents;
+        Task Hydrate<TId, TEventStream>(TId id, TEventStream stream, CancellationToken token = new CancellationToken())
+            where TEventStream : IHydrateEvents, IFlushEvents;
     }
 }

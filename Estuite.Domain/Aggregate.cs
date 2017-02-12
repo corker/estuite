@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Estuite.Domain
 {
@@ -20,10 +22,10 @@ namespace Estuite.Domain
 
         protected TId Id { get; }
 
-        void ICanBeHydrated.HydrateTo(IHydrateEventStreams streams)
+        async Task ICanBeHydrated.HydrateTo(IHydrateEventStreams streams, CancellationToken token)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
-            streams.Hydrate(Id, this);
+            await streams.Hydrate(Id, this, token);
         }
 
         void ICanBeRegistered.RegisterTo(IRegisterEventStreams streams)
