@@ -22,7 +22,7 @@ namespace Estuite.Specs.UnitTests
             actAsync = async () => await _target.HydrateTo(_eventStreams);
             it["provides an id with expected type"] = () => { _eventStreams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _eventStreams.ProvidedId.ShouldBe(_id); };
-            it["provides itself to hydrate aggregate"] =
+            it["provides itself to hydrate events"] =
                 () => { _eventStreams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
             context["and hydrator is null"] = () =>
             {
@@ -38,14 +38,14 @@ namespace Estuite.Specs.UnitTests
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public async Task Hydrate<TId, TAggregate>(
+            public async Task Hydrate<TId, TEventStream>(
                 TId id,
-                TAggregate aggregate,
+                TEventStream stream,
                 CancellationToken token = new CancellationToken())
-                where TAggregate : IHydrateEvents, IFlushEvents
+                where TEventStream : IHydrateEvents, IFlushEvents
             {
                 ProvidedId = id;
-                ProvidedEvents = aggregate;
+                ProvidedEvents = stream;
             }
         }
 

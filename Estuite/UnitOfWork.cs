@@ -68,13 +68,13 @@ namespace Estuite
 
         public async Task Hydrate<TId, TEventStream>(
             TId id,
-            TEventStream events,
+            TEventStream stream,
             CancellationToken token = new CancellationToken())
             where TEventStream : IHydrateEvents, IFlushEvents
         {
             var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
-            await _readEventStreams.Read(streamId, events, token);
-            _aggregates.Add(streamId, events);
+            await _readEventStreams.Read(streamId, stream, token);
+            _aggregates.Add(streamId, stream);
         }
 
         public void Register(ICanBeRegistered aggregate)
@@ -82,10 +82,10 @@ namespace Estuite
             aggregate.RegisterTo(this);
         }
 
-        public void Register<TId, TEventStream>(TId id, TEventStream events) where TEventStream : IFlushEvents
+        public void Register<TId, TEventStream>(TId id, TEventStream stream) where TEventStream : IFlushEvents
         {
             var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
-            _aggregates.Add(streamId, events);
+            _aggregates.Add(streamId, stream);
         }
 
         private async Task WriteStream(
