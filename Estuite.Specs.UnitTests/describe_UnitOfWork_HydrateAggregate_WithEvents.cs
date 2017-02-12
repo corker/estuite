@@ -26,14 +26,14 @@ namespace Estuite.Specs.UnitTests
         {
             actAsync = async () => await _target.Hydrate(_aggregate);
             it["hydrates event on aggregate"] = () => _aggregate.IsHydrated.ShouldBeTrue();
-            context["when apply an event"] = () =>
+            context["when apply event"] = () =>
             {
                 act = () => _aggregate.ApplyEvents();
                 it["applies event on aggregate"] = () => _aggregate.IsApplied.ShouldBeTrue();
                 context["when commit"] = () =>
                 {
                     actAsync = async () => await _target.Commit();
-                    it["writes applied event"] = () => { _writeSessionStreams.HasOnlyAppliedEvent.ShouldBeTrue(); };
+                    it["writes only applied event"] = () => { _writeSessionStreams.HasOnlyAppliedEvent.ShouldBeTrue(); };
                 };
             };
         }
