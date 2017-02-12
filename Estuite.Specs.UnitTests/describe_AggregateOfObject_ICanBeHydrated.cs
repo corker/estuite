@@ -33,6 +33,23 @@ namespace Estuite.Specs.UnitTests
             };
         }
 
+        private void when_try_hydrate()
+        {
+            actAsync = async () => _returns = await _target.TryHydrateTo(_streams);
+            it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<object>(); };
+            it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
+            it["returns true"] = () => { _returns.ShouldBe(true); };
+            it["provides itself to hydrate events"] =
+                () => { _streams.ProvidedEvents.ShouldBeSameAs(_aggregate); };
+            context["and hydrator is null"] = () =>
+            {
+                before = () => _streams = null;
+                it["throw exception"] = expect<ArgumentNullException>(
+                    "Value cannot be null.\r\nParameter name: streams"
+                );
+            };
+        }
+
         private class FakeIHydrateStreams : IHydrateStreams
         {
             public IHydrateEvents ProvidedEvents { get; private set; }
@@ -54,7 +71,9 @@ namespace Estuite.Specs.UnitTests
                 CancellationToken token = new CancellationToken())
                 where TEventStream : IHydrateEvents, IFlushEvents
             {
-                throw new NotImplementedException();
+                ProvidedId = id;
+                ProvidedEvents = stream;
+                return true;
             }
         }
 
@@ -69,5 +88,6 @@ namespace Estuite.Specs.UnitTests
         private ICanBeHydrated _target;
         private AggregateUnderTest _aggregate;
         private FakeIHydrateStreams _streams;
+        private bool _returns;
     }
 }
