@@ -15,6 +15,7 @@ namespace Estuite
         ICommitAggregates
     {
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
+        private readonly object _aggregatesLock;
         private readonly BucketId _bucketId;
         private readonly ICreateSessions _createSessions;
         private readonly IGenerateIdentities _identities;
@@ -22,7 +23,10 @@ namespace Estuite
         private readonly ICreateStreamIdentities _streamIdentities;
         private readonly IWriteStreams _writeStreams;
 
-        public UnitOfWork(BucketId bucketId, IReadStreams readStreams, ICreateSessions createSessions,
+        public UnitOfWork(
+            BucketId bucketId,
+            IReadStreams readStreams,
+            ICreateSessions createSessions,
             IWriteStreams writeStreams)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
@@ -31,28 +35,34 @@ namespace Estuite
             _writeStreams = writeStreams;
             _readStreams = readStreams;
             _aggregates = new Dictionary<StreamId, IFlushEvents>(StreamIdEqualityComparer.Instance);
+            _aggregatesLock = new object();
             _identities = this as IGenerateIdentities ?? new GuidCombGenerator(new UtcDateTimeProvider());
             _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
         }
 
         public async Task Commit(CancellationToken token = new CancellationToken())
         {
-            var streamsToWrite = _aggregates
-                .Select(x => new {StreamId = x.Key, Events = x.Value.Flush()})
-                .Where(x => x.Events.Any())
-                .ToArray();
+            Tuple<StreamId, List<Event>>[] streamsToWrite;
+
+            lock (_aggregatesLock)
+            {
+                streamsToWrite = _aggregates
+                    .Select(x => new Tuple<StreamId, List<Event>>(x.Key, x.Value.Flush()))
+                    .Where(x => x.Item2.Any())
+                    .ToArray();
+            }
 
             switch (streamsToWrite.Length)
             {
                 case 0:
                     return;
                 case 1:
-                    var streamId = streamsToWrite[0].StreamId;
-                    var events = streamsToWrite[0].Events;
+                    var streamId = streamsToWrite[0].Item1;
+                    var events = streamsToWrite[0].Item2;
                     await WriteStream(streamId, events, token);
                     break;
                 default:
-                    var ids = string.Join(", ", streamsToWrite.Select(x => x.StreamId.Value));
+                    var ids = string.Join(", ", streamsToWrite.Select(x => x.Item1.Value));
                     string message = $"Can't commit multiple event streams. Stream ids {ids}";
                     throw new InvalidOperationException(message);
             }
@@ -77,7 +87,10 @@ namespace Estuite
             var type = stream.GetType();
             var streamId = _streamIdentities.Create(_bucketId, id, type);
             await _readStreams.Read(streamId, stream, token);
-            _aggregates.Add(streamId, stream);
+            lock (_aggregatesLock)
+            {
+                _aggregates.Add(streamId, stream);
+            }
         }
 
         public async Task<bool> TryHydrate<TId, TStream>(
@@ -89,7 +102,10 @@ namespace Estuite
             var type = stream.GetType();
             var streamId = _streamIdentities.Create(_bucketId, id, type);
             var result = await _readStreams.TryRead(streamId, stream, token);
-            _aggregates.Add(streamId, stream);
+            lock (_aggregatesLock)
+            {
+                _aggregates.Add(streamId, stream);
+            }
             return result;
         }
 
@@ -102,7 +118,10 @@ namespace Estuite
         {
             var type = stream.GetType();
             var streamId = _streamIdentities.Create(_bucketId, id, type);
-            _aggregates.Add(streamId, stream);
+            lock (_aggregatesLock)
+            {
+                _aggregates.Add(streamId, stream);
+            }
         }
 
         private async Task WriteStream(

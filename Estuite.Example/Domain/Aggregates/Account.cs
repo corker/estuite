@@ -1,8 +1,8 @@
 ﻿using System;
 using Estuite.Domain;
-using Estuite.Example.Events;
+using Estuite.Example.Domain.Events;
 
-namespace Estuite.Example.Aggregates
+namespace Estuite.Example.Domain.Aggregates
 {
     public class Account : Aggregate<Guid>
     {

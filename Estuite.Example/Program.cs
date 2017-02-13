@@ -1,16 +1,20 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Reflection;
+using Autofac;
 using Estuite.AzureEventStore;
 using Estuite.Domain;
-using Estuite.Example.Aggregates;
-using Estuite.Example.Events;
+using Estuite.Example.Configuration;
+using Estuite.Example.Services;
+using log4net;
+using log4net.Config;
 using Microsoft.WindowsAzure.Storage;
 
 namespace Estuite.Example
 {
     internal class Program
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static readonly Guid AccountId = Guid.NewGuid();
         private static readonly ProgramConfiguration Configuration;
         private static readonly ISerializeEvents SerializeEvents;
@@ -24,6 +28,8 @@ namespace Estuite.Example
 
         static Program()
         {
+            XmlConfigurator.Configure();
+
             Configuration = new ProgramConfiguration();
             SerializeEvents = new EventSerializer();
             DeserializeEvents = new EventDeserializer();
@@ -36,109 +42,23 @@ namespace Estuite.Example
 
         private static void Main(string[] args)
         {
-            RegisterAggregateAndAppendAStream();
-            VersionCollision();
-            SessionCollision();
-        }
+            Log.Info("Program started.");
 
-        private static void RegisterAggregateAndAppendAStream()
-        {
-            var accountId = Guid.NewGuid();
-
-            var unitOfWork = new UnitOfWork(BucketId, null, Sessions, WriteStreams);
-            var aggregate = Account.Register(accountId, "MyAccount1");
-            unitOfWork.Register(aggregate);
-            var commit1 = unitOfWork.Commit();
-            commit1.Wait();
-
-            aggregate.ChangeName("MyAccount2");
-            var commit2 = unitOfWork.Commit();
-            commit2.Wait();
-
-            var unitOfWork3 = new UnitOfWork(BucketId, ReadStreams, Sessions, WriteStreams);
-            var aggregate3 = new Account(accountId);
-            var hydrate3 = unitOfWork3.Hydrate(aggregate3);
-            hydrate3.Wait();
-
-            var unitOfWork4 = new UnitOfWork(BucketId, ReadStreams, Sessions, WriteStreams);
-            var aggregate4 = new Account(Guid.NewGuid());
-            var hydrate4 = Task.Run(async () =>
+            try
             {
-                try
+                using (var container = AutofacContainerFactory.Create())
                 {
-                    await unitOfWork4.Hydrate(aggregate4);
+                    var runner = container.Resolve<ProgramRunner>();
+                    runner.Run();
                 }
-                catch (StreamNotFoundException e)
-                {
-                    Debug.WriteLine($"{e}");
-                }
-            });
-            hydrate4.Wait();
-        }
-
-        private static void VersionCollision()
-        {
-            var accountId = Guid.NewGuid();
-
-            var unitOfWork1 = new UnitOfWork(BucketId, null, Sessions, WriteStreams);
-            var aggregate1 = Account.Register(accountId, "MyAccount3");
-            unitOfWork1.Register(aggregate1);
-            var commit1 = unitOfWork1.Commit();
-            commit1.Wait();
-
-            var unitOfWork2 = new UnitOfWork(BucketId, null, Sessions, WriteStreams);
-            var aggregate2 = Account.Register(accountId, "MyAccount3");
-            unitOfWork2.Register(aggregate2);
-            var commit2 = Task.Run(async () =>
+                Log.Info("Program finished.");
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    await unitOfWork2.Commit();
-                }
-                catch (StreamConcurrentWriteException e)
-                {
-                    Debug.WriteLine($"{e}");
-                }
-            });
-            commit2.Wait();
-        }
+                Log.Fatal("Exception thrown. Program will be stopped.", e);
+            }
 
-        private static void SessionCollision()
-        {
-            var sessionId = new SessionId($"{Guid.NewGuid()}");
-            var aggregateType = new AggregateType("Account");
-            var aggregateId = new AggregateId($"{Guid.NewGuid()}");
-
-            var streamId = new StreamId(BucketId, aggregateType, aggregateId);
-            var session1 = Sessions.Create(
-                streamId,
-                sessionId,
-                new[]
-                {
-                    new Event(1, new AccountRegistered {AccountId = AccountId, Name = "MyAccount4"})
-                });
-            var write1 = WriteStreams.Write(session1);
-            write1.Wait();
-
-            var session2 = Sessions.Create(
-                streamId,
-                sessionId,
-                new[]
-                {
-                    new Event(2, new AccountNameCorrected {AccountId = AccountId, Name = "MyAccount4"})
-                });
-            var write2 = Task.Run(async () =>
-            {
-                try
-                {
-                    await WriteStreams.Write(session2);
-                }
-                catch (StreamConcurrentWriteException e)
-                {
-                    Debug.WriteLine($"{e}");
-                }
-            });
-            write2.Wait();
+            Console.ReadKey();
         }
     }
 }

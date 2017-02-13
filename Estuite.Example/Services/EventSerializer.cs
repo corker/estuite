@@ -1,7 +1,6 @@
-﻿using Estuite.AzureEventStore;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Estuite.Example
+namespace Estuite.Example.Services
 {
     public class EventSerializer : ISerializeEvents
     {

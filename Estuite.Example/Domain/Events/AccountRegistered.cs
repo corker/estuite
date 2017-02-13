@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite.Example.Events
+namespace Estuite.Example.Domain.Events
 {
     public class AccountRegistered
     {

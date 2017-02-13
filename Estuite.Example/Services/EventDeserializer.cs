@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Estuite.Example
+namespace Estuite.Example.Services
 {
     public class EventDeserializer : IDeserializeEvents
     {
