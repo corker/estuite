@@ -4,6 +4,6 @@ namespace Estuite
 {
     public interface ICreateStreamIdentities
     {
-        StreamId Create<TId, TAggregate>(BucketId bucketId, TId id);
+        StreamId Create<TId>(BucketId bucketId, TId id, Type type);
     }
 }

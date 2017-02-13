@@ -22,7 +22,8 @@ namespace Estuite
         private readonly ICreateStreamIdentities _streamIdentities;
         private readonly IWriteStreams _writeStreams;
 
-        public UnitOfWork(BucketId bucketId, IReadStreams readStreams, ICreateSessions createSessions, IWriteStreams writeStreams)
+        public UnitOfWork(BucketId bucketId, IReadStreams readStreams, ICreateSessions createSessions,
+            IWriteStreams writeStreams)
         {
             if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
             _bucketId = bucketId;
@@ -73,7 +74,8 @@ namespace Estuite
             CancellationToken token = new CancellationToken())
             where TStream : IHydrateEvents, IFlushEvents
         {
-            var streamId = _streamIdentities.Create<TId, TStream>(_bucketId, id);
+            var type = stream.GetType();
+            var streamId = _streamIdentities.Create(_bucketId, id, type);
             await _readStreams.Read(streamId, stream, token);
             _aggregates.Add(streamId, stream);
         }
@@ -84,7 +86,8 @@ namespace Estuite
             CancellationToken token = new CancellationToken())
             where TStream : IHydrateEvents, IFlushEvents
         {
-            var streamId = _streamIdentities.Create<TId, TStream>(_bucketId, id);
+            var type = stream.GetType();
+            var streamId = _streamIdentities.Create(_bucketId, id, type);
             var result = await _readStreams.TryRead(streamId, stream, token);
             _aggregates.Add(streamId, stream);
             return result;
@@ -97,7 +100,8 @@ namespace Estuite
 
         public void Register<TId, TEventStream>(TId id, TEventStream stream) where TEventStream : IFlushEvents
         {
-            var streamId = _streamIdentities.Create<TId, TEventStream>(_bucketId, id);
+            var type = stream.GetType();
+            var streamId = _streamIdentities.Create(_bucketId, id, type);
             _aggregates.Add(streamId, stream);
         }
 

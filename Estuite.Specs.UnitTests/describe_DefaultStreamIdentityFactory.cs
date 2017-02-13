@@ -15,7 +15,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_create()
         {
-            act = () => _streamId = _target.Create<string, Aggregate<string>>(_bucketId, _id);
+            act = () => _streamId = _target.Create(_bucketId, _id, typeof(Aggregate<string>));
             it["has value"] = () => { _streamId.Value.ShouldBe(ExpectedValue); };
             context["and bucket id is null"] = () =>
             {
