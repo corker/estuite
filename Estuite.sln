@@ -18,9 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.Domain", "Estuite.Domain\Estuite.Domain.csproj", "{9603D807-DC8B-4F18-A84B-17E945242AE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.AzureEventStore", "Estuite.AzureEventStore\Estuite.AzureEventStore.csproj", "{CF205E4B-050B-4AF0-BDA2-800094E1778B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamDispatcher", "Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj", "{634A1D49-6531-4A9D-8936-2A994999A606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite", "Estuite\Estuite.csproj", "{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamStore", "Estuite.StreamStore\Estuite.StreamStore.csproj", "{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamStore.Azure", "Estuite.StreamStore.Azure\Estuite.StreamStore.Azure.csproj", "{A61158E6-B135-4351-BC2E-9669D89A8A89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,14 +42,18 @@ Global
 		{9603D807-DC8B-4F18-A84B-17E945242AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9603D807-DC8B-4F18-A84B-17E945242AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9603D807-DC8B-4F18-A84B-17E945242AE5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF205E4B-050B-4AF0-BDA2-800094E1778B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF205E4B-050B-4AF0-BDA2-800094E1778B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF205E4B-050B-4AF0-BDA2-800094E1778B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF205E4B-050B-4AF0-BDA2-800094E1778B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634A1D49-6531-4A9D-8936-2A994999A606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634A1D49-6531-4A9D-8936-2A994999A606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634A1D49-6531-4A9D-8936-2A994999A606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634A1D49-6531-4A9D-8936-2A994999A606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

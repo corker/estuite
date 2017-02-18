@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
+using Estuite.StreamStore;
 using NSpec;
 using Shouldly;
 

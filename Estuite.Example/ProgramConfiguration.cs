@@ -1,5 +1,5 @@
-﻿using Estuite.AzureEventStore;
-using Estuite.Example.Configuration;
+﻿using Estuite.Example.Configuration;
+using Estuite.StreamStore.Azure;
 
 namespace Estuite.Example
 {

@@ -1,7 +1,7 @@
 ﻿using Autofac;
-using Estuite.AzureEventStore;
-using Estuite.Example.Examples;
 using Estuite.Example.Services;
+using Estuite.StreamStore;
+using Estuite.StreamStore.Azure;
 using Microsoft.WindowsAzure.Storage;
 
 namespace Estuite.Example.Configuration

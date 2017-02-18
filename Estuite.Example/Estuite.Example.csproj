@@ -101,17 +101,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Estuite.AzureEventStore\Estuite.AzureEventStore.csproj">
-      <Project>{CF205E4B-050B-4AF0-BDA2-800094E1778B}</Project>
-      <Name>Estuite.AzureEventStore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
       <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
       <Name>Estuite.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Estuite\Estuite.csproj">
-      <Project>{2F4CEF5E-975A-4FD9-8E03-F3499DCCB0F3}</Project>
-      <Name>Estuite</Name>
+    <ProjectReference Include="..\Estuite.StreamStore.Azure\Estuite.StreamStore.Azure.csproj">
+      <Project>{A61158E6-B135-4351-BC2E-9669D89A8A89}</Project>
+      <Name>Estuite.StreamStore.Azure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">
+      <Project>{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}</Project>
+      <Name>Estuite.StreamStore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

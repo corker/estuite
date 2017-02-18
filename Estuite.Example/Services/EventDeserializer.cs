@@ -1,4 +1,5 @@
 ﻿using System;
+using Estuite.StreamStore;
 using Newtonsoft.Json;
 
 namespace Estuite.Example.Services

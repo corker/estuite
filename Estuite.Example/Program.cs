@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using Autofac;
-using Estuite.AzureEventStore;
 using Estuite.Domain;
 using Estuite.Example.Configuration;
 using Estuite.Example.Services;
+using Estuite.StreamStore;
+using Estuite.StreamStore.Azure;
 using log4net;
 using log4net.Config;
 using Microsoft.WindowsAzure.Storage;

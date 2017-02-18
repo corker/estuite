@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Estuite.Example.Domain.Aggregates;
+using Estuite.StreamStore;
 
 namespace Estuite.Example.Examples
 {

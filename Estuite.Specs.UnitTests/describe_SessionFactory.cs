@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Estuite.Domain;
+using Estuite.StreamStore;
 using Shouldly;
 
 namespace Estuite.Specs.UnitTests

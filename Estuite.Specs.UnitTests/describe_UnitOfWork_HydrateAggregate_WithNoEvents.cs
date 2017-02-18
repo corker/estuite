@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
+using Estuite.StreamStore;
 using NSpec;
 
 namespace Estuite.Specs.UnitTests

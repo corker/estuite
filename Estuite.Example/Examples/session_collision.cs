@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Estuite.Domain;
 using Estuite.Example.Domain.Events;
+using Estuite.StreamStore;
 
 namespace Estuite.Example.Examples
 {

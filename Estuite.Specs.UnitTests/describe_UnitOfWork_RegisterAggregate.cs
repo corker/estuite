@@ -1,4 +1,5 @@
 ﻿using Estuite.Domain;
+using Estuite.StreamStore;
 using NSpec;
 using Shouldly;
 
