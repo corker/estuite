@@ -15,11 +15,13 @@ namespace Estuite.StreamStore.Azure
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;
 
-        public StreamReader(CloudStorageAccount account, IEventStoreConfiguration configuration,
+        public StreamReader(
+            CloudStorageAccount account, 
+            IStreamStoreConfiguration configuration,
             IDeserializeEvents events)
         {
             _events = events;
-            _streamTableName = configuration.StreamTableName;
+            _streamTableName = configuration.TableName;
             _tableClient = account.CreateCloudTableClient();
         }
 

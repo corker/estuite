@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamStore", "Estu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamStore.Azure", "Estuite.StreamStore.Azure\Estuite.StreamStore.Azure.csproj", "{A61158E6-B135-4351-BC2E-9669D89A8A89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estuite.StreamDispatcher.Azure", "Estuite.StreamDispatcher.Azure\Estuite.StreamDispatcher.Azure.csproj", "{1996AF2A-1193-4871-A9E9-108DDC87664C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A61158E6-B135-4351-BC2E-9669D89A8A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1996AF2A-1193-4871-A9E9-108DDC87664C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1996AF2A-1193-4871-A9E9-108DDC87664C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1996AF2A-1193-4871-A9E9-108DDC87664C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1996AF2A-1193-4871-A9E9-108DDC87664C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
