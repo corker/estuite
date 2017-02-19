@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Estuite.StreamDispatcher
 {
-    public interface IDispatchEvents<in TEvent>
+    public interface IDispatchEvents<TEvent>
     {
-        Task Dispatch(IEnumerable<TEvent> events, CancellationToken token = new CancellationToken());
+        Task Dispatch(List<TEvent> events, CancellationToken token = new CancellationToken());
     }
 }

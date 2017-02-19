@@ -6,6 +6,6 @@ namespace Estuite.StreamDispatcher
 {
     public interface IPullEventsForDispatching<TEvent>
     {
-        Task<List<TEvent>> Pull(StreamId id, CancellationToken token = new CancellationToken());
+        Task<List<TEvent>> Pull(StreamId streamId, CancellationToken token = new CancellationToken());
     }
 }

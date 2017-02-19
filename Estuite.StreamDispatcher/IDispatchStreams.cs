@@ -5,6 +5,6 @@ namespace Estuite.StreamDispatcher
 {
     public interface IDispatchStreams
     {
-        Task Dispatch(StreamId id, CancellationToken token = new CancellationToken());
+        Task Dispatch(StreamId streamId, CancellationToken token = new CancellationToken());
     }
 }

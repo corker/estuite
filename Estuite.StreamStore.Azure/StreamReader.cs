@@ -21,7 +21,7 @@ namespace Estuite.StreamStore.Azure
             IDeserializeEvents events)
         {
             _events = events;
-            _streamTableName = configuration.TableName;
+            _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 

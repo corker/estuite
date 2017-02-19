@@ -105,6 +105,14 @@
       <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
       <Name>Estuite.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Estuite.StreamDispatcher.Azure\Estuite.StreamDispatcher.Azure.csproj">
+      <Project>{1996AF2A-1193-4871-A9E9-108DDC87664C}</Project>
+      <Name>Estuite.StreamDispatcher.Azure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
+      <Project>{634A1D49-6531-4A9D-8936-2A994999A606}</Project>
+      <Name>Estuite.StreamDispatcher</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamStore.Azure\Estuite.StreamStore.Azure.csproj">
       <Project>{A61158E6-B135-4351-BC2E-9669D89A8A89}</Project>
       <Name>Estuite.StreamStore.Azure</Name>

@@ -5,6 +5,6 @@ namespace Estuite.StreamDispatcher
 {
     public interface IConfirmEventsDispatched
     {
-        Task Commit(CancellationToken token = new CancellationToken());
+        Task Confirm(CancellationToken token = new CancellationToken());
     }
 }

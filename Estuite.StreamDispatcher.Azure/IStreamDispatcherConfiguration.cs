@@ -2,6 +2,7 @@
 {
     public interface IStreamDispatcherConfiguration
     {
-        string TableName { get; }
+        string StreamTableName { get; }
+        string EventTableName { get; }
     }
 }

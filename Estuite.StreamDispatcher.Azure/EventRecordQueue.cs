@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class UnitOfWork : IConfirmEventsDispatched, IPullEventsForDispatching<EventRecord>
+    public class EventRecordQueue : IConfirmEventsDispatched, IPullEventsForDispatching<EventRecord>
     {
         private static readonly EventRecordEqualityComparer Comparer;
         private readonly object _cachedRecordsLock;
@@ -15,12 +15,12 @@ namespace Estuite.StreamDispatcher.Azure
         private HashSet<EventRecord> _cachedRecords;
         private string _partitionKey;
 
-        static UnitOfWork()
+        static EventRecordQueue()
         {
             Comparer = new EventRecordEqualityComparer();
         }
 
-        public UnitOfWork(IReadEventRecords readEventRecords, IDeleteEventRecords deleteEventRecords)
+        public EventRecordQueue(IReadEventRecords readEventRecords, IDeleteEventRecords deleteEventRecords)
         {
             _cachedRecordsLock = new object();
             _cachedRecords = new HashSet<EventRecord>(Comparer);
@@ -28,7 +28,7 @@ namespace Estuite.StreamDispatcher.Azure
             _deleteEventRecords = deleteEventRecords;
         }
 
-        public async Task Commit(CancellationToken token = new CancellationToken())
+        public async Task Confirm(CancellationToken token = new CancellationToken())
         {
             HashSet<EventRecord> recordsToDelete;
             lock (_cachedRecordsLock)
@@ -41,10 +41,11 @@ namespace Estuite.StreamDispatcher.Azure
             if (recordsToDelete.Any()) await _deleteEventRecords.Delete(recordsToDelete, token);
         }
 
-        public async Task<List<EventRecord>> Pull(StreamId id, CancellationToken token = new CancellationToken())
+        public async Task<List<EventRecord>> Pull(StreamId streamId, CancellationToken token = new CancellationToken())
         {
-            if (_partitionKey == null) _partitionKey = id.Value;
-            if (_partitionKey != id.Value) throw new ArgumentOutOfRangeException(nameof(id));
+            if (streamId == null) throw new ArgumentNullException(nameof(streamId));
+            if (_partitionKey == null) _partitionKey = streamId.Value;
+            if (_partitionKey != streamId.Value) throw new ArgumentOutOfRangeException(nameof(streamId));
             var records = await _readEventRecords.Read(_partitionKey, token);
             var newRecords = records.Where(x =>
             {

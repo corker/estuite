@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Estuite.Example.Services;
+using Estuite.StreamDispatcher.Azure;
 using Estuite.StreamStore;
 using Estuite.StreamStore.Azure;
 using Microsoft.WindowsAzure.Storage;
@@ -16,14 +17,22 @@ namespace Estuite.Example.Configuration
             builder.RegisterType<ProgramConfiguration>().AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<ProgramRunner>();
 
-            // Event store
+            // AzureStorageAccount
+            builder.Register(CreateCloudStorageAccount).InstancePerLifetimeScope();
+
+            // StreamStore
             builder.RegisterInstance(new BucketId("default"));
             builder.RegisterType<UtcDateTimeProvider>().AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<SessionFactory>().AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<StreamWriter>().AsImplementedInterfaces();
             builder.RegisterType<StreamReader>().AsImplementedInterfaces();
             builder.RegisterType<UnitOfWork>();
-            builder.Register(CreateCloudStorageAccount).InstancePerLifetimeScope();
+
+            // StreamDispatcher
+            builder.RegisterType<AzureEventDispatcher>().AsImplementedInterfaces();
+            builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces();
+            builder.RegisterType<EventRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<EventRecordRepository>().AsImplementedInterfaces();
 
             // Services
             builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();

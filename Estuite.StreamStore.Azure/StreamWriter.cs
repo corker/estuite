@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -12,7 +13,7 @@ namespace Estuite.StreamStore.Azure
 
         public StreamWriter(CloudStorageAccount account, IStreamStoreConfiguration configuration)
         {
-            _streamTableName = configuration.TableName;
+            _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 
@@ -45,8 +46,12 @@ namespace Estuite.StreamStore.Azure
                 {
                     PartitionKey = session.StreamId.Value,
                     RowKey = $"D^{record.Version:D10}",
+                    AggregateType = session.StreamId.AggregateType.Value,
+                    BucketId = session.StreamId.BucketId.Value,
+                    AggregateId = session.StreamId.AggregateId.Value,
+                    SessionId = session.SessionId.Value,
+                    Version = record.Version,
                     Created = $"{record.Created:O}",
-                    SessionId = record.SessionId.Value,
                     Type = record.Type,
                     Payload = record.Payload
                 };
@@ -63,7 +68,7 @@ namespace Estuite.StreamStore.Azure
             {
                 switch (e.RequestInformation.HttpStatusCode)
                 {
-                    case HttpStatusCodes.EntityAlreadyExists:
+                    case (int) HttpStatusCode.Conflict:
                         throw new StreamConcurrentWriteException(
                             $"The stream {session.StreamId.Value} was modified between read and write or the session {session.SessionId.Value} was already registered.",
                             e
@@ -74,11 +79,6 @@ namespace Estuite.StreamStore.Azure
             }
         }
 
-        private static class HttpStatusCodes
-        {
-            public const int EntityAlreadyExists = 409;
-        }
-        
         private class EventTableEntity : TableEntity
         {
             public string Created { get; set; }
@@ -89,8 +89,12 @@ namespace Estuite.StreamStore.Azure
 
         private class DispatchTableEntity : TableEntity
         {
-            public string Created { get; set; }
+            public string AggregateType { get; set; }
+            public string BucketId { get; set; }
+            public string AggregateId { get; set; }
             public string SessionId { get; set; }
+            public int Version { get; set; }
+            public string Created { get; set; }
             public string Type { get; set; }
             public string Payload { get; set; }
         }

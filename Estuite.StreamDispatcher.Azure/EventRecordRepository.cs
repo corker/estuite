@@ -16,7 +16,7 @@ namespace Estuite.StreamDispatcher.Azure
 
         public EventRecordRepository(CloudStorageAccount account, IStreamDispatcherConfiguration configuration)
         {
-            _streamTableName = configuration.TableName;
+            _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 
