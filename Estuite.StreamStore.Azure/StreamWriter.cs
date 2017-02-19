@@ -34,7 +34,7 @@ namespace Estuite.StreamStore.Azure
                 var eventTableEntity = new EventTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
-                    RowKey = $"E^{record.Version:D10}",
+                    RowKey = $"E^{record.Version:x16}",
                     Created = $"{record.Created:O}",
                     SessionId = record.SessionId.Value,
                     Type = record.Type,
@@ -45,7 +45,7 @@ namespace Estuite.StreamStore.Azure
                 var dispatchTableEntity = new DispatchTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
-                    RowKey = $"D^{record.Version:D10}",
+                    RowKey = $"D^{record.Version:x16}",
                     AggregateType = session.StreamId.AggregateType.Value,
                     BucketId = session.StreamId.BucketId.Value,
                     AggregateId = session.StreamId.AggregateId.Value,
@@ -93,7 +93,7 @@ namespace Estuite.StreamStore.Azure
             public string BucketId { get; set; }
             public string AggregateId { get; set; }
             public string SessionId { get; set; }
-            public int Version { get; set; }
+            public long Version { get; set; }
             public string Created { get; set; }
             public string Type { get; set; }
             public string Payload { get; set; }
