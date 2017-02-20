@@ -6,6 +6,6 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public interface IReadEventRecords
     {
-        Task<IEnumerable<EventRecord>> Read(string partitionKey, CancellationToken token);
+        Task<IEnumerable<EventRecordTableEntity>> Read(string partitionKey, CancellationToken token);
     }
 }

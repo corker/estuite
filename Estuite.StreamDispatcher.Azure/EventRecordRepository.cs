@@ -11,6 +11,8 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public class EventRecordRepository : IReadEventRecords, IDeleteEventRecords
     {
+        private static readonly EventRecordTableEntity[] Empty = new EventRecordTableEntity[0];
+
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;
 
@@ -21,7 +23,7 @@ namespace Estuite.StreamDispatcher.Azure
         }
 
         public async Task Delete(
-            IEnumerable<EventRecord> records,
+            IEnumerable<EventRecordTableEntity> records,
             CancellationToken token = new CancellationToken())
         {
             var operation = new TableBatchOperation();
@@ -30,21 +32,18 @@ namespace Estuite.StreamDispatcher.Azure
             await table.ExecuteBatchAsync(operation, token);
         }
 
-        public async Task<IEnumerable<EventRecord>> Read(
+        public async Task<IEnumerable<EventRecordTableEntity>> Read(
             string partitionKey,
             CancellationToken token = new CancellationToken())
         {
             var table = _tableClient.GetTableReference(_streamTableName);
-            if (await table.ExistsAsync(token))
-            {
-                var query = table.CreateQuery<EventRecord>()
-                    .Where(x => x.PartitionKey == partitionKey)
-                    .Where(x => string.Compare(x.RowKey, "D^", StringComparison.Ordinal) > 0)
-                    .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) < 0)
-                    .AsTableQuery();
-                return await table.ExecuteQuerySegmentedAsync(query, null, token);
-            }
-            return new EventRecord[0];
+            if (!await table.ExistsAsync(token)) return Empty;
+            var query = table.CreateQuery<EventRecordTableEntity>()
+                .Where(x => x.PartitionKey == partitionKey)
+                .Where(x => string.Compare(x.RowKey, "D^", StringComparison.Ordinal) > 0)
+                .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) < 0)
+                .AsTableQuery();
+            return await table.ExecuteQuerySegmentedAsync(query, null, token);
         }
     }
 }

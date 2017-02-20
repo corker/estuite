@@ -33,6 +33,7 @@ namespace Estuite.Example.Configuration
             builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces();
             builder.RegisterType<EventRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<EventRecordRepository>().AsImplementedInterfaces();
+            builder.RegisterType<StreamMarkerRepository>().AsImplementedInterfaces();
 
             // Services
             builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();

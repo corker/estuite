@@ -6,6 +6,6 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public interface IDeleteEventRecords
     {
-        Task Delete(IEnumerable<EventRecord> records, CancellationToken token = new CancellationToken());
+        Task Delete(IEnumerable<EventRecordTableEntity> records, CancellationToken token = new CancellationToken());
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public sealed class EventRecordEqualityComparer : IEqualityComparer<EventRecord>
+    public sealed class EventRecordEqualityComparer : IEqualityComparer<EventRecordTableEntity>
     {
-        public bool Equals(EventRecord x, EventRecord y)
+        public bool Equals(EventRecordTableEntity x, EventRecordTableEntity y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
@@ -13,7 +13,7 @@ namespace Estuite.StreamDispatcher.Azure
             return string.Equals(x.PartitionKey, y.PartitionKey) && string.Equals(x.RowKey, y.RowKey);
         }
 
-        public int GetHashCode(EventRecord obj)
+        public int GetHashCode(EventRecordTableEntity obj)
         {
             unchecked
             {

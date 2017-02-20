@@ -2,7 +2,7 @@
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class EventRecord : TableEntity
+    public class EventRecordTableEntity : TableEntity
     {
         public string AggregateType { get; set; }
         public string BucketId { get; set; }

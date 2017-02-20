@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class AzureEventDispatcher : IDispatchEvents<EventRecord>
+    public class AzureEventDispatcher : IDispatchEvents<EventRecordTableEntity>
     {
         private readonly CloudTableClient _tableClient;
         private readonly string _tableName;
@@ -20,7 +20,7 @@ namespace Estuite.StreamDispatcher.Azure
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Dispatch(List<EventRecord> events, CancellationToken token = new CancellationToken())
+        public async Task Dispatch(List<EventRecordTableEntity> events, CancellationToken token = new CancellationToken())
         {
             var table = _tableClient.GetTableReference(_tableName);
             await table.CreateIfNotExistsAsync(token);
@@ -108,8 +108,8 @@ namespace Estuite.StreamDispatcher.Azure
         private static async Task<EventStoreCurrentPage> GetCurrentPage(CloudTable table, CancellationToken token)
         {
             var queryCurrentPartition = table.CreateQuery<EventStoreCurrentPage>()
-                .Where(x => x.PartitionKey == "Identities")
-                .Where(x => x.RowKey == "EventStoreCurrentPage")
+                .Where(x => x.PartitionKey == "Indexes")
+                .Where(x => x.RowKey == "CurrentPageIndex")
                 .Take(1)
                 .AsTableQuery();
 
@@ -123,8 +123,8 @@ namespace Estuite.StreamDispatcher.Azure
                 if (currentPage != null) continue;
                 currentPage = new EventStoreCurrentPage
                 {
-                    PartitionKey = "Identities",
-                    RowKey = "EventStoreCurrentPage",
+                    PartitionKey = "Indexes",
+                    RowKey = "CurrentPageIndex",
                     Index = 0
                 };
                 var operation = TableOperation.Insert(currentPage);

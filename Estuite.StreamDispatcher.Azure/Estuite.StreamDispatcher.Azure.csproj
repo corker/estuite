@@ -71,13 +71,17 @@
     <Compile Include="AzureEventDispatcher.cs" />
     <Compile Include="AzureStreamDispatcher.cs" />
     <Compile Include="EventRecordRepository.cs" />
-    <Compile Include="EventRecord.cs" />
+    <Compile Include="EventRecordTableEntity.cs" />
     <Compile Include="EventRecordEqualityComparer.cs" />
     <Compile Include="IDeleteEventRecords.cs" />
     <Compile Include="IReadEventRecords.cs" />
+    <Compile Include="IFindStreamMarkers.cs" />
+    <Compile Include="IDeleteStreamMarkers.cs" />
     <Compile Include="IStreamDispatcherConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventRecordQueue.cs" />
+    <Compile Include="StreamMarkerRepository.cs" />
+    <Compile Include="StreamMarkerTableEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
