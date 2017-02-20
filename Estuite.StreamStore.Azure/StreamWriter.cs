@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
@@ -19,8 +20,28 @@ namespace Estuite.StreamStore.Azure
 
         public async Task Write(Session session, CancellationToken token = new CancellationToken())
         {
+            var table = _tableClient.GetTableReference(_streamTableName);
+            await table.CreateIfNotExistsAsync(token);
+            await WriteDispatcherMarker(table, session, token);
+            await WriteStream(table, session, token);
+        }
+
+        private static async Task WriteDispatcherMarker(CloudTable table, Session session, CancellationToken token)
+        {
+            var entity = new StreamMarkerTableEntity
+            {
+                PartitionKey = "StreamMarkers",
+                RowKey = session.StreamId.Value,
+                Updated = $"{DateTime.UtcNow:O}"
+            };
+            var operation = TableOperation.InsertOrReplace(entity);
+            await table.ExecuteAsync(operation, token);
+        }
+
+        private static async Task WriteStream(CloudTable table, Session session, CancellationToken token)
+        {
             var operation = new TableBatchOperation();
-            var sessionTableEntity = new SessionTableEntity
+            var sessionTableEntity = new StreamSessionTableEntity
             {
                 PartitionKey = session.StreamId.Value,
                 RowKey = $"S^{session.SessionId.Value}",
@@ -31,7 +52,7 @@ namespace Estuite.StreamStore.Azure
 
             foreach (var record in session.Records)
             {
-                var eventTableEntity = new EventTableEntity
+                var eventTableEntity = new StreamEventTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
                     RowKey = $"E^{record.Version:x16}",
@@ -42,7 +63,7 @@ namespace Estuite.StreamStore.Azure
                 };
                 operation.Add(TableOperation.Insert(eventTableEntity));
 
-                var dispatchTableEntity = new DispatchTableEntity
+                var dispatchTableEntity = new StreamDispatchTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
                     RowKey = $"D^{record.Version:x16}",
@@ -58,8 +79,6 @@ namespace Estuite.StreamStore.Azure
                 operation.Add(TableOperation.Insert(dispatchTableEntity));
             }
 
-            var table = _tableClient.GetTableReference(_streamTableName);
-            await table.CreateIfNotExistsAsync(token);
             try
             {
                 await table.ExecuteBatchAsync(operation, token);
@@ -77,32 +96,6 @@ namespace Estuite.StreamStore.Azure
                         throw;
                 }
             }
-        }
-
-        private class EventTableEntity : TableEntity
-        {
-            public string Created { get; set; }
-            public string SessionId { get; set; }
-            public string Type { get; set; }
-            public string Payload { get; set; }
-        }
-
-        private class DispatchTableEntity : TableEntity
-        {
-            public string AggregateType { get; set; }
-            public string BucketId { get; set; }
-            public string AggregateId { get; set; }
-            public string SessionId { get; set; }
-            public long Version { get; set; }
-            public string Created { get; set; }
-            public string Type { get; set; }
-            public string Payload { get; set; }
-        }
-
-        private class SessionTableEntity : TableEntity
-        {
-            public string Created { get; set; }
-            public int RecordCount { get; set; }
         }
     }
 }

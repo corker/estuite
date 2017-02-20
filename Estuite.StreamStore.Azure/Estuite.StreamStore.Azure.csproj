@@ -68,8 +68,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StreamMarkerTableEntity.cs" />
+    <Compile Include="StreamDispatchTableEntity.cs" />
+    <Compile Include="StreamEventTableEntity.cs" />
     <Compile Include="IStreamStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamSessionTableEntity.cs" />
     <Compile Include="StreamReader.cs" />
     <Compile Include="StreamWriter.cs" />
   </ItemGroup>

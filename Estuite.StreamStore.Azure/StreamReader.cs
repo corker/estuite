@@ -44,7 +44,7 @@ namespace Estuite.StreamStore.Azure
             var table = _tableClient.GetTableReference(_streamTableName);
             if (await table.CreateIfNotExistsAsync(token)) return false;
             var hydratedAny = false;
-            var query = table.CreateQuery<EventTableEntity>()
+            var query = table.CreateQuery<StreamEventTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)
                 .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) > 0)
                 .Where(x => string.Compare(x.RowKey, "F^", StringComparison.Ordinal) < 0)
@@ -65,14 +65,6 @@ namespace Estuite.StreamStore.Azure
                 if (token.IsCancellationRequested) throw new OperationCanceledException(token);
             } while (queryToken != null);
             return hydratedAny;
-        }
-
-        private class EventTableEntity : TableEntity
-        {
-            public string Created { get; set; }
-            public string SessionId { get; set; }
-            public string Type { get; set; }
-            public string Payload { get; set; }
         }
     }
 }
