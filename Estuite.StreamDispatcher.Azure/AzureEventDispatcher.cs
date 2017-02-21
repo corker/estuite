@@ -85,14 +85,14 @@ namespace Estuite.StreamDispatcher.Azure
                         eventIndex = pageInfo.NextIndex;
                         pageInfo.NextIndex += eventsCount;
                         if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = pageIndex.Index + 1;
-                        var operation = TableOperation.Merge(pageInfo);
+                        var operation = TableOperation.Replace(pageInfo);
                         try
                         {
                             await table.ExecuteAsync(operation, token);
                         }
                         catch (StorageException e)
                         {
-                            if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.Conflict) throw;
+                            if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.PreconditionFailed) throw;
                             pageInfo = null;
                         }
                     }

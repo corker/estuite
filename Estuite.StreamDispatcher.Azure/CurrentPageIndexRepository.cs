@@ -46,14 +46,14 @@ namespace Estuite.StreamDispatcher.Azure
         {
             var table = _tableClient.GetTableReference(_tableName);
             await table.CreateIfNotExistsAsync(token);
-            var operation = TableOperation.Merge(entity);
+            var operation = TableOperation.Replace(entity);
             try
             {
                 await table.ExecuteAsync(operation, token);
             }
             catch (StorageException e)
             {
-                if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.Conflict) throw;
+                if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.PreconditionFailed) throw;
             }
         }
 
