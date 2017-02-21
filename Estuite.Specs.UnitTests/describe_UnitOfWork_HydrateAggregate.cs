@@ -19,13 +19,13 @@ namespace Estuite.Specs.UnitTests
 
         private void when_hydrate_aggregate()
         {
-            actAsync = async () => await _target.Hydrate(_aggregate);
+            actAsync = async () => await _target.Hydrate(_aggregate, CancellationToken.None);
             it["calls aggregate with itself"] = () => _aggregate.HydratedTo.ShouldBeSameAs(_target);
         }
 
         private void when_try_hydrate_aggregate()
         {
-            actAsync = async () => await _target.TryHydrate(_aggregate);
+            actAsync = async () => await _target.TryHydrate(_aggregate, CancellationToken.None);
             it["calls aggregate with itself"] = () => _aggregate.TryHydratedTo.ShouldBeSameAs(_target);
         }
 
@@ -35,13 +35,12 @@ namespace Estuite.Specs.UnitTests
 
             public IHydrateStreams TryHydratedTo { get; private set; }
 
-            public async Task HydrateTo(IHydrateStreams streams, CancellationToken token = new CancellationToken())
+            public async Task HydrateTo(IHydrateStreams streams, CancellationToken token)
             {
                 HydratedTo = streams;
             }
-
-            public async Task<bool> TryHydrateTo(IHydrateStreams streams,
-                CancellationToken token = new CancellationToken())
+            
+            public async Task<bool> TryHydrateTo(IHydrateStreams streams, CancellationToken token)
             {
                 TryHydratedTo = streams;
                 return true;

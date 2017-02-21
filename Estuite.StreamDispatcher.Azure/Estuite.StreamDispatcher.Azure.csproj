@@ -70,27 +70,35 @@
   <ItemGroup>
     <Compile Include="AzureEventDispatcher.cs" />
     <Compile Include="AzureStreamDispatcher.cs" />
-    <Compile Include="EventRecordRepository.cs" />
-    <Compile Include="EventRecordTableEntity.cs" />
-    <Compile Include="EventRecordEqualityComparer.cs" />
+    <Compile Include="CurrentPageIndexRepository.cs" />
+    <Compile Include="CurrentPageIndexTableEntity.cs" />
+    <Compile Include="DispatchEventRecordRepository.cs" />
+    <Compile Include="DispatchEventRecordTableEntity.cs" />
+    <Compile Include="DispatchEventRecordEqualityComparer.cs" />
+    <Compile Include="EventStorePageInfoTableEntity.cs" />
+    <Compile Include="EventStoreRecordTableEntity.cs" />
     <Compile Include="IDeleteEventRecords.cs" />
+    <Compile Include="IProvideCurrentPageIndexes.cs" />
     <Compile Include="IReadEventRecords.cs" />
-    <Compile Include="IFindStreamMarkers.cs" />
-    <Compile Include="IDeleteStreamMarkers.cs" />
     <Compile Include="IStreamDispatcherConfiguration.cs" />
+    <Compile Include="IUpdateCurrentPageIndexes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EventRecordQueue.cs" />
-    <Compile Include="StreamMarkerRepository.cs" />
-    <Compile Include="StreamMarkerTableEntity.cs" />
+    <Compile Include="DispatchEventRecordQueue.cs" />
+    <Compile Include="DispatchStreamRecoveryJobRepository.cs" />
+    <Compile Include="DispatchStreamRecoveryJobTableEntity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
       <Project>{634A1D49-6531-4A9D-8936-2A994999A606}</Project>
       <Name>Estuite.StreamDispatcher</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">
+      <Project>{749eb64b-6a85-4e58-8fca-0b94fdc171bb}</Project>
+      <Name>Estuite.StreamStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

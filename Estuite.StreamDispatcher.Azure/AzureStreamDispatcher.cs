@@ -1,10 +1,10 @@
 ﻿namespace Estuite.StreamDispatcher.Azure
 {
-    public class AzureStreamDispatcher : StreamDispatcher<EventRecordTableEntity>
+    public class AzureStreamDispatcher : StreamDispatcher<DispatchEventRecordTableEntity>
     {
         public AzureStreamDispatcher(
-            IPullEventsForDispatching<EventRecordTableEntity> dispatching,
-            IDispatchEvents<EventRecordTableEntity> events,
+            IPullEventsForDispatching<DispatchEventRecordTableEntity> dispatching,
+            IDispatchEvents<DispatchEventRecordTableEntity> events,
             IConfirmEventsDispatched dispatched
         ) : base(dispatching, events, dispatched)
         {

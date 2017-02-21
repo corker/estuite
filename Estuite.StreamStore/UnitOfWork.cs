@@ -40,7 +40,7 @@ namespace Estuite.StreamStore
             _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
         }
 
-        public async Task Commit(CancellationToken token = new CancellationToken())
+        public async Task Commit(CancellationToken token)
         {
             Tuple<StreamId, List<Event>>[] streamsToWrite;
 
@@ -68,20 +68,17 @@ namespace Estuite.StreamStore
             }
         }
 
-        public async Task Hydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
+        public async Task Hydrate(ICanBeHydrated aggregate, CancellationToken token)
         {
             await aggregate.HydrateTo(this, token);
         }
 
-        public async Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token = new CancellationToken())
+        public async Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token)
         {
             return await aggregate.TryHydrateTo(this, token);
         }
 
-        public async Task Hydrate<TId, TStream>(
-            TId id,
-            TStream stream,
-            CancellationToken token = new CancellationToken())
+        public async Task Hydrate<TId, TStream>(TId id, TStream stream, CancellationToken token)
             where TStream : IHydrateEvents, IFlushEvents
         {
             var type = stream.GetType();
@@ -93,10 +90,7 @@ namespace Estuite.StreamStore
             }
         }
 
-        public async Task<bool> TryHydrate<TId, TStream>(
-            TId id,
-            TStream stream,
-            CancellationToken token = new CancellationToken())
+        public async Task<bool> TryHydrate<TId, TStream>(TId id, TStream stream, CancellationToken token)
             where TStream : IHydrateEvents, IFlushEvents
         {
             var type = stream.GetType();
@@ -124,10 +118,7 @@ namespace Estuite.StreamStore
             }
         }
 
-        private async Task WriteStream(
-            StreamId streamId,
-            IEnumerable<Event> events,
-            CancellationToken token = new CancellationToken())
+        private async Task WriteStream(StreamId streamId, IEnumerable<Event> events, CancellationToken token)
         {
             var sessionId = new SessionId($"{_identities.Generate()}");
             var session = _createSessions.Create(streamId, sessionId, events);

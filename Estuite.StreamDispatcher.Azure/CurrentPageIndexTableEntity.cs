@@ -2,7 +2,8 @@
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class StreamMarkerTableEntity: TableEntity
+    public class CurrentPageIndexTableEntity : TableEntity
     {
+        public long Index { get; set; }
     }
 }

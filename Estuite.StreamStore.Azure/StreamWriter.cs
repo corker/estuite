@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Estuite.StreamDispatcher.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -9,37 +9,48 @@ namespace Estuite.StreamStore.Azure
 {
     public class StreamWriter : IWriteStreams
     {
+        private readonly IAddDispatchStreamRecoveryJobs _addDispatchStreamRecoveryJobs;
+        private readonly IDeleteDispatchStreamRecoveryJobs _deleteDispatchStreamRecoveryJobs;
+        private readonly IDispatchStreams _dispatchStreams;
         private readonly string _streamTableName;
         private readonly CloudTableClient _tableClient;
 
-        public StreamWriter(CloudStorageAccount account, IStreamStoreConfiguration configuration)
+        public StreamWriter(
+            CloudStorageAccount account,
+            IStreamStoreConfiguration configuration,
+            IAddDispatchStreamRecoveryJobs addDispatchStreamRecoveryJobs,
+            IDeleteDispatchStreamRecoveryJobs deleteDispatchStreamRecoveryJobs,
+            IDispatchStreams dispatchStreams)
         {
+            _addDispatchStreamRecoveryJobs = addDispatchStreamRecoveryJobs;
+            _deleteDispatchStreamRecoveryJobs = deleteDispatchStreamRecoveryJobs;
+            _dispatchStreams = dispatchStreams;
             _streamTableName = configuration.StreamTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Write(Session session, CancellationToken token = new CancellationToken())
+        public async Task Write(Session session, CancellationToken token)
+        {
+            var job = new StreamDispatchJob(session.StreamId, session.SessionId);
+            await _addDispatchStreamRecoveryJobs.Add(job, token);
+            try
+            {
+                await WriteStream(session, token);
+            }
+            catch
+            {
+                await _deleteDispatchStreamRecoveryJobs.Delete(job, token);
+                throw;
+            }
+            await _dispatchStreams.Dispatch(job, token);
+            await _deleteDispatchStreamRecoveryJobs.Delete(job, token);
+        }
+
+        private async Task WriteStream(Session session, CancellationToken token)
         {
             var table = _tableClient.GetTableReference(_streamTableName);
             await table.CreateIfNotExistsAsync(token);
-            await WriteDispatcherMarker(table, session, token);
-            await WriteStream(table, session, token);
-        }
 
-        private static async Task WriteDispatcherMarker(CloudTable table, Session session, CancellationToken token)
-        {
-            var entity = new StreamMarkerTableEntity
-            {
-                PartitionKey = "StreamMarkers",
-                RowKey = session.StreamId.Value,
-                Updated = $"{DateTime.UtcNow:O}"
-            };
-            var operation = TableOperation.InsertOrReplace(entity);
-            await table.ExecuteAsync(operation, token);
-        }
-
-        private static async Task WriteStream(CloudTable table, Session session, CancellationToken token)
-        {
             var operation = new TableBatchOperation();
             var sessionTableEntity = new StreamSessionTableEntity
             {

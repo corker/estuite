@@ -30,7 +30,7 @@ namespace Estuite.Specs.UnitTests
                 act = () => _target.Register(_id, _aggregate);
                 context["and commit"] = () =>
                 {
-                    actAsync = async () => await _target.Commit();
+                    actAsync = async () => await _target.Commit(CancellationToken.None);
                     it["has session"] = () => _streams.Sessions.Count.ShouldBe(1);
                     context["and session"] = () =>
                     {
@@ -52,7 +52,7 @@ namespace Estuite.Specs.UnitTests
                     act = () => _target.Register(Guid.NewGuid(), _anotherAggregate);
                     context["and commit"] = () =>
                     {
-                        actAsync = async () => await _target.Commit();
+                        actAsync = async () => await _target.Commit(CancellationToken.None);
                         it["throws exception"] = expect<InvalidOperationException>();
                     };
                 };
@@ -63,7 +63,7 @@ namespace Estuite.Specs.UnitTests
                 act = () => _target.Register(_id, _aggregate);
                 context["and commit"] = () =>
                 {
-                    actAsync = async () => await _target.Commit();
+                    actAsync = async () => await _target.Commit(CancellationToken.None);
                     it["has no session"] = () => _streams.Sessions.Count.ShouldBe(0);
                 };
             };
@@ -74,7 +74,7 @@ namespace Estuite.Specs.UnitTests
             act = () => _target.Register(_id, _aggregate);
             context["and commit"] = () =>
             {
-                actAsync = async () => await _target.Commit();
+                actAsync = async () => await _target.Commit(CancellationToken.None);
                 it["has no sessions"] = () => _streams.Sessions.Count.ShouldBe(0);
             };
         }

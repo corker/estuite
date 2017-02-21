@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Estuite.Example.Domain.Aggregates;
@@ -25,7 +26,7 @@ namespace Estuite.Example.Examples
                 var uow = scope.Resolve<UnitOfWork>();
                 var aggregate = Account.Register(accountId, "MyAccount3");
                 uow.Register(aggregate);
-                await uow.Commit();
+                await uow.Commit(CancellationToken.None);
             }
 
             using (var scope = _scope.BeginLifetimeScope())
@@ -35,7 +36,7 @@ namespace Estuite.Example.Examples
                 uow.Register(aggregate);
                 try
                 {
-                    await uow.Commit();
+                    await uow.Commit(CancellationToken.None);
                 }
                 catch (StreamConcurrentWriteException e)
                 {

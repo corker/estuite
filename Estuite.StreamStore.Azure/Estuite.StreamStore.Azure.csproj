@@ -68,11 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StreamMarkerTableEntity.cs" />
-    <Compile Include="StreamDispatchTableEntity.cs" />
-    <Compile Include="StreamEventTableEntity.cs" />
     <Compile Include="IStreamStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamDispatchTableEntity.cs" />
+    <Compile Include="StreamEventTableEntity.cs" />
     <Compile Include="StreamSessionTableEntity.cs" />
     <Compile Include="StreamReader.cs" />
     <Compile Include="StreamWriter.cs" />
@@ -84,6 +83,10 @@
     <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
       <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
       <Name>Estuite.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
+      <Project>{634a1d49-6531-4a9d-8936-2a994999a606}</Project>
+      <Name>Estuite.StreamDispatcher</Name>
     </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">
       <Project>{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}</Project>

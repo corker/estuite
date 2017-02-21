@@ -20,13 +20,13 @@ namespace Estuite.Specs.UnitTests
 
         private void when_hydrate()
         {
-            actAsync = async () => await _target.Hydrate(_aggregate);
+            actAsync = async () => await _target.Hydrate(_aggregate, CancellationToken.None);
             it["throws exception"] = expect<StreamNotFoundException>();
         }
 
         private void when_try_hydrate()
         {
-            actAsync = async () => _returns = await _target.TryHydrate(_aggregate);
+            actAsync = async () => _returns = await _target.TryHydrate(_aggregate, CancellationToken.None);
             it["returns false"] = () => _returns.ShouldBeFalse();
         }
 

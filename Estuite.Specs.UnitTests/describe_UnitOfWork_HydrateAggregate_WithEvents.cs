@@ -25,7 +25,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_hydrate()
         {
-            actAsync = async () => await _target.Hydrate(_aggregate);
+            actAsync = async () => await _target.Hydrate(_aggregate, CancellationToken.None);
             it["hydrates event on aggregate"] = () => _aggregate.IsHydrated.ShouldBeTrue();
             context["when apply event"] = () =>
             {
@@ -33,7 +33,7 @@ namespace Estuite.Specs.UnitTests
                 it["applies event on aggregate"] = () => _aggregate.IsApplied.ShouldBeTrue();
                 context["when commit"] = () =>
                 {
-                    actAsync = async () => await _target.Commit();
+                    actAsync = async () => await _target.Commit(CancellationToken.None);
                     it["writes only applied event"] = () => { _writeSessionStreams.HasOnlyAppliedEvent.ShouldBeTrue(); };
                 };
             };
@@ -41,7 +41,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_try_hydrate()
         {
-            actAsync = async () => _returns = await _target.TryHydrate(_aggregate);
+            actAsync = async () => _returns = await _target.TryHydrate(_aggregate, CancellationToken.None);
             it["returns true"] = () => _returns.ShouldBeTrue();
             it["hydrates event on aggregate"] = () => _aggregate.IsHydrated.ShouldBeTrue();
             context["when apply event"] = () =>
@@ -50,7 +50,7 @@ namespace Estuite.Specs.UnitTests
                 it["applies event on aggregate"] = () => _aggregate.IsApplied.ShouldBeTrue();
                 context["when commit"] = () =>
                 {
-                    actAsync = async () => await _target.Commit();
+                    actAsync = async () => await _target.Commit(CancellationToken.None);
                     it["writes only applied event"] = () => { _writeSessionStreams.HasOnlyAppliedEvent.ShouldBeTrue(); };
                 };
             };
@@ -108,7 +108,7 @@ namespace Estuite.Specs.UnitTests
                 get { return _records.All(x => x.Payload == typeof(FakeAppliedEvent).Name); }
             }
 
-            public async Task Write(Session session, CancellationToken token = new CancellationToken())
+            public async Task Write(Session session, CancellationToken token)
             {
                 _records.AddRange(session.Records);
             }

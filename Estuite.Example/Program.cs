@@ -16,29 +16,9 @@ namespace Estuite.Example
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly Guid AccountId = Guid.NewGuid();
-        private static readonly ProgramConfiguration Configuration;
-        private static readonly ISerializeEvents SerializeEvents;
-        private static readonly IDeserializeEvents DeserializeEvents;
-        private static readonly IProvideUtcDateTime DateTime;
-        private static readonly ICreateSessions Sessions;
-        private static readonly CloudStorageAccount StorageAccount;
-        private static readonly IReadStreams ReadStreams;
-        private static readonly IWriteStreams WriteStreams;
-        private static readonly BucketId BucketId = new BucketId("default");
-
         static Program()
         {
             XmlConfigurator.Configure();
-
-            Configuration = new ProgramConfiguration();
-            SerializeEvents = new EventSerializer();
-            DeserializeEvents = new EventDeserializer();
-            DateTime = new UtcDateTimeProvider();
-            Sessions = new SessionFactory(DateTime, SerializeEvents);
-            StorageAccount = CloudStorageAccount.Parse(Configuration.ConnectionString);
-            WriteStreams = new StreamWriter(StorageAccount, Configuration);
-            ReadStreams = new StreamReader(StorageAccount, Configuration, DeserializeEvents);
         }
 
         private static void Main(string[] args)

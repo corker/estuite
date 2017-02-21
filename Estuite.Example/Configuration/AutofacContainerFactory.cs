@@ -31,9 +31,10 @@ namespace Estuite.Example.Configuration
             // StreamDispatcher
             builder.RegisterType<AzureEventDispatcher>().AsImplementedInterfaces();
             builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces();
-            builder.RegisterType<EventRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<EventRecordRepository>().AsImplementedInterfaces();
-            builder.RegisterType<StreamMarkerRepository>().AsImplementedInterfaces();
+            builder.RegisterType<DispatchEventRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<DispatchEventRecordRepository>().AsImplementedInterfaces();
+            builder.RegisterType<DispatchStreamRecoveryJobRepository>().AsImplementedInterfaces();
+            builder.RegisterType<CurrentPageIndexRepository>().AsImplementedInterfaces();
 
             // Services
             builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();

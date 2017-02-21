@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Estuite.Example.Domain.Aggregates;
-using Estuite.StreamDispatcher;
 using Estuite.StreamStore;
-using StreamId = Estuite.StreamDispatcher.StreamId;
 
 namespace Estuite.Example.Examples
 {
@@ -26,23 +25,16 @@ namespace Estuite.Example.Examples
                 var uow = scope.Resolve<UnitOfWork>();
                 var aggregate = Account.Register(accountId, "MyAccount1");
                 uow.Register(aggregate);
-                await uow.Commit();
+                await uow.Commit(CancellationToken.None);
                 aggregate.ChangeName("MyAccount2");
-                await uow.Commit();
+                await uow.Commit(CancellationToken.None);
             }
 
             using (var scope = _scope.BeginLifetimeScope())
             {
                 var uow = scope.Resolve<UnitOfWork>();
                 var aggregate = new Account(accountId);
-                await uow.Hydrate(aggregate);
-            }
-
-            using (var scope = _scope.BeginLifetimeScope())
-            {
-                var dispatcher = scope.Resolve<IDispatchStreams>();
-                var streamId = new StreamId($"default^Account^{accountId}");
-                await dispatcher.Dispatch(streamId);
+                await uow.Hydrate(aggregate, CancellationToken.None);
             }
         }
     }

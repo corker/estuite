@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Estuite.StreamStore;
 
 namespace Estuite.StreamDispatcher
 {
@@ -21,16 +22,16 @@ namespace Estuite.StreamDispatcher
             _events = events;
         }
 
-        public async Task Dispatch(StreamId streamId, CancellationToken token = new CancellationToken())
+        public async Task Dispatch(StreamDispatchJob job, CancellationToken token = new CancellationToken())
         {
-            if (streamId == null) throw new ArgumentNullException(nameof(streamId));
-            var events = await _dispatching.Pull(streamId, token);
+            if (job == null) throw new ArgumentNullException(nameof(job));
+            var events = await _dispatching.Pull(job.StreamId, token);
             while (events.Any())
             {
                 await _events.Dispatch(events, token);
                 await _dispatched.Confirm(token);
                 if (token.IsCancellationRequested) return;
-                events = await _dispatching.Pull(streamId, token);
+                events = await _dispatching.Pull(job.StreamId, token);
             }
         }
     }

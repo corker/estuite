@@ -9,34 +9,45 @@ using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class AzureEventDispatcher : IDispatchEvents<EventRecordTableEntity>
+    public class AzureEventDispatcher : IDispatchEvents<DispatchEventRecordTableEntity>
     {
+        private readonly IProvideCurrentPageIndexes _provideCurrentPageIndexes;
         private readonly CloudTableClient _tableClient;
         private readonly string _tableName;
+        private readonly IUpdateCurrentPageIndexes _updateCurrentPageIndexes;
 
-        public AzureEventDispatcher(CloudStorageAccount account, IStreamDispatcherConfiguration configuration)
+        public AzureEventDispatcher(
+            CloudStorageAccount account,
+            IStreamDispatcherConfiguration configuration,
+            IProvideCurrentPageIndexes provideCurrentPageIndexes,
+            IUpdateCurrentPageIndexes updateCurrentPageIndexes)
         {
+            _provideCurrentPageIndexes = provideCurrentPageIndexes;
+            _updateCurrentPageIndexes = updateCurrentPageIndexes;
             _tableName = configuration.EventTableName;
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Dispatch(List<EventRecordTableEntity> events, CancellationToken token = new CancellationToken())
+        public async Task Dispatch(List<DispatchEventRecordTableEntity> events, CancellationToken token)
         {
             var table = _tableClient.GetTableReference(_tableName);
             await table.CreateIfNotExistsAsync(token);
 
-            EventStoreCurrentPage page = null;
-            EventStorePageInfo pageInfo = null;
+            CurrentPageIndexTableEntity pageIndex = null;
+            EventStorePageInfoTableEntity pageInfo = null;
 
-            while (pageInfo == null)
+            var eventsCount = events.Count;
+            var eventIndex = 0L;
+
+            do
             {
                 token.ThrowIfCancellationRequested();
 
-                page = await GetCurrentPage(table, token);
+                pageIndex = await _provideCurrentPageIndexes.Get(token);
 
-                var partitionKey = $"P^{page.Index:x16}";
+                var partitionKey = $"P^{pageIndex.Index:x16}";
 
-                var queryCurrentPageInfo = table.CreateQuery<EventStorePageInfo>()
+                var queryCurrentPageInfo = table.CreateQuery<EventStorePageInfoTableEntity>()
                     .Where(x => x.PartitionKey == partitionKey)
                     .Where(x => x.RowKey == "PageInfo")
                     .Take(1)
@@ -47,13 +58,15 @@ namespace Estuite.StreamDispatcher.Azure
 
                 if (pageInfo == null)
                 {
-                    pageInfo = new EventStorePageInfo
+                    eventIndex = 0;
+                    pageInfo = new EventStorePageInfoTableEntity
                     {
                         PartitionKey = partitionKey,
                         RowKey = "PageInfo",
-                        NextIndex = 1,
+                        NextIndex = eventsCount,
                         NextPageIndex = 0
                     };
+                    if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = pageIndex.Index + 1;
                     var operation = TableOperation.Insert(pageInfo);
                     try
                     {
@@ -67,24 +80,41 @@ namespace Estuite.StreamDispatcher.Azure
                 }
                 else
                 {
-                    if (pageInfo.NextPageIndex == 0) continue;
-                    page.Index = pageInfo.NextPageIndex;
-                    var operation = TableOperation.Replace(page);
-                    await table.ExecuteAsync(operation, token);
-                    pageInfo = null;
+                    if (pageInfo.NextPageIndex == 0)
+                    {
+                        eventIndex = pageInfo.NextIndex;
+                        pageInfo.NextIndex += eventsCount;
+                        if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = pageIndex.Index + 1;
+                        var operation = TableOperation.Merge(pageInfo);
+                        try
+                        {
+                            await table.ExecuteAsync(operation, token);
+                        }
+                        catch (StorageException e)
+                        {
+                            if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.Conflict) throw;
+                            pageInfo = null;
+                        }
+                    }
+                    else
+                    {
+                        pageIndex.Index = pageInfo.NextPageIndex;
+                        await _updateCurrentPageIndexes.TryUpdate(pageIndex, token);
+                        pageInfo = null;
+                    }
                 }
-            }
+            } while (pageInfo == null);
 
             var batchOperation = new TableBatchOperation();
 
             foreach (var @event in events)
             {
-                var record = new EventStoreRecord
+                var record = new EventStoreRecordTableEntity
                 {
-                    PartitionKey = $"P^{page.Index:x16}",
-                    RowKey = $"E^{pageInfo.NextIndex:x16}",
-                    PageIndex = page.Index,
-                    RowIndex = pageInfo.NextIndex,
+                    PartitionKey = $"P^{pageIndex.Index:x16}",
+                    RowKey = $"E^{eventIndex:x16}",
+                    PageIndex = pageIndex.Index,
+                    RowIndex = eventIndex,
                     AggregateType = @event.AggregateType,
                     BucketId = @event.BucketId,
                     AggregateId = @event.AggregateId,
@@ -94,77 +124,11 @@ namespace Estuite.StreamDispatcher.Azure
                     Type = @event.Type,
                     Payload = @event.Payload
                 };
-                pageInfo.NextIndex++;
+                eventIndex++;
                 batchOperation.InsertOrReplace(record);
             }
 
-            if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = page.Index + 1;
-
-            batchOperation.Replace(pageInfo);
-
             await table.ExecuteBatchAsync(batchOperation, token);
-        }
-
-        private static async Task<EventStoreCurrentPage> GetCurrentPage(CloudTable table, CancellationToken token)
-        {
-            var queryCurrentPartition = table.CreateQuery<EventStoreCurrentPage>()
-                .Where(x => x.PartitionKey == "Indexes")
-                .Where(x => x.RowKey == "CurrentPageIndex")
-                .Take(1)
-                .AsTableQuery();
-
-            EventStoreCurrentPage currentPage = null;
-
-            while (currentPage == null)
-            {
-                token.ThrowIfCancellationRequested();
-                var result = await table.ExecuteQuerySegmentedAsync(queryCurrentPartition, null, token);
-                currentPage = result.SingleOrDefault();
-                if (currentPage != null) continue;
-                currentPage = new EventStoreCurrentPage
-                {
-                    PartitionKey = "Indexes",
-                    RowKey = "CurrentPageIndex",
-                    Index = 0
-                };
-                var operation = TableOperation.Insert(currentPage);
-                try
-                {
-                    await table.ExecuteAsync(operation, token);
-                }
-                catch (StorageException e)
-                {
-                    if (e.RequestInformation.HttpStatusCode != (int) HttpStatusCode.Conflict) throw;
-                    currentPage = null;
-                }
-            }
-
-            return currentPage;
-        }
-
-        private class EventStorePageInfo : TableEntity
-        {
-            public long NextIndex { get; set; }
-            public long NextPageIndex { get; set; }
-        }
-
-        private class EventStoreCurrentPage : TableEntity
-        {
-            public long Index { get; set; }
-        }
-
-        private class EventStoreRecord : TableEntity
-        {
-            public long PageIndex { get; set; }
-            public long RowIndex { get; set; }
-            public string AggregateType { get; set; }
-            public string BucketId { get; set; }
-            public string AggregateId { get; set; }
-            public string SessionId { get; set; }
-            public string Version { get; set; }
-            public string Created { get; set; }
-            public string Type { get; set; }
-            public string Payload { get; set; }
         }
     }
 }
