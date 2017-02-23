@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Estuite.StreamDispatcher.Azure;
+using Estuite.StreamDispatcher;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -31,7 +31,7 @@ namespace Estuite.StreamStore.Azure
 
         public async Task Write(Session session, CancellationToken token)
         {
-            var job = new StreamDispatchJob(session.StreamId, session.SessionId);
+            var job = new DispatchStreamJob(session.StreamId, session.SessionId);
             await _addDispatchStreamRecoveryJobs.Add(job, token);
             try
             {
@@ -52,7 +52,7 @@ namespace Estuite.StreamStore.Azure
             await table.CreateIfNotExistsAsync(token);
 
             var operation = new TableBatchOperation();
-            var sessionTableEntity = new StreamSessionTableEntity
+            var sessionTableEntity = new SessionRecordTableEntity
             {
                 PartitionKey = session.StreamId.Value,
                 RowKey = $"S^{session.SessionId.Value}",
@@ -63,7 +63,7 @@ namespace Estuite.StreamStore.Azure
 
             foreach (var record in session.Records)
             {
-                var eventTableEntity = new StreamEventTableEntity
+                var eventTableEntity = new EventRecordTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
                     RowKey = $"E^{record.Version:x16}",
@@ -74,7 +74,7 @@ namespace Estuite.StreamStore.Azure
                 };
                 operation.Add(TableOperation.Insert(eventTableEntity));
 
-                var dispatchTableEntity = new StreamDispatchTableEntity
+                var dispatchTableEntity = new EventToDispatchRecordTableEntity
                 {
                     PartitionKey = session.StreamId.Value,
                     RowKey = $"D^{record.Version:x16}",

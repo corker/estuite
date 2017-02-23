@@ -22,19 +22,21 @@ namespace Estuite.Example.Configuration
 
             // StreamStore
             builder.RegisterInstance(new BucketId("default"));
-            builder.RegisterType<UtcDateTimeProvider>().AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<SessionFactory>().AsImplementedInterfaces().SingleInstance();
-            builder.RegisterType<StreamWriter>().AsImplementedInterfaces();
-            builder.RegisterType<StreamReader>().AsImplementedInterfaces();
-            builder.RegisterType<UnitOfWork>();
+            builder.RegisterType<UnitOfWork>().InstancePerLifetimeScope();
+            builder.RegisterType<UtcDateTimeProvider>().AsImplementedInterfaces().SingleInstance();
 
-            // StreamDispatcher
-            builder.RegisterType<AzureEventDispatcher>().AsImplementedInterfaces();
-            builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces();
-            builder.RegisterType<DispatchEventRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<DispatchEventRecordRepository>().AsImplementedInterfaces();
-            builder.RegisterType<DispatchStreamRecoveryJobRepository>().AsImplementedInterfaces();
-            builder.RegisterType<CurrentPageIndexRepository>().AsImplementedInterfaces();
+            // StreamStore.Azure
+            builder.RegisterType<StreamWriter>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<StreamReader>().AsImplementedInterfaces().InstancePerLifetimeScope();
+
+            // StreamDispatcher.Azure
+            builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<CurrentPageIndexRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<EventToDispatchRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<EventToDispatchRecordRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<DispatchStreamRecoveryJobRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<EventDispatcher>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             // Services
             builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();

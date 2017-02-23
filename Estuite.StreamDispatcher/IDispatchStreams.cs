@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Estuite.StreamStore
+namespace Estuite.StreamDispatcher
 {
     public interface IDispatchStreams
     {
-        Task Dispatch(StreamDispatchJob job, CancellationToken token = new CancellationToken());
+        Task Dispatch(DispatchStreamJob job, CancellationToken token = new CancellationToken());
     }
 }

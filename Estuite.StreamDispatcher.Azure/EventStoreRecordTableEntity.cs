@@ -10,7 +10,7 @@ namespace Estuite.StreamDispatcher.Azure
         public string BucketId { get; set; }
         public string AggregateId { get; set; }
         public string SessionId { get; set; }
-        public string Version { get; set; }
+        public long Version { get; set; }
         public string Created { get; set; }
         public string Type { get; set; }
         public string Payload { get; set; }

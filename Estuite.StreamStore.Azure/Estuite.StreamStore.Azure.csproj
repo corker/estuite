@@ -68,11 +68,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventToDispatchRecordRepository.cs" />
+    <Compile Include="IDeleteEventToDispatchRecords.cs" />
+    <Compile Include="IReadEventToDispatchRecords.cs" />
     <Compile Include="IStreamStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StreamDispatchTableEntity.cs" />
-    <Compile Include="StreamEventTableEntity.cs" />
-    <Compile Include="StreamSessionTableEntity.cs" />
+    <Compile Include="EventToDispatchRecordTableEntity.cs" />
+    <Compile Include="EventRecordTableEntity.cs" />
+    <Compile Include="SessionRecordTableEntity.cs" />
     <Compile Include="StreamReader.cs" />
     <Compile Include="StreamWriter.cs" />
   </ItemGroup>
@@ -85,7 +88,7 @@
       <Name>Estuite.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
-      <Project>{634a1d49-6531-4a9d-8936-2a994999a606}</Project>
+      <Project>{634A1D49-6531-4A9D-8936-2A994999A606}</Project>
       <Name>Estuite.StreamDispatcher</Name>
     </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">

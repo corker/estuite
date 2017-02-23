@@ -44,7 +44,7 @@ namespace Estuite.StreamStore.Azure
             var table = _tableClient.GetTableReference(_streamTableName);
             if (await table.CreateIfNotExistsAsync(token)) return false;
             var hydratedAny = false;
-            var query = table.CreateQuery<StreamEventTableEntity>()
+            var query = table.CreateQuery<EventRecordTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)
                 .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) > 0)
                 .Where(x => string.Compare(x.RowKey, "F^", StringComparison.Ordinal) < 0)

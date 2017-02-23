@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Estuite.StreamDispatcher
+namespace Estuite.StreamDispatcher.Azure
 {
-    public interface IConfirmEventsDispatched
+    public interface IConfirmDispatchedEvents
     {
         Task Confirm(CancellationToken token = new CancellationToken());
     }

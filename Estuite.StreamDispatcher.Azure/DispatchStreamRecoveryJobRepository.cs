@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Estuite.StreamStore;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -19,7 +18,7 @@ namespace Estuite.StreamDispatcher.Azure
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Add(StreamDispatchJob job, CancellationToken token)
+        public async Task Add(DispatchStreamJob job, CancellationToken token)
         {
             var table = _tableClient.GetTableReference(_eventTableName);
             await table.CreateIfNotExistsAsync(token);
@@ -33,7 +32,7 @@ namespace Estuite.StreamDispatcher.Azure
             await table.ExecuteAsync(operation, token);
         }
 
-        public async Task Delete(StreamDispatchJob job, CancellationToken token)
+        public async Task Delete(DispatchStreamJob job, CancellationToken token)
         {
             var table = _tableClient.GetTableReference(_eventTableName);
             var entity = new TableEntity

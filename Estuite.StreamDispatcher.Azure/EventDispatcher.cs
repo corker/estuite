@@ -3,20 +3,21 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Estuite.StreamStore.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
 namespace Estuite.StreamDispatcher.Azure
 {
-    public class AzureEventDispatcher : IDispatchEvents<DispatchEventRecordTableEntity>
+    public class EventDispatcher : IDispatchEvents
     {
         private readonly IProvideCurrentPageIndexes _provideCurrentPageIndexes;
         private readonly CloudTableClient _tableClient;
         private readonly string _tableName;
         private readonly IUpdateCurrentPageIndexes _updateCurrentPageIndexes;
 
-        public AzureEventDispatcher(
+        public EventDispatcher(
             CloudStorageAccount account,
             IStreamDispatcherConfiguration configuration,
             IProvideCurrentPageIndexes provideCurrentPageIndexes,
@@ -28,7 +29,7 @@ namespace Estuite.StreamDispatcher.Azure
             _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Dispatch(List<DispatchEventRecordTableEntity> events, CancellationToken token)
+        public async Task Dispatch(List<EventToDispatchRecordTableEntity> events, CancellationToken token)
         {
             var table = _tableClient.GetTableReference(_tableName);
             await table.CreateIfNotExistsAsync(token);

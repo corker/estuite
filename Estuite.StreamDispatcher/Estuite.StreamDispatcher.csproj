@@ -41,14 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDeleteDispatchStreamRecoveryJobs.cs" />
-    <Compile Include="IConfirmEventsDispatched.cs" />
-    <Compile Include="IDispatchEvents.cs" />
     <Compile Include="IDispatchStreams.cs" />
-    <Compile Include="IPullEventsForDispatching.cs" />
     <Compile Include="IAddDispatchStreamRecoveryJobs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StreamDispatcher.cs" />
-    <Compile Include="StreamDispatchJob.cs" />
+    <Compile Include="DispatchStreamJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">

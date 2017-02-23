@@ -2,7 +2,7 @@
 
 namespace Estuite.StreamStore.Azure
 {
-    public class StreamSessionTableEntity : TableEntity
+    public class SessionRecordTableEntity : TableEntity
     {
         public string Created { get; set; }
         public int RecordCount { get; set; }

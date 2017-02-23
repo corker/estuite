@@ -2,7 +2,7 @@
 
 namespace Estuite.StreamStore.Azure
 {
-    public class StreamEventTableEntity : TableEntity
+    public class EventRecordTableEntity : TableEntity
     {
         public string Created { get; set; }
         public string SessionId { get; set; }
