@@ -72,11 +72,13 @@
     <Compile Include="AzureStreamDispatcher.cs" />
     <Compile Include="CurrentPageIndexRepository.cs" />
     <Compile Include="CurrentPageIndexTableEntity.cs" />
+    <Compile Include="EventStoreCloudTableProvider.cs" />
     <Compile Include="EventStorePageInfoTableEntity.cs" />
     <Compile Include="EventStoreRecordTableEntity.cs" />
     <Compile Include="IConfirmDispatchedEvents.cs" />
     <Compile Include="IDispatchEvents.cs" />
     <Compile Include="IProvideCurrentPageIndexes.cs" />
+    <Compile Include="IProvideEventStoreCloudTable.cs" />
     <Compile Include="IPullEventsForDispatching.cs" />
     <Compile Include="IStreamDispatcherConfiguration.cs" />
     <Compile Include="IUpdateCurrentPageIndexes.cs" />

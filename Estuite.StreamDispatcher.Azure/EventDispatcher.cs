@@ -12,30 +12,30 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public class EventDispatcher : IDispatchEvents
     {
+        private const int PageSize = 10;
+        private const int UndefinedNextPageIndex = 0;
+        private const string PageInfoRowKey = "PageInfo";
+
         private readonly IProvideCurrentPageIndexes _provideCurrentPageIndexes;
-        private readonly CloudTableClient _tableClient;
-        private readonly string _tableName;
+        private readonly IProvideEventStoreCloudTable _table;
         private readonly IUpdateCurrentPageIndexes _updateCurrentPageIndexes;
 
         public EventDispatcher(
-            CloudStorageAccount account,
-            IStreamDispatcherConfiguration configuration,
+            IProvideEventStoreCloudTable table,
             IProvideCurrentPageIndexes provideCurrentPageIndexes,
             IUpdateCurrentPageIndexes updateCurrentPageIndexes)
         {
+            _table = table;
             _provideCurrentPageIndexes = provideCurrentPageIndexes;
             _updateCurrentPageIndexes = updateCurrentPageIndexes;
-            _tableName = configuration.EventTableName;
-            _tableClient = account.CreateCloudTableClient();
         }
 
         public async Task Dispatch(List<EventToDispatchRecordTableEntity> events, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_tableName);
-            await table.CreateIfNotExistsAsync(token);
+            var table = await _table.GetOrCreate();
 
-            CurrentPageIndexTableEntity pageIndex = null;
-            EventStorePageInfoTableEntity pageInfo = null;
+            CurrentPageIndexTableEntity pageIndex;
+            EventStorePageInfoTableEntity pageInfo;
 
             var eventsCount = events.Count;
             var eventIndex = 0L;
@@ -50,7 +50,7 @@ namespace Estuite.StreamDispatcher.Azure
 
                 var queryCurrentPageInfo = table.CreateQuery<EventStorePageInfoTableEntity>()
                     .Where(x => x.PartitionKey == partitionKey)
-                    .Where(x => x.RowKey == "PageInfo")
+                    .Where(x => x.RowKey == PageInfoRowKey)
                     .Take(1)
                     .AsTableQuery();
 
@@ -63,11 +63,11 @@ namespace Estuite.StreamDispatcher.Azure
                     pageInfo = new EventStorePageInfoTableEntity
                     {
                         PartitionKey = partitionKey,
-                        RowKey = "PageInfo",
+                        RowKey = PageInfoRowKey,
                         NextIndex = eventsCount,
                         NextPageIndex = 0
                     };
-                    if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = pageIndex.Index + 1;
+                    if (pageInfo.NextIndex > PageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
                     var operation = TableOperation.Insert(pageInfo);
                     try
                     {
@@ -81,11 +81,11 @@ namespace Estuite.StreamDispatcher.Azure
                 }
                 else
                 {
-                    if (pageInfo.NextPageIndex == 0)
+                    if (pageInfo.NextPageIndex == UndefinedNextPageIndex)
                     {
                         eventIndex = pageInfo.NextIndex;
                         pageInfo.NextIndex += eventsCount;
-                        if (pageInfo.NextIndex > 500) pageInfo.NextPageIndex = pageIndex.Index + 1;
+                        if (pageInfo.NextIndex > PageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
                         var operation = TableOperation.Replace(pageInfo);
                         try
                         {

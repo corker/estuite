@@ -68,8 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventStoreCloudTableProvider.cs" />
     <Compile Include="EventToDispatchRecordRepository.cs" />
     <Compile Include="IDeleteEventToDispatchRecords.cs" />
+    <Compile Include="IProvideEventStoreCloudTable.cs" />
     <Compile Include="IReadEventToDispatchRecords.cs" />
     <Compile Include="IStreamStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

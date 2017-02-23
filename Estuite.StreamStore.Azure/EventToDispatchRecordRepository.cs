@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
@@ -13,26 +12,24 @@ namespace Estuite.StreamStore.Azure
     {
         private static readonly EventToDispatchRecordTableEntity[] Empty = new EventToDispatchRecordTableEntity[0];
 
-        private readonly string _streamTableName;
-        private readonly CloudTableClient _tableClient;
+        private readonly IProvideStreamStoreCloudTable _table;
 
-        public EventToDispatchRecordRepository(CloudStorageAccount account, IStreamStoreConfiguration configuration)
+        public EventToDispatchRecordRepository(IProvideStreamStoreCloudTable table)
         {
-            _streamTableName = configuration.StreamTableName;
-            _tableClient = account.CreateCloudTableClient();
+            _table = table;
         }
 
         public async Task Delete(IEnumerable<EventToDispatchRecordTableEntity> records, CancellationToken token)
         {
             var operation = new TableBatchOperation();
             foreach (var record in records) operation.Delete(record);
-            var table = _tableClient.GetTableReference(_streamTableName);
+            var table = await _table.GetOrCreate();
             await table.ExecuteBatchAsync(operation, token);
         }
 
         public async Task<IEnumerable<EventToDispatchRecordTableEntity>> Read(StreamId streamId, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_streamTableName);
+            var table = await _table.GetOrCreate();
             if (!await table.ExistsAsync(token)) return Empty;
             var query = table.CreateQuery<EventToDispatchRecordTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)

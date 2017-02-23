@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
@@ -12,23 +11,15 @@ namespace Estuite.StreamStore.Azure
     public class StreamReader : IReadStreams
     {
         private readonly IDeserializeEvents _events;
-        private readonly string _streamTableName;
-        private readonly CloudTableClient _tableClient;
+        private readonly IProvideStreamStoreCloudTable _table;
 
-        public StreamReader(
-            CloudStorageAccount account, 
-            IStreamStoreConfiguration configuration,
-            IDeserializeEvents events)
+        public StreamReader(IProvideStreamStoreCloudTable table, IDeserializeEvents events)
         {
+            _table = table;
             _events = events;
-            _streamTableName = configuration.StreamTableName;
-            _tableClient = account.CreateCloudTableClient();
         }
 
-        public async Task Read(
-            StreamId streamId,
-            IHydrateEvents events,
-            CancellationToken token = new CancellationToken())
+        public async Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token)
         {
             var result = await TryRead(streamId, events, token);
             if (result) return;
@@ -36,13 +27,9 @@ namespace Estuite.StreamStore.Azure
             throw new StreamNotFoundException(message);
         }
 
-        public async Task<bool> TryRead(
-            StreamId streamId,
-            IHydrateEvents events,
-            CancellationToken token = new CancellationToken())
+        public async Task<bool> TryRead(StreamId streamId, IHydrateEvents events, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_streamTableName);
-            if (await table.CreateIfNotExistsAsync(token)) return false;
+            var table = await _table.GetOrCreate();
             var hydratedAny = false;
             var query = table.CreateQuery<EventRecordTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)

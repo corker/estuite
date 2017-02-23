@@ -9,24 +9,21 @@ namespace Estuite.StreamStore.Azure
 {
     public class StreamWriter : IWriteStreams
     {
+        private readonly IProvideStreamStoreCloudTable _table;
         private readonly IAddDispatchStreamRecoveryJobs _addDispatchStreamRecoveryJobs;
         private readonly IDeleteDispatchStreamRecoveryJobs _deleteDispatchStreamRecoveryJobs;
         private readonly IDispatchStreams _dispatchStreams;
-        private readonly string _streamTableName;
-        private readonly CloudTableClient _tableClient;
 
         public StreamWriter(
-            CloudStorageAccount account,
-            IStreamStoreConfiguration configuration,
+            IProvideStreamStoreCloudTable table,
             IAddDispatchStreamRecoveryJobs addDispatchStreamRecoveryJobs,
             IDeleteDispatchStreamRecoveryJobs deleteDispatchStreamRecoveryJobs,
             IDispatchStreams dispatchStreams)
         {
+            _table = table;
             _addDispatchStreamRecoveryJobs = addDispatchStreamRecoveryJobs;
             _deleteDispatchStreamRecoveryJobs = deleteDispatchStreamRecoveryJobs;
             _dispatchStreams = dispatchStreams;
-            _streamTableName = configuration.StreamTableName;
-            _tableClient = account.CreateCloudTableClient();
         }
 
         public async Task Write(Session session, CancellationToken token)
@@ -48,9 +45,7 @@ namespace Estuite.StreamStore.Azure
 
         private async Task WriteStream(Session session, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_streamTableName);
-            await table.CreateIfNotExistsAsync(token);
-
+            var table = await _table.GetOrCreate();
             var operation = new TableBatchOperation();
             var sessionTableEntity = new SessionRecordTableEntity
             {
@@ -89,7 +84,6 @@ namespace Estuite.StreamStore.Azure
                 };
                 operation.Add(TableOperation.Insert(dispatchTableEntity));
             }
-
             try
             {
                 await table.ExecuteBatchAsync(operation, token);

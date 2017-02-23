@@ -29,14 +29,16 @@ namespace Estuite.Example.Configuration
             // StreamStore.Azure
             builder.RegisterType<StreamWriter>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<StreamReader>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<StreamStoreCloudTableProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             // StreamDispatcher.Azure
             builder.RegisterType<AzureStreamDispatcher>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<CurrentPageIndexRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<DispatchStreamRecoveryJobRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<EventToDispatchRecordQueue>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<EventToDispatchRecordRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<DispatchStreamRecoveryJobRepository>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<EventDispatcher>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<EventStoreCloudTableProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             // Services
             builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();

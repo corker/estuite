@@ -10,20 +10,16 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public class CurrentPageIndexRepository : IProvideCurrentPageIndexes, IUpdateCurrentPageIndexes
     {
-        private readonly CloudTableClient _tableClient;
-        private readonly string _tableName;
+        private readonly IProvideEventStoreCloudTable _table;
 
-        public CurrentPageIndexRepository(CloudStorageAccount account, IStreamDispatcherConfiguration configuration)
+        public CurrentPageIndexRepository(IProvideEventStoreCloudTable table)
         {
-            _tableName = configuration.EventTableName;
-            _tableClient = account.CreateCloudTableClient();
+            _table = table;
         }
 
         public async Task<CurrentPageIndexTableEntity> Get(CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_tableName);
-            await table.CreateIfNotExistsAsync(token);
-
+            var table = await _table.GetOrCreate();
             var query = table.CreateQuery<CurrentPageIndexTableEntity>()
                 .Where(x => x.PartitionKey == "Indexes")
                 .Where(x => x.RowKey == "CurrentPageIndex")
@@ -31,21 +27,18 @@ namespace Estuite.StreamDispatcher.Azure
                 .AsTableQuery();
 
             CurrentPageIndexTableEntity entity;
-
             do
             {
                 token.ThrowIfCancellationRequested();
                 var segment = await table.ExecuteQuerySegmentedAsync(query, null, token);
                 entity = segment.SingleOrDefault() ?? await Create(table, token);
             } while (entity == null);
-
             return entity;
         }
 
         public async Task TryUpdate(CurrentPageIndexTableEntity entity, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_tableName);
-            await table.CreateIfNotExistsAsync(token);
+            var table = await _table.GetOrCreate();
             var operation = TableOperation.Replace(entity);
             try
             {

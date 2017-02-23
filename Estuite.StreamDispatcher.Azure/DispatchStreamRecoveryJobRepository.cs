@@ -1,27 +1,21 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Estuite.StreamDispatcher.Azure
 {
     public class DispatchStreamRecoveryJobRepository : IAddDispatchStreamRecoveryJobs, IDeleteDispatchStreamRecoveryJobs
     {
-        private readonly string _eventTableName;
-        private readonly CloudTableClient _tableClient;
+        private readonly IProvideEventStoreCloudTable _table;
 
-        public DispatchStreamRecoveryJobRepository(
-            CloudStorageAccount account,
-            IStreamDispatcherConfiguration configuration)
+        public DispatchStreamRecoveryJobRepository(IProvideEventStoreCloudTable table)
         {
-            _eventTableName = configuration.EventTableName;
-            _tableClient = account.CreateCloudTableClient();
+            _table = table;
         }
 
         public async Task Add(DispatchStreamJob job, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_eventTableName);
-            await table.CreateIfNotExistsAsync(token);
+            var table = await _table.GetOrCreate();
             var entity = new DispatchStreamRecoveryJobTableEntity
             {
                 PartitionKey = "StreamsToDispatchOnRecovery",
@@ -34,7 +28,7 @@ namespace Estuite.StreamDispatcher.Azure
 
         public async Task Delete(DispatchStreamJob job, CancellationToken token)
         {
-            var table = _tableClient.GetTableReference(_eventTableName);
+            var table = await _table.GetOrCreate();
             var entity = new TableEntity
             {
                 PartitionKey = "StreamsToDispatchOnRecovery",
