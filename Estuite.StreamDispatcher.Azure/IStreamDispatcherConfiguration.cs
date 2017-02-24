@@ -2,6 +2,7 @@
 {
     public interface IStreamDispatcherConfiguration
     {
-        string EventTableName { get; }
+        string TableName { get; }
+        long PageSize { get; }
     }
 }

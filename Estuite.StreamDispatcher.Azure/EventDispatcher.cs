@@ -12,10 +12,9 @@ namespace Estuite.StreamDispatcher.Azure
 {
     public class EventDispatcher : IDispatchEvents
     {
-        private const int PageSize = 10;
         private const int UndefinedNextPageIndex = 0;
         private const string PageInfoRowKey = "PageInfo";
-
+        private readonly long _pageSize;
         private readonly IProvideCurrentPageIndexes _provideCurrentPageIndexes;
         private readonly IProvideEventStoreCloudTable _table;
         private readonly IUpdateCurrentPageIndexes _updateCurrentPageIndexes;
@@ -23,11 +22,13 @@ namespace Estuite.StreamDispatcher.Azure
         public EventDispatcher(
             IProvideEventStoreCloudTable table,
             IProvideCurrentPageIndexes provideCurrentPageIndexes,
-            IUpdateCurrentPageIndexes updateCurrentPageIndexes)
+            IUpdateCurrentPageIndexes updateCurrentPageIndexes,
+            IStreamDispatcherConfiguration configuration)
         {
             _table = table;
             _provideCurrentPageIndexes = provideCurrentPageIndexes;
             _updateCurrentPageIndexes = updateCurrentPageIndexes;
+            _pageSize = configuration.PageSize;
         }
 
         public async Task Dispatch(List<EventToDispatchRecordTableEntity> events, CancellationToken token)
@@ -67,7 +68,7 @@ namespace Estuite.StreamDispatcher.Azure
                         NextIndex = eventsCount,
                         NextPageIndex = 0
                     };
-                    if (pageInfo.NextIndex > PageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
+                    if (pageInfo.NextIndex > _pageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
                     var operation = TableOperation.Insert(pageInfo);
                     try
                     {
@@ -85,7 +86,7 @@ namespace Estuite.StreamDispatcher.Azure
                     {
                         eventIndex = pageInfo.NextIndex;
                         pageInfo.NextIndex += eventsCount;
-                        if (pageInfo.NextIndex > PageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
+                        if (pageInfo.NextIndex > _pageSize) pageInfo.NextPageIndex = pageIndex.Index + 1;
                         var operation = TableOperation.Replace(pageInfo);
                         try
                         {

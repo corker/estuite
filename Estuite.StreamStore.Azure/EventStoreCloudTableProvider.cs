@@ -12,7 +12,7 @@ namespace Estuite.StreamStore.Azure
 
         public StreamStoreCloudTableProvider(CloudStorageAccount account, IStreamStoreConfiguration configuration)
         {
-            _tableName = configuration.StreamTableName;
+            _tableName = configuration.TableName;
             _tableClient = account.CreateCloudTableClient();
         }
 

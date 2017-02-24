@@ -4,13 +4,14 @@ using Estuite.StreamStore.Azure;
 
 namespace Estuite.Example
 {
-    public class ProgramConfiguration : 
-        IStreamStoreConfiguration, 
+    public class ProgramConfiguration :
+        IStreamStoreConfiguration,
         ICloudStorageAccountConfiguration,
         IStreamDispatcherConfiguration
     {
         public string ConnectionString => "UseDevelopmentStorage=true";
-        public string EventTableName => "esEvents";
-        public string StreamTableName => "esStreams";
+        string IStreamDispatcherConfiguration.TableName => "esEvents";
+        string IStreamStoreConfiguration.TableName => "esStreams";
+        public long PageSize => 500;
     }
 }

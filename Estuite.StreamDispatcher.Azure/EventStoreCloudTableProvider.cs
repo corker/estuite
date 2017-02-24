@@ -12,7 +12,7 @@ namespace Estuite.StreamDispatcher.Azure
 
         public EventStoreCloudTableProvider(CloudStorageAccount account, IStreamDispatcherConfiguration configuration)
         {
-            _tableName = configuration.EventTableName;
+            _tableName = configuration.TableName;
             _tableClient = account.CreateCloudTableClient();
         }
 

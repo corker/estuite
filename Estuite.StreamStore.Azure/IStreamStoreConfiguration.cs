@@ -2,6 +2,6 @@
 {
     public interface IStreamStoreConfiguration
     {
-        string StreamTableName { get; }
+        string TableName { get; }
     }
 }
