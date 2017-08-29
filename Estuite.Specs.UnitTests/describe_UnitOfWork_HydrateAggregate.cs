@@ -35,12 +35,12 @@ namespace Estuite.Specs.UnitTests
 
             public IHydrateStreams TryHydratedTo { get; private set; }
 
-            public async Task HydrateTo(IHydrateStreams streams, CancellationToken token)
+            public async Task HydrateFrom(IHydrateStreams streams, CancellationToken token)
             {
                 HydratedTo = streams;
             }
             
-            public async Task<bool> TryHydrateTo(IHydrateStreams streams, CancellationToken token)
+            public async Task<bool> TryHydrateFrom(IHydrateStreams streams, CancellationToken token)
             {
                 TryHydratedTo = streams;
                 return true;

@@ -10,12 +10,12 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             _aggregate = new FakeAggregate();
-            _target = new DefaultEventHandler();
+            _target = new DefaultEventApplier();
         }
 
         private void when_handle()
         {
-            act = () => _target.Handle(_aggregate, new FakeEventWithHandler());
+            act = () => _target.Apply(_aggregate, new FakeEventWithHandler());
             it["should execute handler"] = () => _aggregate.Counter.ShouldBe(1);
         }
 
@@ -27,14 +27,14 @@ namespace Estuite.Specs.UnitTests
                 var aggregate = new FakeAggregate();
                 var target = new DefaultEventHandlerWithNoCache();
                 var stopwatch = Stopwatch.StartNew();
-                for (var i = 0; i < Times; i++) target.Handle(aggregate, @event);
+                for (var i = 0; i < Times; i++) target.Apply(aggregate, @event);
                 _elapsedNoCache = stopwatch.Elapsed;
             };
             act = () =>
             {
                 var @event = new FakeEventWithHandler();
                 var stopwatch = Stopwatch.StartNew();
-                for (var i = 0; i < Times; i++) _target.Handle(_aggregate, @event);
+                for (var i = 0; i < Times; i++) _target.Apply(_aggregate, @event);
                 _elapsed = stopwatch.Elapsed;
             };
             it["executes handler multiple times"] = () => _aggregate.Counter.ShouldBe(Times);
@@ -42,7 +42,7 @@ namespace Estuite.Specs.UnitTests
         }
 
         private FakeAggregate _aggregate;
-        private DefaultEventHandler _target;
+        private DefaultEventApplier _target;
         private TimeSpan _elapsed;
         private TimeSpan _elapsedNoCache;
         private const int Times = 100000;

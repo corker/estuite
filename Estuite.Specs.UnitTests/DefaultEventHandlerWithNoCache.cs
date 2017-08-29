@@ -5,7 +5,7 @@ using Estuite.Domain;
 
 namespace Estuite.Specs.UnitTests
 {
-    public class DefaultEventHandlerWithNoCache : IHandleEvents
+    public class DefaultEventHandlerWithNoCache : IApplyEvents
     {
         private static readonly MethodInfo HandleMethod;
         private static readonly Dictionary<Type, object> CachedEventHandlers;
@@ -19,7 +19,7 @@ namespace Estuite.Specs.UnitTests
             EventHandlersLock = new object();
         }
 
-        public void Handle(object aggregate, object @event)
+        public void Apply(object aggregate, object @event)
         {
             var aggregateType = aggregate.GetType();
             var eventType = @event.GetType();
@@ -30,18 +30,18 @@ namespace Estuite.Specs.UnitTests
         private void Handle<TAggregate, TEvent>(TAggregate aggregate, TEvent @event)
         {
             var handler = GetOrCreateHandler<TAggregate>();
-            handler.Handle(aggregate, @event);
+            handler.Apply(aggregate, @event);
         }
 
-        private static IHandleEvents<TAggregate> GetOrCreateHandler<TAggregate>()
+        private static IApplyEvents<TAggregate> GetOrCreateHandler<TAggregate>()
         {
             lock (EventHandlersLock)
             {
                 object handler;
                 var isCached = CachedEventHandlers.TryGetValue(typeof(TAggregate), out handler);
-                handler = new DefaultEventHandler<TAggregate>();
+                handler = new DefaultEventApplier<TAggregate>();
                 if (!isCached) CachedEventHandlers.Add(typeof(TAggregate), handler);
-                return (IHandleEvents<TAggregate>) handler;
+                return (IApplyEvents<TAggregate>) handler;
             }
         }
     }

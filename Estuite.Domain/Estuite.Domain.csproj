@@ -46,11 +46,11 @@
     <Compile Include="ICanBeHydrated.cs" />
     <Compile Include="ICanBeRegistered.cs" />
     <Compile Include="DefaultEventFactory.cs" />
-    <Compile Include="DefaultEventHandler.cs" />
+    <Compile Include="DefaultEventApplier.cs" />
     <Compile Include="ICreateEvents.cs" />
     <Compile Include="IFlushEvents.cs" />
     <Compile Include="IGenerateIdentities.cs" />
-    <Compile Include="IHandleEvents.cs" />
+    <Compile Include="IApplyEvents.cs" />
     <Compile Include="IHydrateAggregates.cs" />
     <Compile Include="IHydrateEvents.cs" />
     <Compile Include="IHydrateStreams.cs" />

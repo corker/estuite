@@ -70,12 +70,12 @@ namespace Estuite.StreamStore
 
         public async Task Hydrate(ICanBeHydrated aggregate, CancellationToken token)
         {
-            await aggregate.HydrateTo(this, token);
+            await aggregate.HydrateFrom(this, token);
         }
 
         public async Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token)
         {
-            return await aggregate.TryHydrateTo(this, token);
+            return await aggregate.TryHydrateFrom(this, token);
         }
 
         public async Task Hydrate<TId, TStream>(TId id, TStream stream, CancellationToken token)

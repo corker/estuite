@@ -19,7 +19,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_hydrate()
         {
-            actAsync = async () => await _target.HydrateTo(_streams);
+            actAsync = async () => await _target.HydrateFrom(_streams);
             it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
             it["provides itself to hydrate events"] =
@@ -34,7 +34,7 @@ namespace Estuite.Specs.UnitTests
         }
         private void when_try_hydrate()
         {
-            actAsync = async () => _returns = await _target.TryHydrateTo(_streams);
+            actAsync = async () => _returns = await _target.TryHydrateFrom(_streams);
             it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
             it["returns true"] = () => { _returns.ShouldBe(true); };
