@@ -43,7 +43,7 @@
     <Compile Include="Aggregate.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="GuidCombGenerator.cs" />
-    <Compile Include="ICanBeHydrated.cs" />
+    <Compile Include="ICanReadStreams.cs" />
     <Compile Include="ICanBeRegistered.cs" />
     <Compile Include="DefaultEventFactory.cs" />
     <Compile Include="DefaultEventApplier.cs" />
@@ -53,7 +53,7 @@
     <Compile Include="IApplyEvents.cs" />
     <Compile Include="IHydrateAggregates.cs" />
     <Compile Include="IHydrateEvents.cs" />
-    <Compile Include="IHydrateStreams.cs" />
+    <Compile Include="IReadStreams.cs" />
     <Compile Include="IProvideUtcDateTime.cs" />
     <Compile Include="IRegisterAggregates.cs" />
     <Compile Include="IRegisterStreams.cs" />

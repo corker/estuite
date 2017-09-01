@@ -14,12 +14,12 @@ namespace Estuite.Specs.UnitTests
         {
             _id = 1;
             _target = _aggregate = new AggregateUnderTest(_id);
-            _streams = new FakeIHydrateStreams();
+            _streams = new FakeIReadStreams();
         }
 
         private void when_hydrate()
         {
-            actAsync = async () => await _target.HydrateFrom(_streams);
+            actAsync = async () => await _target.ReadFrom(_streams);
             it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
             it["provides itself to hydrate events"] =
@@ -34,7 +34,7 @@ namespace Estuite.Specs.UnitTests
         }
         private void when_try_hydrate()
         {
-            actAsync = async () => _returns = await _target.TryHydrateFrom(_streams);
+            actAsync = async () => _returns = await _target.TryReadFrom(_streams);
             it["provides an id with expected type"] = () => { _streams.ProvidedId.ShouldBeOfType<int>(); };
             it["provides an expected id"] = () => { _streams.ProvidedId.ShouldBe(_id); };
             it["returns true"] = () => { _returns.ShouldBe(true); };
@@ -49,12 +49,12 @@ namespace Estuite.Specs.UnitTests
             };
         }
 
-        private class FakeIHydrateStreams : IHydrateStreams
+        private class FakeIReadStreams : IReadStreams
         {
             public IHydrateEvents ProvidedEvents { get; private set; }
             public object ProvidedId { get; private set; }
 
-            public async Task Hydrate<TId, TEventStream>(
+            public async Task ReadInto<TId, TEventStream>(
                 TId id,
                 TEventStream stream,
                 CancellationToken token = new CancellationToken())
@@ -64,7 +64,7 @@ namespace Estuite.Specs.UnitTests
                 ProvidedEvents = stream;
             }
 
-            public async Task<bool> TryHydrate<TId, TEventStream>(
+            public async Task<bool> TryReadInto<TId, TEventStream>(
                 TId id,
                 TEventStream stream,
                 CancellationToken token = new CancellationToken())
@@ -84,9 +84,9 @@ namespace Estuite.Specs.UnitTests
         }
 
         private int _id;
-        private ICanBeHydrated _target;
+        private ICanReadStreams _target;
         private AggregateUnderTest _aggregate;
-        private FakeIHydrateStreams _streams;
+        private FakeIReadStreams _streams;
         private bool _returns;
     }
 }

@@ -4,6 +4,7 @@ using Estuite.Domain;
 using Estuite.StreamStore;
 using NSpec;
 using Shouldly;
+using IReadStreams = Estuite.Domain.IReadStreams;
 
 namespace Estuite.Specs.UnitTests
 {
@@ -13,7 +14,7 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             _bucketId = new BucketId("bucket-id");
-            _aggregate = new FakeICanBeHydrated();
+            _aggregate = new FakeICanReadStreams();
             _target = new UnitOfWork(_bucketId, null, null, null);
         }
 
@@ -29,18 +30,18 @@ namespace Estuite.Specs.UnitTests
             it["calls aggregate with itself"] = () => _aggregate.TryHydratedTo.ShouldBeSameAs(_target);
         }
 
-        private class FakeICanBeHydrated : ICanBeHydrated
+        private class FakeICanReadStreams : ICanReadStreams
         {
-            public IHydrateStreams HydratedTo { get; private set; }
+            public IReadStreams HydratedTo { get; private set; }
 
-            public IHydrateStreams TryHydratedTo { get; private set; }
+            public IReadStreams TryHydratedTo { get; private set; }
 
-            public async Task HydrateFrom(IHydrateStreams streams, CancellationToken token)
+            public async Task ReadFrom(IReadStreams streams, CancellationToken token)
             {
                 HydratedTo = streams;
             }
             
-            public async Task<bool> TryHydrateFrom(IHydrateStreams streams, CancellationToken token)
+            public async Task<bool> TryReadFrom(IReadStreams streams, CancellationToken token)
             {
                 TryHydratedTo = streams;
                 return true;
@@ -49,6 +50,6 @@ namespace Estuite.Specs.UnitTests
 
         private UnitOfWork _target;
         private BucketId _bucketId;
-        private FakeICanBeHydrated _aggregate;
+        private FakeICanReadStreams _aggregate;
     }
 }

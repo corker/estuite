@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Estuite.Domain
 {
-    public abstract class Aggregate<TId> : IFlushEvents, IHydrateEvents, ICanBeHydrated, ICanBeRegistered
+    public abstract class Aggregate<TId> : IFlushEvents, IHydrateEvents, ICanReadStreams, ICanBeRegistered
     {
         private readonly IApplyEvents _eventApplier;
         private readonly ICreateEvents _eventFactory;
@@ -26,16 +26,16 @@ namespace Estuite.Domain
 
         protected TId Id { get; }
 
-        async Task ICanBeHydrated.HydrateFrom(IHydrateStreams streams, CancellationToken token)
+        async Task ICanReadStreams.ReadFrom(IReadStreams streams, CancellationToken token)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
-            await streams.Hydrate(Id, this, token);
+            await streams.ReadInto(Id, this, token);
         }
 
-        async Task<bool> ICanBeHydrated.TryHydrateFrom(IHydrateStreams streams, CancellationToken token)
+        async Task<bool> ICanReadStreams.TryReadFrom(IReadStreams streams, CancellationToken token)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
-            return await streams.TryHydrate(Id, this, token);
+            return await streams.TryReadInto(Id, this, token);
         }
 
         void ICanBeRegistered.RegisterWith(IRegisterStreams streams)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Estuite.Domain;
 using Estuite.StreamStore;
 using NSpec;
+using IReadStreams = Estuite.StreamStore.IReadStreams;
 
 namespace Estuite.Specs.UnitTests
 {

@@ -11,7 +11,7 @@ namespace Estuite.StreamStore
         IRegisterAggregates,
         IRegisterStreams,
         IHydrateAggregates,
-        IHydrateStreams,
+        Domain.IReadStreams,
         ICommitAggregates
     {
         private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
@@ -68,17 +68,17 @@ namespace Estuite.StreamStore
             }
         }
 
-        public async Task Hydrate(ICanBeHydrated aggregate, CancellationToken token)
+        public async Task Hydrate(ICanReadStreams aggregate, CancellationToken token)
         {
-            await aggregate.HydrateFrom(this, token);
+            await aggregate.ReadFrom(this, token);
         }
 
-        public async Task<bool> TryHydrate(ICanBeHydrated aggregate, CancellationToken token)
+        public async Task<bool> TryHydrate(ICanReadStreams aggregate, CancellationToken token)
         {
-            return await aggregate.TryHydrateFrom(this, token);
+            return await aggregate.TryReadFrom(this, token);
         }
 
-        public async Task Hydrate<TId, TStream>(TId id, TStream stream, CancellationToken token)
+        public async Task ReadInto<TId, TStream>(TId id, TStream stream, CancellationToken token)
             where TStream : IHydrateEvents, IFlushEvents
         {
             var type = stream.GetType();
@@ -90,7 +90,7 @@ namespace Estuite.StreamStore
             }
         }
 
-        public async Task<bool> TryHydrate<TId, TStream>(TId id, TStream stream, CancellationToken token)
+        public async Task<bool> TryReadInto<TId, TStream>(TId id, TStream stream, CancellationToken token)
             where TStream : IHydrateEvents, IFlushEvents
         {
             var type = stream.GetType();
