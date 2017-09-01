@@ -38,7 +38,7 @@ namespace Estuite.Domain
             return await streams.TryHydrate(Id, this, token);
         }
 
-        void ICanBeRegistered.RegisterTo(IRegisterStreams streams)
+        void ICanBeRegistered.RegisterWith(IRegisterStreams streams)
         {
             if (streams == null) throw new ArgumentNullException(nameof(streams));
             streams.Register(Id, this);

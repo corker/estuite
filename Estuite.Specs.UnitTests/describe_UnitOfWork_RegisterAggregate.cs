@@ -25,7 +25,7 @@ namespace Estuite.Specs.UnitTests
         {
             public IRegisterStreams RegisteredTo { get; private set; }
 
-            public void RegisterTo(IRegisterStreams streams)
+            public void RegisterWith(IRegisterStreams streams)
             {
                 RegisteredTo = streams;
             }

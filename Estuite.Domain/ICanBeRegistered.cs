@@ -2,6 +2,6 @@
 {
     public interface ICanBeRegistered
     {
-        void RegisterTo(IRegisterStreams streams);
+        void RegisterWith(IRegisterStreams streams);
     }
 }

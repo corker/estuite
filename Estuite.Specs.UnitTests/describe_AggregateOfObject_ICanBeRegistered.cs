@@ -17,7 +17,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_register()
         {
-            act = () => _target.RegisterTo(_registerer);
+            act = () => _target.RegisterWith(_registerer);
             it["provides an id with expected type"] = () => { _registerer.ProvidedId.ShouldBeOfType<object>(); };
             it["provides an expected id"] = () => { _registerer.ProvidedId.ShouldBe(_id); };
             it["provides itself to flush aggregate"] = () => { _registerer.ProvidedEvents.ShouldBeSameAs(_aggregate); };

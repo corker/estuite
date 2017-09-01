@@ -105,7 +105,7 @@ namespace Estuite.StreamStore
 
         public void Register(ICanBeRegistered aggregate)
         {
-            aggregate.RegisterTo(this);
+            aggregate.RegisterWith(this);
         }
 
         public void Register<TId, TEventStream>(TId id, TEventStream stream) where TEventStream : IFlushEvents
