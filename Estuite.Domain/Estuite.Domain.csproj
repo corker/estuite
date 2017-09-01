@@ -51,11 +51,9 @@
     <Compile Include="IFlushEvents.cs" />
     <Compile Include="IGenerateIdentities.cs" />
     <Compile Include="IApplyEvents.cs" />
-    <Compile Include="IHydrateAggregates.cs" />
     <Compile Include="IHydrateEvents.cs" />
     <Compile Include="IReadStreams.cs" />
     <Compile Include="IProvideUtcDateTime.cs" />
-    <Compile Include="IRegisterAggregates.cs" />
     <Compile Include="IRegisterStreams.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

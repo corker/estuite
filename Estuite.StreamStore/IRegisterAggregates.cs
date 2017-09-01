@@ -1,4 +1,6 @@
-﻿namespace Estuite.Domain
+﻿using Estuite.Domain;
+
+namespace Estuite.StreamStore
 {
     public interface IRegisterAggregates
     {

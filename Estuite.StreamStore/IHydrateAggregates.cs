@@ -1,7 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Estuite.Domain;
 
-namespace Estuite.Domain
+namespace Estuite.StreamStore
 {
     public interface IHydrateAggregates
     {

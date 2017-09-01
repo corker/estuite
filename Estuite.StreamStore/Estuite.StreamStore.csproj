@@ -49,7 +49,9 @@
     <Compile Include="ICreateSessions.cs" />
     <Compile Include="ICreateStreamIdentities.cs" />
     <Compile Include="IDeserializeEvents.cs" />
+    <Compile Include="IHydrateAggregates.cs" />
     <Compile Include="IReadStreams.cs" />
+    <Compile Include="IRegisterAggregates.cs" />
     <Compile Include="ISerializeEvents.cs" />
     <Compile Include="IWriteStreams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
