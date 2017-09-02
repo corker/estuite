@@ -13,7 +13,7 @@ namespace Estuite.Specs.UnitTests
 
         private void when_create()
         {
-            act = () => _target = new UnitOfWork(_bucketId, null, null, null);
+            act = () => _target = new UnitOfWork(_bucketId, null, null);
             it["has been created"] = () => _target.ShouldNotBeNull();
             context["and bucket id is null"] = () =>
             {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Estuite.StreamStore;
+using Estuite.StreamDispatcher;
 using Shouldly;
 
 namespace Estuite.Specs.UnitTests

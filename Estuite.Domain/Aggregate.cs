@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Estuite.Domain
 {
-    public abstract class Aggregate<TId> : IFlushEvents, IHydrateEvents, ICanReadStreams, ICanBeRegistered
+    public abstract class Aggregate<TId> : IReceiveEvents, ISendEvents
     {
         private readonly IApplyEvents _eventApplier;
         private readonly ICreateEvents _eventFactory;
+        private readonly object _eventsLock;
         private List<Event> _events = new List<Event>();
-        private int _version;
+        private long _version;
 
         protected Aggregate(TId id) : this(id, new DefaultEventFactory(), new DefaultEventApplier())
         {
@@ -22,42 +21,29 @@ namespace Estuite.Domain
             Id = id;
             _eventFactory = eventFactory ?? throw new ArgumentNullException(nameof(eventFactory));
             _eventApplier = eventApplier ?? throw new ArgumentNullException(nameof(eventApplier));
+            _eventsLock = new object();
         }
 
         protected TId Id { get; }
 
-        async Task ICanReadStreams.ReadFrom(IReadStreams streams, CancellationToken token)
-        {
-            if (streams == null) throw new ArgumentNullException(nameof(streams));
-            await streams.ReadInto(Id, this, token);
-        }
-
-        async Task<bool> ICanReadStreams.TryReadFrom(IReadStreams streams, CancellationToken token)
-        {
-            if (streams == null) throw new ArgumentNullException(nameof(streams));
-            return await streams.TryReadInto(Id, this, token);
-        }
-
-        void ICanBeRegistered.RegisterWith(IRegisterStreams streams)
-        {
-            if (streams == null) throw new ArgumentNullException(nameof(streams));
-            streams.Register(Id, this);
-        }
-
-        List<Event> IFlushEvents.Flush()
-        {
-            var events = _events;
-            _events = new List<Event>();
-            return events;
-        }
-
-        void IHydrateEvents.Hydrate(IEnumerable<object> events)
+        void IReceiveEvents.Receive(IEnumerable<Event> events)
         {
             if (events == null) throw new ArgumentNullException(nameof(events));
             foreach (var @event in events)
             {
-                _eventApplier.Apply(this, @event);
+                _eventApplier.Apply(this, @event.Body);
                 _version++;
+                if (_version != @event.Version) throw new UnexpectedEventVersionException();
+            }
+        }
+
+        void ISendEvents.SendTo(IReceiveEvents receiver)
+        {
+            lock (_eventsLock)
+            {
+                var events = _events;
+                _events = new List<Event>();
+                receiver.Receive(events);
             }
         }
 
@@ -66,9 +52,12 @@ namespace Estuite.Domain
             if (action == null) throw new ArgumentNullException(nameof(action));
             var @event = _eventFactory.Create<TEvent>();
             action(@event);
-            _eventApplier.Apply(this, @event);
-            _version++;
-            _events.Add(new Event(_version, @event));
+            lock (_eventsLock)
+            {
+                _eventApplier.Apply(this, @event);
+                _version++;
+                _events.Add(new Event(_version, @event));
+            }
         }
     }
 }

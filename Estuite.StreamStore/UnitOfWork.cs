@@ -7,122 +7,119 @@ using Estuite.Domain;
 
 namespace Estuite.StreamStore
 {
-    public class UnitOfWork :
-        IRegisterAggregates,
-        IRegisterStreams,
-        IHydrateAggregates,
-        Domain.IReadStreams,
-        ICommitAggregates
+    public class UnitOfWork : ICommitAggregates, IProvideAggregates
     {
-        private readonly Dictionary<StreamId, IFlushEvents> _aggregates;
+        private readonly Dictionary<StreamId, IReceiveEvents> _aggregates;
         private readonly object _aggregatesLock;
         private readonly BucketId _bucketId;
-        private readonly ICreateSessions _createSessions;
-        private readonly IGenerateIdentities _identities;
+        private readonly ICreateAggregates _createAggregates;
+        private readonly ICreateStreamIdentities _identities;
         private readonly IReadStreams _readStreams;
-        private readonly ICreateStreamIdentities _streamIdentities;
+        private readonly Dictionary<StreamId, ISendEvents> _writers;
         private readonly IWriteStreams _writeStreams;
 
         public UnitOfWork(
             BucketId bucketId,
             IReadStreams readStreams,
-            ICreateSessions createSessions,
-            IWriteStreams writeStreams)
+            IWriteStreams writeStreams
+        )
         {
-            if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
-            _bucketId = bucketId;
-            _createSessions = createSessions;
+            _bucketId = bucketId ?? throw new ArgumentNullException(nameof(bucketId));
             _writeStreams = writeStreams;
             _readStreams = readStreams;
-            _aggregates = new Dictionary<StreamId, IFlushEvents>(StreamIdEqualityComparer.Instance);
+            _aggregates = new Dictionary<StreamId, IReceiveEvents>(StreamIdEqualityComparer.Instance);
+            _writers = new Dictionary<StreamId, ISendEvents>(StreamIdEqualityComparer.Instance);
             _aggregatesLock = new object();
-            _identities = this as IGenerateIdentities ?? new GuidCombGenerator(new UtcDateTimeProvider());
-            _streamIdentities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
+            _createAggregates = this as ICreateAggregates ?? new DefaultAggregateFactory();
+            _identities = this as ICreateStreamIdentities ?? new DefaultStreamIdentityFactory();
         }
 
         public async Task Commit(CancellationToken token)
         {
-            Tuple<StreamId, List<Event>>[] streamsToWrite;
-
+            EventReceiver[] receivers;
             lock (_aggregatesLock)
             {
-                streamsToWrite = _aggregates
-                    .Select(x => new Tuple<StreamId, List<Event>>(x.Key, x.Value.Flush()))
-                    .Where(x => x.Item2.Any())
+                receivers = _writers.Select(x =>
+                    {
+                        var receiver = new EventReceiver(x.Key);
+                        x.Value.SendTo(receiver);
+                        return receiver;
+                    })
+                    .Where(x => x.HasEvents)
                     .ToArray();
             }
-
-            switch (streamsToWrite.Length)
+            switch (receivers.Length)
             {
                 case 0:
                     return;
                 case 1:
-                    var streamId = streamsToWrite[0].Item1;
-                    var events = streamsToWrite[0].Item2;
-                    await WriteStream(streamId, events, token);
-                    break;
+                    await receivers[0].WriteTo(_writeStreams);
+                    return;
                 default:
-                    var ids = string.Join(", ", streamsToWrite.Select(x => x.Item1.Value));
-                    string message = $"Can't commit multiple event streams. Stream ids {ids}";
-                    throw new InvalidOperationException(message);
+                    throw new SingleStreamCommitException();
             }
         }
 
-        public async Task Hydrate(ICanReadStreams aggregate, CancellationToken token)
+        public async Task<T> Get<T>(object id, CancellationToken token) where T : IReceiveEvents
         {
-            await aggregate.ReadFrom(this, token);
-        }
-
-        public async Task<bool> TryHydrate(ICanReadStreams aggregate, CancellationToken token)
-        {
-            return await aggregate.TryReadFrom(this, token);
-        }
-
-        public async Task ReadInto<TId, TStream>(TId id, TStream stream, CancellationToken token)
-            where TStream : IHydrateEvents, IFlushEvents
-        {
-            var type = stream.GetType();
-            var streamId = _streamIdentities.Create(_bucketId, id, type);
-            await _readStreams.Read(streamId, stream, token);
+            if (id.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(id));
+            var streamId = _identities.Create<T>(_bucketId, id);
             lock (_aggregatesLock)
             {
-                _aggregates.Add(streamId, stream);
+                if (_aggregates.TryGetValue(streamId, out var value)) return (T) value;
             }
-        }
-
-        public async Task<bool> TryReadInto<TId, TStream>(TId id, TStream stream, CancellationToken token)
-            where TStream : IHydrateEvents, IFlushEvents
-        {
-            var type = stream.GetType();
-            var streamId = _streamIdentities.Create(_bucketId, id, type);
-            var result = await _readStreams.TryRead(streamId, stream, token);
+            var aggregate = _createAggregates.Create<T>(id);
+            var receiver = new EventRecordReceiver(aggregate);
+            await _readStreams.Read(streamId, receiver, token);
             lock (_aggregatesLock)
             {
-                _aggregates.Add(streamId, stream);
+                if (_aggregates.TryGetValue(streamId, out var value)) return (T) value;
+                _aggregates.Add(streamId, aggregate);
+                var writer = aggregate as ISendEvents;
+                if (writer != null) _writers.Add(streamId, writer);
             }
-            return result;
+            return aggregate;
         }
 
-        public void Register(ICanBeRegistered aggregate)
+        private class EventReceiver : IReceiveEvents
         {
-            aggregate.RegisterWith(this);
-        }
+            private readonly List<Event> _events;
+            private readonly StreamId _streamId;
 
-        public void Register<TId, TEventStream>(TId id, TEventStream stream) where TEventStream : IFlushEvents
-        {
-            var type = stream.GetType();
-            var streamId = _streamIdentities.Create(_bucketId, id, type);
-            lock (_aggregatesLock)
+            public EventReceiver(StreamId streamId)
             {
-                _aggregates.Add(streamId, stream);
+                _streamId = streamId;
+                _events = new List<Event>();
+            }
+
+            public bool HasEvents => _events.Any();
+
+            public void Receive(IEnumerable<Event> events)
+            {
+                _events.AddRange(events);
+            }
+
+            public async Task WriteTo(IWriteStreams streams)
+            {
+                var records = _events.Select(x => new EventRecord(x.Version, x.Body)).ToArray();
+                await streams.Write(_streamId, records);
             }
         }
 
-        private async Task WriteStream(StreamId streamId, IEnumerable<Event> events, CancellationToken token)
+        private class EventRecordReceiver : IReceiveEventRecords
         {
-            var sessionId = new SessionId($"{_identities.Generate()}");
-            var session = _createSessions.Create(streamId, sessionId, events);
-            await _writeStreams.Write(session, token);
+            private readonly IReceiveEvents _events;
+
+            public EventRecordReceiver(IReceiveEvents events)
+            {
+                _events = events;
+            }
+
+            public void Receive(IEnumerable<EventRecord> records)
+            {
+                var events = records.Select(x => new Event(x.Version, x.Body));
+                _events.Receive(events);
+            }
         }
     }
 }

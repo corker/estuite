@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.StreamDispatcher;
@@ -9,78 +10,92 @@ namespace Estuite.StreamStore.Azure
 {
     public class StreamWriter : IWriteStreams
     {
-        private readonly IProvideStreamStoreCloudTable _table;
         private readonly IAddDispatchStreamRecoveryJobs _addDispatchStreamRecoveryJobs;
+        private readonly IProvideUtcDateTime _dateTime;
         private readonly IDeleteDispatchStreamRecoveryJobs _deleteDispatchStreamRecoveryJobs;
-        private readonly IDispatchStreams _dispatchStreams;
+        private readonly ICreateEventRecordTableEntities _entities;
+        private readonly IProvideSessions _sessions;
+        private readonly IDispatchStreams _streams;
+        private readonly IProvideStreamStoreCloudTable _table;
 
         public StreamWriter(
             IProvideStreamStoreCloudTable table,
             IAddDispatchStreamRecoveryJobs addDispatchStreamRecoveryJobs,
             IDeleteDispatchStreamRecoveryJobs deleteDispatchStreamRecoveryJobs,
-            IDispatchStreams dispatchStreams)
+            IDispatchStreams streams,
+            IProvideUtcDateTime dateTime,
+            ICreateEventRecordTableEntities entities,
+            IProvideSessions sessions
+        )
         {
             _table = table;
             _addDispatchStreamRecoveryJobs = addDispatchStreamRecoveryJobs;
             _deleteDispatchStreamRecoveryJobs = deleteDispatchStreamRecoveryJobs;
-            _dispatchStreams = dispatchStreams;
+            _streams = streams;
+            _dateTime = dateTime;
+            _entities = entities;
+            _sessions = sessions;
         }
 
-        public async Task Write(Session session, CancellationToken token)
+        public async Task Write(StreamId streamId, IReadOnlyCollection<EventRecord> records, CancellationToken token)
         {
-            var job = new DispatchStreamJob(session.StreamId, session.SessionId);
+            var sessionId = _sessions.Current();
+            var job = new DispatchStreamJob(streamId, sessionId);
             await _addDispatchStreamRecoveryJobs.Add(job, token);
             try
             {
-                await WriteStream(session, token);
+                await WriteStream(sessionId, streamId, records, token);
             }
             catch
             {
                 await _deleteDispatchStreamRecoveryJobs.Delete(job, token);
                 throw;
             }
-            await _dispatchStreams.Dispatch(job, token);
+            await _streams.Dispatch(job, token);
             await _deleteDispatchStreamRecoveryJobs.Delete(job, token);
         }
 
-        private async Task WriteStream(Session session, CancellationToken token)
+        private async Task WriteStream(
+            SessionId sessionId,
+            StreamId streamId,
+            IReadOnlyCollection<EventRecord> records,
+            CancellationToken token
+        )
         {
             var table = await _table.GetOrCreate();
             var operation = new TableBatchOperation();
+            var created = _dateTime.Now;
             var sessionTableEntity = new SessionRecordTableEntity
             {
-                PartitionKey = session.StreamId.Value,
-                RowKey = $"S^{session.SessionId.Value}",
-                Created = $"{session.Created:O}",
-                RecordCount = session.Records.Length
+                PartitionKey = streamId.Value,
+                RowKey = $"S^{sessionId.Value}",
+                Created = $"{created:O}",
+                RecordCount = records.Count
             };
             operation.Add(TableOperation.Insert(sessionTableEntity));
 
-            foreach (var record in session.Records)
+            foreach (var record in records)
             {
-                var eventTableEntity = new EventRecordTableEntity
-                {
-                    PartitionKey = session.StreamId.Value,
-                    RowKey = $"E^{record.Version:x16}",
-                    Created = $"{record.Created:O}",
-                    SessionId = record.SessionId.Value,
-                    Type = record.Type,
-                    Payload = record.Payload
-                };
-                operation.Add(TableOperation.Insert(eventTableEntity));
+                var entity = _entities.CreateFrom(record);
+                entity.PartitionKey = streamId.Value;
+                entity.RowKey = $"E^{record.Version:x16}";
+                entity.Created = $"{created:O}";
+                entity.SessionId = sessionId.Value;
+                entity.Version = record.Version;
+                operation.Add(TableOperation.Insert(entity));
 
                 var dispatchTableEntity = new EventToDispatchRecordTableEntity
                 {
-                    PartitionKey = session.StreamId.Value,
+                    PartitionKey = streamId.Value,
                     RowKey = $"D^{record.Version:x16}",
-                    AggregateType = session.StreamId.AggregateType.Value,
-                    BucketId = session.StreamId.BucketId.Value,
-                    AggregateId = session.StreamId.AggregateId.Value,
-                    SessionId = session.SessionId.Value,
+                    AggregateType = streamId.AggregateType.Value,
+                    BucketId = streamId.BucketId.Value,
+                    AggregateId = streamId.AggregateId.Value,
+                    SessionId = sessionId.Value,
                     Version = record.Version,
-                    Created = $"{record.Created:O}",
-                    Type = record.Type,
-                    Payload = record.Payload
+                    Created = $"{created:O}",
+                    Type = entity.Type,
+                    Payload = entity.Payload
                 };
                 operation.Add(TableOperation.Insert(dispatchTableEntity));
             }
@@ -94,9 +109,8 @@ namespace Estuite.StreamStore.Azure
                 {
                     case (int) HttpStatusCode.Conflict:
                         throw new StreamConcurrentWriteException(
-                            $"The stream {session.StreamId.Value} was modified between read and write or the session {session.SessionId.Value} was already registered.",
-                            e
-                        );
+                            $"The stream {streamId.Value} was modified between read and write or the session {sessionId.Value} was already registered.",
+                            e);
                     default:
                         throw;
                 }

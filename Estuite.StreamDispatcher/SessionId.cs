@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite.StreamStore
+namespace Estuite.StreamDispatcher
 {
     public class SessionId
     {
@@ -10,6 +10,6 @@ namespace Estuite.StreamStore
             Value = value;
         }
 
-        public string Value { get; private set; }
+        public string Value { get; }
     }
 }

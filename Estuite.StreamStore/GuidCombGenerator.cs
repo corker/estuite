@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite.Domain
+namespace Estuite.StreamStore
 {
     /// <summary>
     ///     Tribute to awesome NHibernate

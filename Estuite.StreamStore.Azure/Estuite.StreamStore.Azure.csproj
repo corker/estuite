@@ -71,8 +71,10 @@
     <Compile Include="EventStoreCloudTableProvider.cs" />
     <Compile Include="EventToDispatchRecordRepository.cs" />
     <Compile Include="IDeleteEventToDispatchRecords.cs" />
+    <Compile Include="IRestoreEventRecords.cs" />
     <Compile Include="IProvideEventStoreCloudTable.cs" />
     <Compile Include="IReadEventToDispatchRecords.cs" />
+    <Compile Include="ICreateEventRecordTableEntities.cs" />
     <Compile Include="IStreamStoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventToDispatchRecordTableEntity.cs" />
@@ -85,10 +87,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
-      <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
-      <Name>Estuite.Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
       <Project>{634A1D49-6531-4A9D-8936-2A994999A606}</Project>
       <Name>Estuite.StreamDispatcher</Name>

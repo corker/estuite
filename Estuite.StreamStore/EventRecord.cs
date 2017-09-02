@@ -4,10 +4,14 @@ namespace Estuite.StreamStore
 {
     public class EventRecord
     {
-        public DateTime Created { get; set; }
-        public SessionId SessionId { get; set; }
-        public long Version { get; set; }
-        public string Type { get; set; }
-        public string Payload { get; set; }
+        public EventRecord(long version, object body)
+        {
+            if (version <= 0) throw new ArgumentOutOfRangeException(nameof(version));
+            Version = version;
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+        }
+
+        public long Version { get; }
+        public object Body { get; }
     }
 }

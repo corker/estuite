@@ -10,10 +10,10 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             _id = Guid.NewGuid();
-            _eventsToHydrate = _eventsToHydrate = new List<object>
+            _eventsToRead = _eventsToRead = new List<Event>
             {
-                new HydratedEvent {Index = 1},
-                new HydratedEvent {Index = 2}
+                new Event(1, new ReceivedEvent {Index = 1}),
+                new Event(2, new ReceivedEvent {Index = 2})
             };
         }
 
@@ -30,16 +30,16 @@ namespace Estuite.Specs.UnitTests
             };
             context["then hydrate"] = () =>
             {
-                act = () => _target.Hydrate(_eventsToHydrate);
-                it["handles hydrated events"] = () => { _target.HydratedEvents.Count.ShouldBe(2); };
-                it["handles hydrated events in correct order"] = () =>
+                act = () => _target.Read(_eventsToRead);
+                it["handles received events"] = () => { _target.ReceivedEvents.Count.ShouldBe(2); };
+                it["handles received events in correct order"] = () =>
                 {
-                    _target.HydratedEvents[0].Index.ShouldBe(1);
-                    _target.HydratedEvents[1].Index.ShouldBe(2);
+                    _target.ReceivedEvents[0].Index.ShouldBe(1);
+                    _target.ReceivedEvents[1].Index.ShouldBe(2);
                 };
-                context["and events to hydrate are null"] = () =>
+                context["and events to read are null"] = () =>
                 {
-                    before = () => _eventsToHydrate = null;
+                    before = () => _eventsToRead = null;
                     it["throws exception"] = expect<ArgumentNullException>(
                         "Value cannot be null.\r\nParameter name: events"
                     );
@@ -55,28 +55,28 @@ namespace Estuite.Specs.UnitTests
                             "Value cannot be null.\r\nParameter name: action"
                         );
                     };
-                    context["then flush"] = () =>
+                    context["then write"] = () =>
                     {
-                        act = () => _flushedEvents = _target.Flush();
-                        it["flushes applied events"] = () =>
+                        act = () => _writtenEvents = _target.Flush();
+                        it["write applied events"] = () =>
                         {
-                            _flushedEvents.Count.ShouldBe(_target.AppliedEvents.Count);
-                            foreach (var @event in _flushedEvents) @event.Body.ShouldBeOfType<AppliedEvent>();
+                            _writtenEvents.Count.ShouldBe(_target.AppliedEvents.Count);
+                            foreach (var @event in _writtenEvents) @event.Body.ShouldBeOfType<AppliedEvent>();
                         };
-                        it["flushes applied events with versions after hydrated events"] = () =>
+                        it["write applied events with versions after received events"] = () =>
                         {
-                            _flushedEvents[0].Version.ShouldBe(3);
-                            _flushedEvents[1].Version.ShouldBe(4);
+                            _writtenEvents[0].Version.ShouldBe(3);
+                            _writtenEvents[1].Version.ShouldBe(4);
                         };
-                        it["flushes applied events in correct order"] = () =>
+                        it["write applied events in correct order"] = () =>
                         {
-                            ((AppliedEvent) _flushedEvents[0].Body).Index.ShouldBe(1);
-                            ((AppliedEvent) _flushedEvents[1].Body).Index.ShouldBe(2);
+                            ((AppliedEvent) _writtenEvents[0].Body).Index.ShouldBe(1);
+                            ((AppliedEvent) _writtenEvents[1].Body).Index.ShouldBe(2);
                         };
-                        context["then flush again"] = () =>
+                        context["then write again"] = () =>
                         {
-                            act = () => _flushedEvents = _target.Flush();
-                            it["flushes no events"] = () => _flushedEvents.Count.ShouldBe(0);
+                            act = () => _writtenEvents = _target.Flush();
+                            it["write no events"] = () => _writtenEvents.Count.ShouldBe(0);
                         };
                     };
                 };
@@ -86,15 +86,25 @@ namespace Estuite.Specs.UnitTests
         private class AggregateUnderTest : Aggregate<Guid>
         {
             public readonly List<AppliedEvent> AppliedEvents = new List<AppliedEvent>();
-            public readonly List<HydratedEvent> HydratedEvents = new List<HydratedEvent>();
+            public readonly List<ReceivedEvent> ReceivedEvents = new List<ReceivedEvent>();
 
             public AggregateUnderTest(Guid id) : base(id)
             {
             }
 
             public Guid ProvidedId => Id;
-            public List<Event> Flush() => ((IFlushEvents) this).Flush();
-            public void Hydrate(IEnumerable<object> events) => ((IHydrateEvents) this).Hydrate(events);
+
+            public List<Event> Flush()
+            {
+                var events = new EventReceiver();
+                ((ISendEvents) this).SendTo(events);
+                return events;
+            }
+
+            public void Read(IEnumerable<Event> events)
+            {
+                ((IReceiveEvents) this).Receive(events);
+            }
 
             public void ApplyTwoTimes()
             {
@@ -107,18 +117,26 @@ namespace Estuite.Specs.UnitTests
                 Apply<AppliedEvent>(null);
             }
 
-            private void Handle(HydratedEvent @event)
+            private void Handle(ReceivedEvent @event)
             {
-                HydratedEvents.Add(@event);
+                ReceivedEvents.Add(@event);
             }
 
             private void Handle(AppliedEvent @event)
             {
                 AppliedEvents.Add(@event);
             }
+
+            private class EventReceiver : List<Event>, IReceiveEvents
+            {
+                public void Receive(IEnumerable<Event> events)
+                {
+                    AddRange(events);
+                }
+            }
         }
 
-        private class HydratedEvent
+        private class ReceivedEvent
         {
             public int Index { get; set; }
         }
@@ -130,7 +148,7 @@ namespace Estuite.Specs.UnitTests
 
         private Guid _id;
         private AggregateUnderTest _target;
-        private List<Event> _flushedEvents;
-        private List<object> _eventsToHydrate;
+        private List<Event> _writtenEvents;
+        private List<Event> _eventsToRead;
     }
 }

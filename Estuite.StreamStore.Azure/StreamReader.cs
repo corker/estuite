@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Estuite.Domain;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Table.Queryable;
 
@@ -10,27 +9,27 @@ namespace Estuite.StreamStore.Azure
 {
     public class StreamReader : IReadStreams
     {
-        private readonly IDeserializeEvents _events;
+        private readonly IRestoreEventRecords _records;
         private readonly IProvideStreamStoreCloudTable _table;
 
-        public StreamReader(IProvideStreamStoreCloudTable table, IDeserializeEvents events)
+        public StreamReader(IProvideStreamStoreCloudTable table, IRestoreEventRecords records)
         {
             _table = table;
-            _events = events;
+            _records = records;
         }
 
-        public async Task Read(StreamId streamId, IHydrateEvents events, CancellationToken token)
+        public async Task Read(StreamId streamId, IReceiveEventRecords records, CancellationToken token)
         {
-            var result = await TryRead(streamId, events, token);
+            var result = await TryRead(streamId, records, token);
             if (result) return;
-            string message = $"Stream {streamId.Value} not found.";
+            var message = $"Stream {streamId.Value} not found.";
             throw new StreamNotFoundException(message);
         }
 
-        public async Task<bool> TryRead(StreamId streamId, IHydrateEvents events, CancellationToken token)
+        public async Task<bool> TryRead(StreamId streamId, IReceiveEventRecords records, CancellationToken token)
         {
             var table = await _table.GetOrCreate();
-            var hydratedAny = false;
+            var handledAny = false;
             var query = table.CreateQuery<EventRecordTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)
                 .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) > 0)
@@ -40,18 +39,13 @@ namespace Estuite.StreamStore.Azure
             do
             {
                 var segment = await table.ExecuteQuerySegmentedAsync(query, queryToken, token);
+                if (segment.Any()) handledAny = true;
                 queryToken = segment.ContinuationToken;
-                var eventsFromStore = segment
-                    .Select(x =>
-                    {
-                        hydratedAny = true;
-                        var serializedEvent = new SerializedEvent(x.Type, x.Payload);
-                        return _events.Deserialize(serializedEvent);
-                    });
-                events.Hydrate(eventsFromStore);
+                var segmentRecords = segment.Select(x => _records.RestoreFrom(x));
+                records.Receive(segmentRecords);
                 if (token.IsCancellationRequested) throw new OperationCanceledException(token);
             } while (queryToken != null);
-            return hydratedAny;
+            return handledAny;
         }
     }
 }

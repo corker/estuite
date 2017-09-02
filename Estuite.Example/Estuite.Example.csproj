@@ -85,8 +85,8 @@
     <Compile Include="Examples\register_an_aggregate_and_append_a_stream.cs" />
     <Compile Include="Examples\session_collision.cs" />
     <Compile Include="Examples\version_collision.cs" />
-    <Compile Include="Services\EventDeserializer.cs" />
-    <Compile Include="Services\EventSerializer.cs" />
+    <Compile Include="Services\EventRecordDeserializer.cs" />
+    <Compile Include="Services\EventRecordTableEntityFactory.cs" />
     <Compile Include="Domain\Events\AccountNameCorrected.cs" />
     <Compile Include="Domain\Events\AccountRegistered.cs" />
     <Compile Include="Configuration\ICloudStorageAccountConfiguration.cs" />

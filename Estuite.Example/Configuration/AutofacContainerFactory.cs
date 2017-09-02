@@ -22,7 +22,6 @@ namespace Estuite.Example.Configuration
 
             // StreamStore
             builder.RegisterInstance(new BucketId("default"));
-            builder.RegisterType<SessionFactory>().AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<UnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<UtcDateTimeProvider>().AsImplementedInterfaces().SingleInstance();
 
@@ -41,8 +40,8 @@ namespace Estuite.Example.Configuration
             builder.RegisterType<EventStoreCloudTableProvider>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             // Services
-            builder.RegisterType<EventSerializer>().AsImplementedInterfaces().SingleInstance();
-            builder.RegisterType<EventDeserializer>().AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<EventRecordTableEntityFactory>().AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<EventRecordDeserializer>().AsImplementedInterfaces().SingleInstance();
 
             // Examples
             builder.RegisterAssemblyTypes(typeof(IRunExamples).Assembly)

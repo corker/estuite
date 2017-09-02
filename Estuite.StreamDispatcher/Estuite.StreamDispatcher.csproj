@@ -43,8 +43,10 @@
     <Compile Include="IDeleteDispatchStreamRecoveryJobs.cs" />
     <Compile Include="IDispatchStreams.cs" />
     <Compile Include="IAddDispatchStreamRecoveryJobs.cs" />
+    <Compile Include="IProvideSessions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatchStreamJob.cs" />
+    <Compile Include="SessionId.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">

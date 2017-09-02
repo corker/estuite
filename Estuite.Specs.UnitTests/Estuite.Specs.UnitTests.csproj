@@ -60,32 +60,17 @@
     <Compile Include="describe_Aggregate.cs" />
     <Compile Include="describe_AggregateId.cs" />
     <Compile Include="describe_AggregateOfInteger.cs" />
-    <Compile Include="describe_AggregateOfInteger_ICanBeHydrated.cs" />
-    <Compile Include="describe_AggregateOfInteger_ICanBeRegistered.cs" />
     <Compile Include="describe_AggregateOfObject.cs" />
-    <Compile Include="describe_AggregateOfObject_ICanBeHydrated.cs" />
-    <Compile Include="describe_AggregateOfObject_ICanBeRegistered.cs" />
     <Compile Include="describe_AggregateOfString.cs" />
-    <Compile Include="describe_AggregateOfString_ICanBeHydrated.cs" />
-    <Compile Include="describe_AggregateOfString_ICanBeRegistered.cs" />
     <Compile Include="describe_AggregateType.cs" />
     <Compile Include="describe_BucketId.cs" />
     <Compile Include="describe_DefaultEventFactory.cs" />
     <Compile Include="describe_DefaultEventHandler.cs" />
     <Compile Include="describe_DefaultEventHandlerOfAggregate.cs" />
-    <Compile Include="describe_DefaultStreamIdentityFactory.cs" />
     <Compile Include="describe_Event.cs" />
-    <Compile Include="describe_SerializedEvent.cs" />
-    <Compile Include="describe_Session.cs" />
-    <Compile Include="describe_SessionFactory.cs" />
     <Compile Include="describe_SessionId.cs" />
     <Compile Include="describe_StreamId.cs" />
     <Compile Include="describe_UnitOfWork.cs" />
-    <Compile Include="describe_UnitOfWork_HydrateAggregate.cs" />
-    <Compile Include="describe_UnitOfWork_HydrateAggregate_WithEvents.cs" />
-    <Compile Include="describe_UnitOfWork_HydrateAggregate_WithNoEvents.cs" />
-    <Compile Include="describe_UnitOfWork_RegisterAggregate.cs" />
-    <Compile Include="describe_UnitOfWork_RegisterStream.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -96,6 +81,10 @@
     <ProjectReference Include="..\Estuite.Domain\Estuite.Domain.csproj">
       <Project>{9603D807-DC8B-4F18-A84B-17E945242AE5}</Project>
       <Name>Estuite.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Estuite.StreamDispatcher\Estuite.StreamDispatcher.csproj">
+      <Project>{634A1D49-6531-4A9D-8936-2A994999A606}</Project>
+      <Name>Estuite.StreamDispatcher</Name>
     </ProjectReference>
     <ProjectReference Include="..\Estuite.StreamStore\Estuite.StreamStore.csproj">
       <Project>{749EB64B-6A85-4E58-8FCA-0B94FDC171BB}</Project>

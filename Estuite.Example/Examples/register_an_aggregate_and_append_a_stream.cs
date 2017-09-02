@@ -18,24 +18,24 @@ namespace Estuite.Example.Examples
 
         public async Task Run()
         {
-            var accountId = Guid.NewGuid();
+            //var accountId = Guid.NewGuid();
 
-            using (var scope = _scope.BeginLifetimeScope())
-            {
-                var uow = scope.Resolve<UnitOfWork>();
-                var aggregate = Account.Register(accountId, "MyAccount1");
-                uow.Register(aggregate);
-                await uow.Commit(CancellationToken.None);
-                aggregate.ChangeName("MyAccount2");
-                await uow.Commit(CancellationToken.None);
-            }
+            //using (var scope = _scope.BeginLifetimeScope())
+            //{
+            //    var uow = scope.Resolve<UnitOfWork>();
+            //    var aggregate = Account.Register(accountId, "MyAccount1");
+            //    uow.Register(aggregate);
+            //    await uow.Commit(CancellationToken.None);
+            //    aggregate.ChangeName("MyAccount2");
+            //    await uow.Commit(CancellationToken.None);
+            //}
 
-            using (var scope = _scope.BeginLifetimeScope())
-            {
-                var uow = scope.Resolve<UnitOfWork>();
-                var aggregate = new Account(accountId);
-                await uow.Hydrate(aggregate, CancellationToken.None);
-            }
+            //using (var scope = _scope.BeginLifetimeScope())
+            //{
+            //    var uow = scope.Resolve<UnitOfWork>();
+            //    var aggregate = new Account(accountId);
+            //    await uow.Hydrate(aggregate, CancellationToken.None);
+            //}
         }
     }
 }

@@ -6,12 +6,9 @@ namespace Estuite.StreamStore
     {
         public StreamId(BucketId bucketId, AggregateType aggregateType, AggregateId aggregateId)
         {
-            if (bucketId == null) throw new ArgumentNullException(nameof(bucketId));
-            if (aggregateType == null) throw new ArgumentNullException(nameof(aggregateType));
-            if (aggregateId == null) throw new ArgumentNullException(nameof(aggregateId));
-            BucketId = bucketId;
-            AggregateType = aggregateType;
-            AggregateId = aggregateId;
+            BucketId = bucketId ?? throw new ArgumentNullException(nameof(bucketId));
+            AggregateType = aggregateType ?? throw new ArgumentNullException(nameof(aggregateType));
+            AggregateId = aggregateId ?? throw new ArgumentNullException(nameof(aggregateId));
             Value = $"{bucketId.Value}^{aggregateType.Value}^{aggregateId.Value}";
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Estuite.Domain
+namespace Estuite.StreamStore
 {
     public interface IProvideUtcDateTime
     {
