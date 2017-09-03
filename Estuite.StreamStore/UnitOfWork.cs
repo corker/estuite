@@ -68,7 +68,7 @@ namespace Estuite.StreamStore
 ",receivers.Select(x => $"{x}"));
                     var message = $@"Can't commit changes from multiple streams.
 {ids}";
-                    throw new MultipleStreamsToCommitException(message);
+                    throw new CommitMultipleStreamsException(message);
             }
         }
 
