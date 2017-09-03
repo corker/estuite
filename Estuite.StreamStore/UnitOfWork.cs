@@ -64,7 +64,8 @@ namespace Estuite.StreamStore
                     await receivers[0].WriteTo(_writeStreams);
                     return;
                 default:
-                    var ids = string.Join("\r\n",receivers.Select(x => $"{x}"));
+                    var ids = string.Join(@"
+",receivers.Select(x => $"{x}"));
                     var message = $@"Can't commit changes from multiple streams.
 {ids}";
                     throw new SingleStreamCommitException(message);
