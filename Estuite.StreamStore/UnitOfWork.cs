@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
@@ -9,6 +10,7 @@ namespace Estuite.StreamStore
 {
     public class UnitOfWork : ICommitAggregates, IProvideAggregates
     {
+        private static readonly MethodInfo GenericMethodGet;
         private readonly Dictionary<StreamId, IReceiveEvents> _aggregates;
         private readonly object _aggregatesLock;
         private readonly BucketId _bucketId;
@@ -17,6 +19,12 @@ namespace Estuite.StreamStore
         private readonly IReadStreams _readStreams;
         private readonly Dictionary<StreamId, ISendEvents> _writers;
         private readonly IWriteStreams _writeStreams;
+
+        static UnitOfWork()
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            GenericMethodGet = typeof(UnitOfWork).GetMethod("Get", flags);
+        }
 
         public UnitOfWork(
             BucketId bucketId,
@@ -61,6 +69,15 @@ namespace Estuite.StreamStore
         }
 
         public async Task<T> Get<T>(object id, CancellationToken token) where T : IReceiveEvents
+        {
+            if (id == null) throw new ArgumentOutOfRangeException(nameof(id));
+            var aggregateType = typeof(T);
+            var idType = id.GetType();
+            var genericMethodGet = GenericMethodGet.MakeGenericMethod(aggregateType, idType);
+            return await (Task<T>) genericMethodGet.Invoke(this, new[] {id, token});
+        }
+
+        private async Task<T> Get<T, T1>(T1 id, CancellationToken token) where T : IReceiveEvents
         {
             if (id.IsNullOrEmpty()) throw new ArgumentOutOfRangeException(nameof(id));
             var streamId = _identities.Create<T>(_bucketId, id);
