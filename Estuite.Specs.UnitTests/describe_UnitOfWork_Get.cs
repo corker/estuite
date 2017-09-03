@@ -27,6 +27,12 @@ namespace Estuite.Specs.UnitTests
             it["returns a receiver with expected id"] = () => _receiver.Id.ShouldBe(_id);
             it["sends events to the receiver"] = () => _receiver.Events.Count.ShouldBe(1);
 
+            context["get with the same id"] = () =>
+            {
+                actAsync = async () => _receiver2 = await _target.Get<FakeIReceiveEvents>(_id);
+                it["returns the same receiver"] = () => _receiver.ShouldBeSameAs(_receiver2);
+            };
+
             new Each<object, string>
             {
                 {default(int), "int"},
@@ -51,6 +57,7 @@ namespace Estuite.Specs.UnitTests
         private IReadStreams _readStreams;
         private object _id;
         private FakeIReceiveEvents _receiver;
+        private FakeIReceiveEvents _receiver2;
 
         private class FakeIReadStreams : IReadStreams
         {
