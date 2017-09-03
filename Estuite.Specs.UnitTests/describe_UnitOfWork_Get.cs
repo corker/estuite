@@ -15,14 +15,7 @@ namespace Estuite.Specs.UnitTests
         private void before_each()
         {
             var bucketId = new BucketId("bucket-id");
-            _expectedEvents = new List<Event>
-            {
-                new Event(1, "")
-            };
-            _readStreams = new FakeIReadStreams(new List<EventRecord>
-            {
-                new EventRecord(1, "")
-            });
+            _readStreams = new FakeIReadStreams();
             _target = new UnitOfWork(bucketId, _readStreams, null);
             _id = 1;
         }
@@ -33,42 +26,39 @@ namespace Estuite.Specs.UnitTests
             it["returns a receiver"] = () => _receiver.ShouldNotBeNull();
             it["returns a receiver with expected id"] = () => _receiver.Id.ShouldBe(_id);
             it["sends events to the receiver"] = () => _receiver.Events.Count.ShouldBe(1);
-            context["and id is null"] = () =>
+
+            new Each<object, string>
             {
-                before = () => _id = null;
-                it["throws exception"] = expect<ArgumentOutOfRangeException>(
-                    "Specified argument was out of the range of valid values.\r\nParameter name: id"
-                );
-            };
-            context["and id is zero"] = () =>
+                {default(int), "int"},
+                {default(long), "long"},
+                {default(byte), "byte"},
+                {default(Guid), "Guid"},
+                {default(string), "string"},
+                {default(DateTime), "DateTime"}
+            }.Do((x, y) =>
             {
-                before = () => _id = 0;
-                it["throws exception"] = expect<ArgumentOutOfRangeException>(
-                    "Specified argument was out of the range of valid values.\r\nParameter name: id"
-                );
-            };
-            context["and id is empty string"] = () =>
-            {
-                before = () => _id = string.Empty;
-                it["throws exception"] = expect<ArgumentOutOfRangeException>(
-                    "Specified argument was out of the range of valid values.\r\nParameter name: id"
-                );
-            };
+                context[$"when id is default of {y}"] = () =>
+                {
+                    before = () => _id = x;
+                    it["throws exception"] = expect<ArgumentOutOfRangeException>(
+                        "Specified argument was out of the range of valid values.\r\nParameter name: id"
+                    );
+                };
+            });
         }
 
         private IProvideAggregates _target;
         private IReadStreams _readStreams;
         private object _id;
         private FakeIReceiveEvents _receiver;
-        private List<Event> _expectedEvents;
 
         private class FakeIReadStreams : IReadStreams
         {
             private readonly IEnumerable<EventRecord> _events;
 
-            public FakeIReadStreams(IEnumerable<EventRecord> events)
+            public FakeIReadStreams()
             {
-                _events = events;
+                _events = new List<EventRecord> {new EventRecord(1, "")};
             }
 
             public async Task Read(
