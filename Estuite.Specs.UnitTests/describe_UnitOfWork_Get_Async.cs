@@ -57,17 +57,10 @@ namespace Estuite.Specs.UnitTests
         {
             protected FakeIReceiveEvents(int id)
             {
-                Id = id;
-                Events = new List<Event>();
             }
-
-            public int Id { get; }
-
-            public List<Event> Events { get; }
 
             public void Receive(IEnumerable<Event> events)
             {
-                Events.AddRange(events);
             }
         }
     }
