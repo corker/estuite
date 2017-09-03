@@ -31,7 +31,7 @@ namespace Estuite.Specs.UnitTests
                 context["and multiple aggregates have changes"] = () =>
                 {
                     beforeAsync = async () => await _aggregates.Get<FakeAggregate>(2);
-                    it["throws exception"] = expect<SingleStreamCommitException>(
+                    it["throws exception"] = expect<MultipleStreamsToCommitException>(
                         @"Can't commit changes from multiple streams.
 StreamId bucket-id^FakeAggregate^1 with 1 event(s)
 StreamId bucket-id^FakeAggregate^2 with 1 event(s)"

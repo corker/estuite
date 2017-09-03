@@ -56,7 +56,7 @@
     <Compile Include="IReceiveEventRecords.cs" />
     <Compile Include="ICreateStreamIdentities.cs" />
     <Compile Include="IWriteStreams.cs" />
-    <Compile Include="SingleStreamCommitException.cs" />
+    <Compile Include="MultipleStreamsToCommitException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamConcurrentWriteException.cs" />
     <Compile Include="StreamId.cs" />
