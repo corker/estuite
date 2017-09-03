@@ -33,7 +33,10 @@ namespace Estuite.Domain
             {
                 _eventApplier.Apply(this, @event.Body);
                 _version++;
-                if (_version != @event.Version) throw new UnexpectedEventVersionException();
+                if (_version != @event.Version)
+                    throw new InvalidEventVersionException(
+                        $"Invalid event version received. {GetType().Name} with id {Id}, expected version {_version}, actual version {@event.Version}"
+                    );
             }
         }
 

@@ -46,7 +46,7 @@
     <Compile Include="DefaultEventApplier.cs" />
     <Compile Include="ICreateEvents.cs" />
     <Compile Include="IApplyEvents.cs" />
-    <Compile Include="UnexpectedEventVersionException.cs" />
+    <Compile Include="InvalidEventVersionException.cs" />
     <Compile Include="IReceiveEvents.cs" />
     <Compile Include="ISendEvents.cs" />
     <Compile Include="ObjectExtensions.cs" />

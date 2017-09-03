@@ -9,8 +9,8 @@ namespace Estuite.Specs.UnitTests
     {
         private void before_each()
         {
-            _id = Guid.NewGuid();
-            _eventsToRead = _eventsToRead = new List<Event>
+            _id = Guid.Parse("efffb958-6be6-4337-add2-3b6658e2329e");
+            _eventsToRead = new List<Event>
             {
                 new Event(1, new ReceivedEvent {Index = 1}),
                 new Event(2, new ReceivedEvent {Index = 2})
@@ -28,7 +28,7 @@ namespace Estuite.Specs.UnitTests
                     "Specified argument was out of the range of valid values.\r\nParameter name: id"
                 );
             };
-            context["then hydrate"] = () =>
+            context["then read"] = () =>
             {
                 act = () => _target.Read(_eventsToRead);
                 it["handles received events"] = () => { _target.ReceivedEvents.Count.ShouldBe(2); };
@@ -42,6 +42,13 @@ namespace Estuite.Specs.UnitTests
                     before = () => _eventsToRead = null;
                     it["throws exception"] = expect<ArgumentNullException>(
                         "Value cannot be null.\r\nParameter name: events"
+                    );
+                };
+                context["and events are in a wrong order"] = () =>
+                {
+                    before = () => _eventsToRead = new List<Event> {new Event(2, new ReceivedEvent())};
+                    it["throws exception"] = expect<InvalidEventVersionException>(
+                        "Invalid event version received. AggregateUnderTest with id efffb958-6be6-4337-add2-3b6658e2329e, expected version 1, actual version 2"
                     );
                 };
                 context["then apply"] = () =>
