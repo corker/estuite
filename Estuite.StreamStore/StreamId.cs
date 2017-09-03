@@ -16,5 +16,10 @@ namespace Estuite.StreamStore
         public AggregateType AggregateType { get; }
         public AggregateId AggregateId { get; }
         public string Value { get; }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

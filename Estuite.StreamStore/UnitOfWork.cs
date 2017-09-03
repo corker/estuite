@@ -64,7 +64,10 @@ namespace Estuite.StreamStore
                     await receivers[0].WriteTo(_writeStreams);
                     return;
                 default:
-                    throw new SingleStreamCommitException();
+                    var ids = string.Join("\r\n",receivers.Select(x => $"{x}"));
+                    var message = $@"Can't commit changes from multiple streams.
+{ids}";
+                    throw new SingleStreamCommitException(message);
             }
         }
 
@@ -102,6 +105,10 @@ namespace Estuite.StreamStore
         {
             private readonly List<Event> _events;
             private readonly StreamId _streamId;
+            public override string ToString()
+            {
+                return $"StreamId {_streamId} with {_events.Count} event(s)";
+            }
 
             public EventReceiver(StreamId streamId)
             {

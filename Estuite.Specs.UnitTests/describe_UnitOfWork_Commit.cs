@@ -29,6 +29,15 @@ namespace Estuite.Specs.UnitTests
             {
                 beforeAsync = async () => await _aggregates.Get<FakeAggregate>(1);
                 it["sends events to the writer"] = () => _writeStreams.Records.Count.ShouldBe(1);
+                context["and multiple aggregates have changes"] = () =>
+                {
+                    beforeAsync = async () => await _aggregates.Get<FakeAggregate>(2);
+                    it["throws exception"] = expect<SingleStreamCommitException>(
+                        @"Can't commit changes from multiple streams.
+StreamId bucket-id^FakeAggregate^1 with 1 event(s)
+StreamId bucket-id^FakeAggregate^2 with 1 event(s)"
+                    );
+                };
             };
         }
 
