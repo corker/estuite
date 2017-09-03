@@ -73,6 +73,7 @@
     <Compile Include="describe_UnitOfWork.cs" />
     <Compile Include="describe_UnitOfWork_Commit.cs" />
     <Compile Include="describe_UnitOfWork_Get.cs" />
+    <Compile Include="describe_UnitOfWork_Get_Async.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
