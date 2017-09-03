@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
@@ -62,15 +61,6 @@ StreamId bucket-id^FakeAggregate^2 with 1 event(s)"
             )
             {
                 records.Receive(_events);
-            }
-
-            public async Task<bool> TryRead(
-                StreamId streamId,
-                IReceiveEventRecords records,
-                CancellationToken token
-            )
-            {
-                throw new NotImplementedException();
             }
         }
 

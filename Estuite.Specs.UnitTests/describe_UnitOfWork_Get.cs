@@ -76,15 +76,6 @@ namespace Estuite.Specs.UnitTests
             {
                 records.Receive(_events);
             }
-
-            public async Task<bool> TryRead(
-                StreamId streamId,
-                IReceiveEventRecords records,
-                CancellationToken token
-            )
-            {
-                throw new NotImplementedException();
-            }
         }
 
         private class FakeIReceiveEvents : IReceiveEvents

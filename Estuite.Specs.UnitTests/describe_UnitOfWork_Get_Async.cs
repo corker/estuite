@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Estuite.Domain;
@@ -46,15 +45,6 @@ namespace Estuite.Specs.UnitTests
                 _callsCount++;
                 if (_callsCount == 2) return;
                 Receiver = await _aggregates.Get<FakeIReceiveEvents>(1, token);
-            }
-
-            public async Task<bool> TryRead(
-                StreamId streamId,
-                IReceiveEventRecords records,
-                CancellationToken token
-            )
-            {
-                throw new NotImplementedException();
             }
 
             public void SetTarget(IProvideAggregates aggregates)
