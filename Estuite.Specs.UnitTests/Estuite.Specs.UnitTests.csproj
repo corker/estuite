@@ -71,6 +71,7 @@
     <Compile Include="describe_SessionId.cs" />
     <Compile Include="describe_StreamId.cs" />
     <Compile Include="describe_UnitOfWork.cs" />
+    <Compile Include="describe_UnitOfWork_Commit.cs" />
     <Compile Include="describe_UnitOfWork_Get.cs" />
     <Compile Include="nspec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

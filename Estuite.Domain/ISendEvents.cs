@@ -2,6 +2,6 @@
 {
     public interface ISendEvents
     {
-        void SendTo(IReceiveEvents events);
+        void SendTo(IReceiveEvents receiver);
     }
 }
