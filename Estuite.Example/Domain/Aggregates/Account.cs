@@ -8,22 +8,20 @@ namespace Estuite.Example.Domain.Aggregates
     {
         private string _name;
 
-        public Account(Guid id) : base(id)
+        protected Account(Guid id) : base(id)
         {
         }
 
-        public static Account Register(Guid accountId, string name)
+        public void Register(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (_name != null) throw new InvalidOperationException("Account was already registered");
 
-            var aggregate = new Account(accountId);
-            aggregate.Apply<AccountRegistered>(x =>
+            Apply<AccountRegistered>(x =>
             {
-                x.AccountId = accountId;
+                x.AccountId = Id;
                 x.Name = name;
             });
-            return aggregate;
         }
 
         public void ChangeName(string name)

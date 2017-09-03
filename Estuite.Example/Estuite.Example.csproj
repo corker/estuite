@@ -81,7 +81,7 @@
   <ItemGroup>
     <Compile Include="Domain\Aggregates\Account.cs" />
     <Compile Include="Configuration\AutofacContainerFactory.cs" />
-    <Compile Include="Examples\hydrate_aggregate_that_doesnt_exist.cs" />
+    <Compile Include="Examples\get_aggregate_that_doesnt_exist.cs" />
     <Compile Include="Examples\register_an_aggregate_and_append_a_stream.cs" />
     <Compile Include="Examples\session_collision.cs" />
     <Compile Include="Examples\version_collision.cs" />

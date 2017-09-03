@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Estuite.Example.Domain.Aggregates;
@@ -18,24 +17,24 @@ namespace Estuite.Example.Examples
 
         public async Task Run()
         {
-            //var accountId = Guid.NewGuid();
+            var accountId = Guid.NewGuid();
 
-            //using (var scope = _scope.BeginLifetimeScope())
-            //{
-            //    var uow = scope.Resolve<UnitOfWork>();
-            //    var aggregate = Account.Register(accountId, "MyAccount1");
-            //    uow.Register(aggregate);
-            //    await uow.Commit(CancellationToken.None);
-            //    aggregate.ChangeName("MyAccount2");
-            //    await uow.Commit(CancellationToken.None);
-            //}
+            using (var scope = _scope.BeginLifetimeScope())
+            {
+                var aggregates = scope.Resolve<IProvideAggregates>();
+                var uow = scope.Resolve<ICommitAggregates>();
+                var aggregate = await aggregates.Get<Account>(accountId);
+                aggregate.Register("MyAccount1");
+                await uow.Commit();
+                aggregate.ChangeName("MyAccount2");
+                await uow.Commit();
+            }
 
-            //using (var scope = _scope.BeginLifetimeScope())
-            //{
-            //    var uow = scope.Resolve<UnitOfWork>();
-            //    var aggregate = new Account(accountId);
-            //    await uow.Hydrate(aggregate, CancellationToken.None);
-            //}
+            using (var scope = _scope.BeginLifetimeScope())
+            {
+                var aggregates = scope.Resolve<IProvideAggregates>();
+                var aggregate = await aggregates.Get<Account>(accountId);
+            }
         }
     }
 }
