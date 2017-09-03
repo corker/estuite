@@ -20,16 +20,7 @@ namespace Estuite.StreamStore.Azure
 
         public async Task Read(StreamId streamId, IReceiveEventRecords records, CancellationToken token)
         {
-            var result = await TryRead(streamId, records, token);
-            if (result) return;
-            var message = $"Stream {streamId.Value} not found.";
-            throw new StreamNotFoundException(message);
-        }
-
-        public async Task<bool> TryRead(StreamId streamId, IReceiveEventRecords records, CancellationToken token)
-        {
             var table = await _table.GetOrCreate();
-            var handledAny = false;
             var query = table.CreateQuery<EventRecordTableEntity>()
                 .Where(x => x.PartitionKey == streamId.Value)
                 .Where(x => string.Compare(x.RowKey, "E^", StringComparison.Ordinal) > 0)
@@ -39,13 +30,11 @@ namespace Estuite.StreamStore.Azure
             do
             {
                 var segment = await table.ExecuteQuerySegmentedAsync(query, queryToken, token);
-                if (segment.Any()) handledAny = true;
                 queryToken = segment.ContinuationToken;
                 var segmentRecords = segment.Select(x => _records.RestoreFrom(x));
                 records.Receive(segmentRecords);
                 if (token.IsCancellationRequested) throw new OperationCanceledException(token);
             } while (queryToken != null);
-            return handledAny;
         }
     }
 }

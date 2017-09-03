@@ -61,7 +61,6 @@
     <Compile Include="StreamConcurrentWriteException.cs" />
     <Compile Include="StreamId.cs" />
     <Compile Include="StreamIdEqualityComparer.cs" />
-    <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="UtcDateTimeProvider.cs" />
   </ItemGroup>
