@@ -10,7 +10,7 @@ namespace Estuite.Specs.UnitTests
     {
         private void before_each()
         {
-            _id = "";
+            _id = "A";
         }
 
         private void when_create()
